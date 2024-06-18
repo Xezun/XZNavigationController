@@ -126,6 +126,10 @@ extension XZNavigationControllerAnimationController {
             navBar.setNeedsLayout()
         }
         
+        if fromNavBar != nil && toNavBar != nil {
+            navigationBar.superview?.sendSubviewToBack(navigationBar)
+        }
+        
         // todo: 执行动画时，是否需要将系统导航条放到转场容器最底层，作为自定义导航条的背景。
         
         // 由于 tabBar 在最顶层，所以平移一个屏宽，而非三分之一
@@ -164,15 +168,14 @@ extension XZNavigationControllerAnimationController {
         }, completion: { (finished) in
             // 删除阴影。
             shadowView.removeFromSuperview()
-
-            // 恢复 TabBar 。
-            if let tabBar = tabBar {
-                tabBar.isFrozen = false
-            }
             
             // 自定义导航条在转场过程中，仅仅作为转场效果出现，将起放置到导航条上有导航控制器处理，所以这里要移除。
+            navigationBar.superview?.bringSubviewToFront(navigationBar)
             fromNavBar?.removeFromSuperview()
             toNavBar?.removeFromSuperview()
+            
+            // 恢复 TabBar 。
+            tabBar?.isFrozen = false
             
             // 恢复导航条状态。如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
             // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
@@ -253,6 +256,10 @@ extension XZNavigationControllerAnimationController {
             containerView.insertSubview(navBar, aboveSubview: toView)
             navBar.setNeedsLayout()
         }
+        
+        if fromNavBar != nil && toNavBar != nil {
+            navigationBar.superview?.sendSubviewToBack(navigationBar)
+        }
          
         // 由于 tabBar 的层级比较高，且将 tabBar 添加到 containerView 上，会导致 tabBar 在动画时到显示不正确
         // 所以 tabBar 是平移一个宽度，而页面仅平移了三分之一
@@ -293,12 +300,13 @@ extension XZNavigationControllerAnimationController {
             // 删除阴影。
             shadowView.removeFromSuperview()
 
-            // 恢复 TabBar 。
-            tabBar?.isFrozen = false
-            
             // 自定义导航条在转场过程中，仅仅作为转场效果出现，将起放置到导航条上有导航控制器处理，所以这里要移除。
+            navigationBar.superview?.bringSubviewToFront(navigationBar)
             fromNavBar?.removeFromSuperview()
             toNavBar?.removeFromSuperview()
+            
+            // 恢复 TabBar 。
+            tabBar?.isFrozen = false
             
             if transitionContext.transitionWasCancelled {
                 // 如果转场取消，恢复导航条样式。
