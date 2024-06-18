@@ -13,6 +13,7 @@ class ExampleNavigationController: UINavigationController, XZNavigationControlle
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .white
         self.isNavigationBarCustomizable = true
     }
 

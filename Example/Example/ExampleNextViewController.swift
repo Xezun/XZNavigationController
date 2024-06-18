@@ -1,5 +1,5 @@
 //
-//  NextViewController.swift
+//  ExampleNextViewController.swift
 //  Example
 //
 //  Created by 徐臻 on 2024/6/16.
@@ -8,14 +8,14 @@
 import UIKit
 import XZNavigationController
 
-class NextViewController: UITableViewController, XZNavigationBarCustomizable, XZNavigationGestureDrivable {
+class ExampleNextViewController: UITableViewController, XZNavigationGestureDrivable {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationBar.title = "Next"
-        self.navigationBar.barTintColor = .brown
-        self.navigationBar.isTranslucent = true
+//        self.navigationBar.title = "Next"
+//        self.navigationBar.barTintColor = .brown
+//        self.navigationBar.isTranslucent = true
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 

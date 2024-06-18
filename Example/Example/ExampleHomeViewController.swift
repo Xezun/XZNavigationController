@@ -1,5 +1,5 @@
 //
-//  HomeViewController.swift
+//  ExampleHomeViewController.swift
 //  Example
 //
 //  Created by 徐臻 on 2024/6/12.
@@ -7,14 +7,15 @@
 
 import UIKit
 import XZNavigationController
+import XZExtensions
 
-class HomeViewController: UITableViewController, XZNavigationBarCustomizable, XZNavigationGestureDrivable {
+class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomizable, XZNavigationGestureDrivable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationBar.title = "Home"
-        self.navigationBar.barTintColor = .red
+        self.navigationBar.title = "首页"
+        self.navigationBar.barTintColor = rgb(0x1296db);
         self.navigationBar.isTranslucent = false
     }
 

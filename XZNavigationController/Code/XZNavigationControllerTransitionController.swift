@@ -65,26 +65,20 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
     
     /// 3. 新的控制器将要显示。
     public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        // 需要在动画开始前配置导航条样式，因为转场动画开始时，会根据当前导航条的状态来确定控制器的布局。
         // 此方法会在 viewDidLoad 之后，但是在转场动画开始之前触发；转场如果取消，此方法不会调用。
+        // 需要在转场动画开始前更新导航条样式，因为在进入自定义转场动画时，控制器的布局已经确定。
         // 导航控制器第一次显示时，栈底控制器如果不是通过初始化方法传入的，可能会造成此方法会被调用，但是 didShow 不调用，所以需要转场事件的回调。
         
-        // 转场过程中，设置当前的自定义导航条为 nil ，以避免将新导航条的状态同步过来了。
-        if (!animated) {
-            navigationController.navigationBar.customNavigationBar = nil
-        }
-        
+        // 设置导航条的值，会同时保存到自定义导航条中，所以先设置为 nil
+        navigationController.navigationBar.customNavigationBar = nil
+        // 更新导航条状态
         if let navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
             navigationController.navigationBar.tintColor          = navigationBar.tintColor
             navigationController.navigationBar.isTranslucent      = navigationBar.isTranslucent
             navigationController.navigationBar.prefersLargeTitles = navigationBar.prefersLargeTitles
             navigationController.setNavigationBarHidden(navigationBar.isHidden, animated: animated)
         } else {
-            // 如果没有自定义导航条，则默认导航条隐藏、透明，那么控制器强制设置导航条显示时，将展示一个透明的导航条。
-            navigationController.navigationBar.tintColor          = nil
-            navigationController.navigationBar.isTranslucent      = true
-            navigationController.navigationBar.prefersLargeTitles = false
-            navigationController.setNavigationBarHidden(true, animated: animated)
+            // 没有自定义导航条，导航条样式保持不变。新页面使用系统导航条，样式值与当前自定义导航条一致。
         }
         
         delegate?.navigationController?(navigationController, willShow: viewController, animated: animated)
@@ -92,12 +86,9 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
     
     /// 5. 导航控制器显示了指定的控制器。转场取消的时候，此方法不会调用。
     public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        // 带动画的转场已由转场控制器处理。
-        // 因为取消的转场，此方法不会调用，所以动画转场的收尾工作已在动画回调中处理。
-        if !animated {
-            // 非动画转场的处理。
-            navigationController.navigationBar.customNavigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
-        }
+        // 设置 customNavigationBar 的值，其实在自定义转场动画中已处理。但是非动画转场，不会走自定义转场动画的逻辑，所以这里需要补上。
+        // 另外，如果转场取消，此方法不会调用，属性 customNavigationBar 的值，也是在自定义转场动画的逻辑中处理的，
+        navigationController.navigationBar.customNavigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
         
         delegate?.navigationController?(navigationController, didShow: viewController, animated: animated)
     }

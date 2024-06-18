@@ -9,7 +9,8 @@ project '../Example/Example.xcodeproj'
 target 'Example' do
 
   pod 'XZNavigationController', :path => '../'
-
+  pod 'XZExtensions'
+  
   # pod 'SDWebImage'
   # pod 'YYModel'
   # pod 'AFNetworking'
