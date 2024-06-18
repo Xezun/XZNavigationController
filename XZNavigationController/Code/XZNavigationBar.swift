@@ -11,12 +11,33 @@ import UIKit
 /// 自定义导航条。tintColor 有默认值，不从父类继承。
 @objc open class XZNavigationBar: UIView, XZNavigationBarProtocol {
     
+    open override var isHidden: Bool {
+        didSet {
+            viewController.navigationController?.navigationBar.setHidden(isHidden)
+        }
+    }
+    
+    open func setHidden(_ isHidden: Bool, animated: Bool) {
+        viewController.navigationController?.setNavigationBarHidden(isHidden, animated: animated)
+    }
+    
     /// 控制背景透明，默认 true 。
-    open var isTranslucent: Bool
+    open var isTranslucent = true {
+        didSet {
+            viewController.navigationController?.navigationBar.setTranslucent(isTranslucent)
+        }
+    }
+    
     /// 默认 false 。
-    open var prefersLargeTitles: Bool
+    open var prefersLargeTitles = false {
+        didSet {
+            viewController.navigationController?.navigationBar.setPrefersLargeTitles(prefersLargeTitles)
+        }
+    }
+    
     /// 导航条的背景视图。
     public let backgroundImageView: UIImageView
+    
     /// 导航条阴影视图。
     public let shadowImageView: UIImageView
     
@@ -32,9 +53,6 @@ import UIKit
         shadowImageView = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: frame.width, height: 1.0 / UIScreen.main.scale))
         shadowImageView.autoresizingMask = [.flexibleTopMargin, .flexibleWidth]
         shadowImageView.backgroundColor = UIColor(white: 0, alpha: 0.3)
-        
-        isTranslucent      = true
-        prefersLargeTitles = false
         
         super.init(frame: CGRect(x: 0, y: 0, width: frame.width, height: 44));
         
