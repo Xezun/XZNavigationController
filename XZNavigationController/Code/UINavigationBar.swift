@@ -54,7 +54,7 @@ extension UINavigationBar {
     }
     
     /// 导航条是否可以自定义。
-    @objc(xz_isCustomizable) var isCustomizable: Bool {
+    @objc(__xz_isCustomizable) var isCustomizable: Bool {
         get {
             return false
         }
@@ -83,9 +83,27 @@ extension UINavigationBar {
         }
     }
     
+    @objc(__xz_setHidden:) func setHidden(_ isHidden: Bool) {
+    }
+    @objc(__xz_setTranslucent:) func setTranslucent(_ isTranslucent: Bool) {
+    }
+    @objc(__xz_setPrefersLargeTitles:) func setPrefersLargeTitles(_ prefersLargeTitles: Bool) {
+    }
 }
 
 private class XZCustomizableNavigationBar: UINavigationBar {
+    
+    override func setHidden(_ isHidden: Bool) {
+        super.isHidden = isHidden
+    }
+    
+    override func setTranslucent(_ isTranslucent: Bool) {
+        super.isTranslucent = isTranslucent
+    }
+    
+    override func setPrefersLargeTitles(_ prefersLargeTitles: Bool) {
+        super.prefersLargeTitles = prefersLargeTitles
+    }
     
     // 重写自定义类的 isCustomizable 属性的 getter 方法，使其返回 true 。
     override var isCustomizable: Bool {
@@ -97,16 +115,18 @@ private class XZCustomizableNavigationBar: UINavigationBar {
         }
     }
     
-    // 会影响布局的属性，在赋值时，同步到自定义导航条中。
+    // 以会影响布局的属性，在赋值时，如果有自定义导航条，则直接设置自定义导航条。
+    // 然后自定义导航条对应的 setter.didSet 方法，会再将值同步给原生导航条。
     
     override var isHidden: Bool {
         get {
             return super.isHidden
         }
         set {
-            super.isHidden = newValue
             if let customNavigationBar = customNavigationBar {
                 customNavigationBar.isHidden = newValue
+            } else {
+                super.isHidden = newValue
             }
         }
     }
@@ -116,9 +136,10 @@ private class XZCustomizableNavigationBar: UINavigationBar {
             return super.isTranslucent
         }
         set {
-            super.isTranslucent = newValue
             if let customNavigationBar = customNavigationBar {
                 customNavigationBar.isTranslucent = newValue
+            } else {
+                super.isTranslucent = newValue
             }
         }
     }
@@ -129,9 +150,10 @@ private class XZCustomizableNavigationBar: UINavigationBar {
             return super.prefersLargeTitles
         }
         set {
-            super.prefersLargeTitles = newValue
             if let customNavigationBar = customNavigationBar {
                 customNavigationBar.prefersLargeTitles = newValue
+            } else {
+                super.prefersLargeTitles = newValue
             }
         }
     }
