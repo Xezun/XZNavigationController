@@ -6,17 +6,15 @@
 //
 
 import UIKit
+import XZNavigationController
 
-class ExampleLastViewController: UITableViewController {
+class ExampleLastViewController: UITableViewController, XZNavigationBarCustomizable {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        self.navigationBar.title = "尾页"
+        self.navigationBar.barTintColor = .systemBrown
     }
 
     // MARK: - Table view data source

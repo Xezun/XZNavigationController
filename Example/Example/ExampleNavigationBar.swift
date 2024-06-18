@@ -24,26 +24,24 @@ public class ExampleNavigationBar: XZNavigationBar {
                 let width = UIScreen.main.bounds.width
                 
                 titleLabel.frame = CGRect(x: 0, y: 0, width: width, height: 44)
-                titleLabel.font = UIFont.systemFont(ofSize: 17.0)
+                titleLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .semibold)
                 titleLabel.textAlignment = .center
                 titleLabel.textColor = .black
-                titleLabel.text = newValue
-                self.titleView = titleLabel
                 
                 largeTitleLabel.frame = CGRect(x: 16.0, y: 3.0, width: width - 32.0, height: 41.0)
                 largeTitleLabel.autoresizingMask = [.flexibleTopMargin, .flexibleWidth]
                 largeTitleLabel.font = UIFont.boldSystemFont(ofSize: 34)
                 largeTitleLabel.textAlignment = .natural
                 largeTitleLabel.textColor = .black
-                largeTitleLabel.text = newValue
                 
                 let largeTitleView = UIView.init(frame: CGRect(x: 0, y: 0, width: width, height: 52))
                 largeTitleView.addSubview(largeTitleLabel)
+                
+                self.titleView = titleLabel
                 self.largeTitleView = largeTitleView
-            } else {
-                titleLabel.text = newValue
-                largeTitleLabel.text = newValue
             }
+            titleLabel.text = newValue
+            largeTitleLabel.text = newValue
         }
     }
     
@@ -54,7 +52,7 @@ public class ExampleNavigationBar: XZNavigationBar {
 extension XZNavigationBarCustomizable {
     
     public var navigationBarIfLoaded: XZNavigationBarProtocol? {
-        return objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarProtocol
+        return self.navigationBar
     }
     
     public var navigationBar: ExampleNavigationBar {
