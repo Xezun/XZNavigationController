@@ -36,6 +36,7 @@ public class ExampleNavigationBar: XZNavigationBar {
                 largeTitleLabel.textColor = .black
                 
                 let largeTitleView = UIView.init(frame: CGRect(x: 0, y: 0, width: width, height: 52))
+                largeTitleView.clipsToBounds = true
                 largeTitleView.addSubview(largeTitleLabel)
                 
                 self.titleView = titleLabel
