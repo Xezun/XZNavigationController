@@ -20,7 +20,11 @@ import UIKit
     /// 导航条阴影视图。
     public let shadowImageView: UIImageView
     
-    public override init(frame: CGRect) {
+    public unowned let viewController: UIViewController
+    
+    public init(for viewController: UIViewController, frame: CGRect) {
+        self.viewController = viewController
+        
         backgroundImageView = UIImageView.init(frame: CGRect(x: 0, y: -20, width: frame.width, height: 64));
         backgroundImageView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         backgroundImageView.backgroundColor  = UIColor.white
@@ -40,26 +44,10 @@ import UIKit
         self.addSubview(shadowImageView)
     }
     
-    public required init?(coder aDecoder: NSCoder) {
-        guard let backgroundImageView = aDecoder.decodeObject(forKey: CodingKey.backgroundImageView.rawValue) as? UIImageView else { return nil }
-        guard let shadowImageView     = aDecoder.decodeObject(forKey: CodingKey.shadowImageView.rawValue) as? UIImageView else { return nil }
-        self.backgroundImageView = backgroundImageView
-        self.shadowImageView     = shadowImageView
-        self.isTranslucent       = aDecoder.decodeBool(forKey: CodingKey.isTranslucent.rawValue)
-        self.prefersLargeTitles  = aDecoder.decodeBool(forKey: CodingKey.prefersLargeTitles.rawValue)
-        super.init(coder: aDecoder)
-        self.addSubview(backgroundImageView)
-        self.addSubview(shadowImageView)
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    open override func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(isTranslucent, forKey: CodingKey.isTranslucent.rawValue)
-        aCoder.encode(backgroundImageView, forKey: CodingKey.backgroundImageView.rawValue)
-        aCoder.encode(shadowImageView, forKey: CodingKey.shadowImageView.rawValue)
-        aCoder.encode(prefersLargeTitles, forKey: CodingKey.prefersLargeTitles.rawValue)
-    }
-
     /// 此属性直接修改的是导航条背景视图的背景色。
     open var barTintColor: UIColor? {
         get { return backgroundImageView.backgroundColor }
