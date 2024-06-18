@@ -73,10 +73,10 @@ public protocol XZNavigationBarProtocol: UIView {
 public protocol XZNavigationBarCustomizable: UIViewController {
     
     /// 控制器自定义导航条。
+    /// - Note: 导航条的获取时机会被 viewDidLoad 更早，因此，在其中访问到 view 属性，可能会造成控制器生命周期提前。
     var navigationBarIfLoaded: XZNavigationBarProtocol? { get }
     
 }
 
-
-
 private var _transitionController = 0
+
