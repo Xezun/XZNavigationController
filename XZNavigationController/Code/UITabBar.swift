@@ -41,7 +41,7 @@ extension UITabBar {
                 _ = object_setClass(self, FreezableTabBarClass)
                 objc_setAssociatedObject(TabBarClass, &_FreezableTabBarClass, FreezableTabBarClass, .OBJC_ASSOCIATION_ASSIGN)
             } else {
-                // tabBar 的动画可能异常
+                print("无法自定义\(TabBarClass)，转场动画时 tabBar 的动画可能异常")
             }
         }
     }
