@@ -174,7 +174,11 @@ import UIKit
                 if largeTitleView.frame.isEmpty {
                     largeTitleView.sizeToFit()
                 }
-                self.addSubview(largeTitleView)
+                if let titleView = titleView {
+                    insertSubview(largeTitleView, belowSubview: titleView)
+                } else {
+                    addSubview(largeTitleView)
+                }
             }
             objc_setAssociatedObject(self, &AssociationKey.largeTitleView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
