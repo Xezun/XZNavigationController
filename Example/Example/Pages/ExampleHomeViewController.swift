@@ -15,7 +15,6 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
         
         self.navigationBar.title = "首页"
         self.navigationBar.barTintColor = .brown
-        self.navigationBar.isTranslucent = false
     }
 
     @IBAction func unwindToHome(_ unwindSegue: UIStoryboardSegue) {
@@ -33,5 +32,18 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     func navigationController(_ navigationController: UINavigationController, edgeInsetsForGestureNavigation operation: UINavigationController.Operation) -> NSDirectionalEdgeInsets? {
         return .init(top: 0, leading: 20, bottom: 0, trailing: 20)
     }
+    
+    @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {
+        self.navigationController?.setNavigationBarHidden(sender.isOn, animated: true)
+    }
+    
+    @IBAction func navigationBarTranslucentChanged(_ sender: UISwitch) {
+        self.navigationController?.navigationBar.isTranslucent = sender.isOn
+    }
+    
+    @IBAction func navigationBarPrefersLargeTitlesChanged(_ sender: UISwitch) {
+        self.navigationController?.navigationBar.prefersLargeTitles = sender.isOn
+    }
+    
 }
 

@@ -8,6 +8,12 @@
 import XZNavigationController
 
 public class ExampleNavigationBar: XZNavigationBar {
+    
+    public override var barTintColor: UIColor? {
+        didSet {
+            titleLabel.backgroundColor = barTintColor
+        }
+    }
 
     public var title: String? {
         get {
@@ -15,18 +21,34 @@ public class ExampleNavigationBar: XZNavigationBar {
         }
         set {
             if titleView == nil {
-                let titleLabel = UILabel.init(frame: CGRect(x: 0, y: 0, width: 0, height: 30))
+                let width = UIScreen.main.bounds.width
+                
+                titleLabel.frame = CGRect(x: 0, y: 0, width: width, height: 44)
                 titleLabel.font = UIFont.systemFont(ofSize: 17.0)
                 titleLabel.textAlignment = .center
                 titleLabel.textColor = .black
                 titleLabel.text = newValue
                 self.titleView = titleLabel
-            } else if let titleLabel = self.titleView as? UILabel {
+                
+                largeTitleLabel.frame = CGRect(x: 16.0, y: 3.0, width: width - 32.0, height: 41.0)
+                largeTitleLabel.autoresizingMask = [.flexibleTopMargin, .flexibleWidth]
+                largeTitleLabel.font = UIFont.boldSystemFont(ofSize: 34)
+                largeTitleLabel.textAlignment = .natural
+                largeTitleLabel.textColor = .black
+                largeTitleLabel.text = newValue
+                
+                let largeTitleView = UIView.init(frame: CGRect(x: 0, y: 0, width: width, height: 52))
+                largeTitleView.addSubview(largeTitleLabel)
+                self.largeTitleView = largeTitleView
+            } else {
                 titleLabel.text = newValue
+                largeTitleLabel.text = newValue
             }
         }
     }
-
+    
+    private let titleLabel = UILabel.init()
+    private let largeTitleLabel = UILabel.init()
 }
 
 extension XZNavigationBarCustomizable {
@@ -39,7 +61,7 @@ extension XZNavigationBarCustomizable {
         if let navigationBar = objc_getAssociatedObject(self, &_navigationBar) as? ExampleNavigationBar {
             return navigationBar
         }
-        let navigationBar = ExampleNavigationBar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 0))
+        let navigationBar = ExampleNavigationBar(for: self, frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 0))
         objc_setAssociatedObject(self, &_navigationBar, navigationBar, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return navigationBar
     }
