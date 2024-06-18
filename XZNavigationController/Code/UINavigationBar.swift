@@ -41,7 +41,6 @@ extension UINavigationBar {
             // 添加新的
             if let newValue = newValue {
                 newValue.frame = bounds
-                newValue.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                 super.addSubview(newValue)
                 
                 // 复制样式，在外部处理：
@@ -200,6 +199,14 @@ private class XZCustomizableNavigationBar: UINavigationBar {
         }
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if let customNavigationBar = customNavigationBar {
+            customNavigationBar.frame = bounds
+        }
+    }
+
 }
 
 private var _customNavigationBar = 0
