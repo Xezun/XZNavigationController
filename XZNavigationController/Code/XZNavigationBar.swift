@@ -146,9 +146,11 @@ import UIKit
             height: shadowImageView.image?.size.height ?? 1.0 / UIScreen.main.scale
         )
 
-        guard let window = self.window else { return }
-        let minY = min(0, window.convert(window.bounds.origin, to: self).y)
-        backgroundImageView.frame = CGRect.init(x: bounds.minX, y: minY, width: bounds.width, height: bounds.maxY - minY)
+        if let window = self.window {
+            let safeAreaInsets = window.safeAreaInsets
+            let y = -safeAreaInsets.top;
+            backgroundImageView.frame = CGRect.init(x: bounds.minX, y: y, width: bounds.width, height: bounds.height + safeAreaInsets.top)
+        }
     }
 
     /// 在导航条上居中显示的标题视图。
