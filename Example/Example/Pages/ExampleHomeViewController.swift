@@ -34,15 +34,15 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     }
     
     @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {
-        self.navigationController?.setNavigationBarHidden(sender.isOn, animated: true)
+        navigationBar.setHidden(sender.isOn, animated: true)
     }
     
     @IBAction func navigationBarTranslucentChanged(_ sender: UISwitch) {
-        self.navigationController?.navigationBar.isTranslucent = sender.isOn
+        navigationBar.isTranslucent = sender.isOn
     }
     
     @IBAction func navigationBarPrefersLargeTitlesChanged(_ sender: UISwitch) {
-        self.navigationController?.navigationBar.prefersLargeTitles = sender.isOn
+        navigationBar.prefersLargeTitles = sender.isOn
     }
     
 }
