@@ -110,8 +110,10 @@ extension XZNavigationControllerAnimationController {
         let fromNavBar = (fromVC as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
         var fromNavBarFrame2: CGRect?
         if let navBar = fromNavBar, !navBar.isHidden {
-            navBar.frame = navBarRect
-            fromNavBarFrame2 = navBarRect.offsetBy(dx: direction * -navBarRect.width / 3.0, dy: 0)
+            // from 导航条使用原始状态
+            let fromNavBarFrame1 = navigationBar.convert(navBar.frame, to: containerView)
+            navBar.frame = fromNavBarFrame1
+            fromNavBarFrame2 = fromNavBarFrame1.offsetBy(dx: direction * -navBarRect.width / 3.0, dy: 0)
             containerView.insertSubview(navBar, aboveSubview: fromView)
             // 解决因为状态栏变化而造成的导航条布局问题：导航条 frame 没变，但是覆盖状态栏的背景，需要根据状态栏变化。
             navBar.setNeedsLayout()
@@ -242,8 +244,9 @@ extension XZNavigationControllerAnimationController {
         let fromNavBar = (fromVC as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
         var fromNavBarFrame2: CGRect?
         if let navBar = fromNavBar, !navBar.isHidden {
-            navBar.frame = navBarRect
-            fromNavBarFrame2 = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
+            let fromNavBarFrame1 = navigationBar.convert(navBar.frame, to: containerView)
+            navBar.frame = fromNavBarFrame1
+            fromNavBarFrame2 = fromNavBarFrame1.offsetBy(dx: direction * navBarRect.width, dy: 0)
             containerView.insertSubview(navBar, aboveSubview: fromView)
             navBar.setNeedsLayout()
         }
