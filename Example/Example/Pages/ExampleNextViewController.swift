@@ -8,7 +8,7 @@
 import UIKit
 import XZNavigationController
 
-class ExampleNextViewController: UITableViewController, XZNavigationGestureDrivable, XZNavigationBarCustomizable {
+class ExampleNextViewController: UITableViewController, XZNavigationGestureDrivable {
 
     override func viewDidLoad() {
         super.viewDidLoad()
