@@ -109,7 +109,7 @@ import UIKit
         // 普通高度：44 大标题最小高度： 44 + 52
         
         if let titleView = self.titleView {
-            titleView.isHidden = bounds.height >= 96.0
+            titleView.isHidden = bounds.height > 64.0
             let frame = titleView.frame
             let x = (bounds.width - frame.width) * 0.5
             let y = (44.0 - frame.height) * 0.5
@@ -117,10 +117,8 @@ import UIKit
         }
         
         if let largeTitleView = self.largeTitleView {
-            largeTitleView.isHidden = !(bounds.height > 70 && prefersLargeTitles)
-            let h = max(bounds.height - 44.0, 52)
-            let y = bounds.maxY - h
-            largeTitleView.frame = CGRect(x: bounds.minX, y: y, width: bounds.width, height: h)
+            largeTitleView.isHidden = !(bounds.height > 64.0 && prefersLargeTitles)
+            largeTitleView.frame = CGRect(x: bounds.minX, y: 44.0, width: bounds.width, height: bounds.height - 44.0)
         }
 
         let isLeftToRight = (self.effectiveUserInterfaceLayoutDirection == .leftToRight)
