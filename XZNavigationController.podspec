@@ -10,8 +10,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XZNavigationController'
-  s.version          = '1.0.0'
-  s.summary          = '对原生框架的拓展，提高开发效率'
+  s.version          = '1.0.1'
+  s.summary          = '支持全屏手势导航、自定义导航栏的协议框架'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-                       XZNavigationController 包含了对原生框架的拓展，丰富了原生框架的功能，提高了开发效率。
+  拓展了原生 UINavigationController 以支持自定义导航条、全屏手势导航的面向协议的组件
                        DESC
 
   s.homepage         = 'https://github.com/Xezun/XZNavigationController'

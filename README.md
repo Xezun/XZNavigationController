@@ -7,7 +7,7 @@
 
 XZNavigationController 为原生的 UINavigationController 组件拓展了自定义导航条的功能，且与原生导航条兼容。
 
-## 功能特色
+## 功能特性
 
 ### 一、面向协议
 
@@ -160,8 +160,6 @@ XZNavigationController is available through [CocoaPods](https://cocoapods.org). 
 ```ruby
 pod 'XZNavigationController'
 ```
-
-## 功能特性
 
 ## Author
 
