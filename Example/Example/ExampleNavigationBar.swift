@@ -23,6 +23,7 @@ public class ExampleNavigationBar: XZNavigationBar {
             if titleView == nil {
                 let width = UIScreen.main.bounds.width
                 
+                titleLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                 titleLabel.frame = CGRect(x: 0, y: 0, width: width, height: 44)
                 titleLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .semibold)
                 titleLabel.textAlignment = .center
