@@ -246,6 +246,16 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         let operation   = currentGestrueNavigationOperation()
         
+        let location    = interactiveNavigationGestureRecognizer.location(in: nil)
+        let translation = interactiveNavigationGestureRecognizer.translation(in: nil)
+        let point       = CGPoint(x: location.x - translation.x, y: location.y - translation.y);
+        let bounds      = navigationController.view.bounds
+        
+        // 滑动横向分量不足时，不识别手势
+        if abs(translation.x) < abs(translation.y) * 10 {
+            return false
+        }
+        
         switch operation {
         case .push:
             // 栈顶控制器必须有协议支持
@@ -253,10 +263,6 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
             
             // 边缘检测
             if let edgeInsets = viewController.navigationController(navigationController, edgeInsetsForGestureNavigation: .push) {
-                let location    = interactiveNavigationGestureRecognizer.location(in: nil)
-                let translation = interactiveNavigationGestureRecognizer.translation(in: nil)
-                let point       = CGPoint(x: location.x - translation.x, y: location.y - translation.y);
-                let bounds      = navigationController.view.bounds
                 switch navigationController.view.effectiveUserInterfaceLayoutDirection {
                 case .leftToRight:
                     return point.x >= bounds.maxX - edgeInsets.trailing
@@ -276,10 +282,6 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
             
             // pop 定制
             if let viewController = navigationController.topViewController as? XZNavigationGestureDrivable {
-                let location    = interactiveNavigationGestureRecognizer.location(in: nil)
-                let translation = interactiveNavigationGestureRecognizer.translation(in: nil)
-                let point       = CGPoint(x: location.x - translation.x, y: location.y - translation.y);
-                let bounds      = navigationController.view.bounds
                 // 边缘检测
                 if let edgeInsets = viewController.navigationController(navigationController, edgeInsetsForGestureNavigation: .pop) {
                     switch navigationController.view.effectiveUserInterfaceLayoutDirection {
@@ -295,11 +297,6 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
                 return true
             }
             
-            let location    = interactiveNavigationGestureRecognizer.location(in: nil)
-            let translation = interactiveNavigationGestureRecognizer.translation(in: nil)
-            let point       = CGPoint(x: location.x - translation.x, y: location.y - translation.y);
-            let bounds      = navigationController.view.bounds
-            
             // 默认支持边缘 15.0 点内侧滑返回
             switch navigationController.view.effectiveUserInterfaceLayoutDirection {
             case .leftToRight:
@@ -314,10 +311,9 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
         }
     }
     
-    /// 是否可以与其它手势同时被识别。明显位横向滑动的手势时，导航手势就可以被识别。
+    /// 是否可以与其它手势同时被识别。
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        let translation = interactiveNavigationGestureRecognizer.translation(in: nil)
-        return translation.y == 0 || abs(translation.x / translation.y) > 3
+        return false
     }
     
     /// 导航驱动手势，是否需要在其它手势失败时才能识别，默认 false 。
