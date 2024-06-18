@@ -113,7 +113,7 @@ import UIKit
             let frame = titleView.frame
             let x = (bounds.width - frame.width) * 0.5
             let y = (44.0 - frame.height) * 0.5
-            titleView.frame = CGRect.init(x: x, y: y, width: frame.width, height: 44.0)
+            titleView.frame = CGRect.init(x: x, y: y, width: frame.width, height: frame.height)
         }
         
         if let largeTitleView = self.largeTitleView {
