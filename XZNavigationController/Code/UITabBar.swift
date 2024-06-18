@@ -17,7 +17,7 @@ import XZDefines
 extension UITabBar {
     
     /// 当此属性为 true 时，可以通过 *isFrozen* 属性冻结 tabBar 防止其它地方修改 frame 值。
-    @objc(xz_isFreezable) var isFreezable: Bool {
+    @objc(__xz_isFreezable) var isFreezable: Bool {
         return false
     }
     
@@ -52,7 +52,7 @@ extension UITabBar {
 private class XZFreezableTabBar: UITabBar {
     
     /// 返回 true 。
-    @objc override var isFreezable: Bool {
+    override var isFreezable: Bool {
         return true
     }
     
