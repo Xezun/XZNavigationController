@@ -41,6 +41,7 @@ extension UINavigationBar {
             // 添加新的
             if let newValue = newValue {
                 newValue.frame = bounds
+                // 设置 autoresizing 后，自定义导航条的 frame 会在父视图变化时改变，难以预期
                 super.addSubview(newValue)
                 
                 // 复制样式，在外部处理：
