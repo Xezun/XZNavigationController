@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import XZDefines
 
 // 关于系统导航条：
 // 如果 isTranslucent == false ，那么导航条背景色 alpha 会被设置为 1.0，但是大标题模式背景色却是白色的。

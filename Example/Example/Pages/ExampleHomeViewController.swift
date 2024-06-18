@@ -7,7 +7,6 @@
 
 import UIKit
 import XZNavigationController
-import XZExtensions
 
 class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomizable, XZNavigationGestureDrivable {
     
@@ -15,7 +14,7 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
         super.viewDidLoad()
         
         self.navigationBar.title = "首页"
-        self.navigationBar.barTintColor = rgb(0x1296db);
+        self.navigationBar.barTintColor = .brown
         self.navigationBar.isTranslucent = false
     }
 

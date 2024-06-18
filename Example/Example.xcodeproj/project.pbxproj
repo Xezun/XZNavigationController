@@ -141,10 +141,7 @@
 				294DF8802C19CFDE0023E41F /* AppDelegate.swift */,
 				294DF8822C19CFDE0023E41F /* SceneDelegate.swift */,
 				295AB13E2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift */,
-				295AB13A2C1EB1F10046CBF6 /* ExampleNavigationController.swift */,
-				294DF8842C19CFDE0023E41F /* ExampleHomeViewController.swift */,
-				295AB13C2C1EB30F0046CBF6 /* ExampleNextViewController.swift */,
-				299170B02C21A3720031A816 /* ExampleLastViewController.swift */,
+				299170B22C21BC6E0031A816 /* Pages */,
 				294DF8862C19CFDE0023E41F /* Main.storyboard */,
 				294DF8892C19CFDF0023E41F /* Assets.xcassets */,
 				294DF88B2C19CFDF0023E41F /* LaunchScreen.storyboard */,
@@ -168,6 +165,17 @@
 				294DF8A32C19CFE00023E41F /* ExampleUITestsLaunchTests.swift */,
 			);
 			path = ExampleUITests;
+			sourceTree = "<group>";
+		};
+		299170B22C21BC6E0031A816 /* Pages */ = {
+			isa = PBXGroup;
+			children = (
+				295AB13A2C1EB1F10046CBF6 /* ExampleNavigationController.swift */,
+				294DF8842C19CFDE0023E41F /* ExampleHomeViewController.swift */,
+				295AB13C2C1EB30F0046CBF6 /* ExampleNextViewController.swift */,
+				299170B02C21A3720031A816 /* ExampleLastViewController.swift */,
+			);
+			path = Pages;
 			sourceTree = "<group>";
 		};
 		C5D2675516A41C3B0D987DC7 /* Frameworks */ = {
