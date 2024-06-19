@@ -329,3 +329,60 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
     
 }
  
+
+// 转场方法调用顺序
+//
+// Push 成功时：
+//    navigationController(_:animationControllerFor:from:to:)
+//    navigationController(_:interactionControllerFor:)
+//    toVC: viewDidLoad()
+//    fromVC: viewWillDisappear(_:)
+//    toVC: viewWillAppear(_:)
+//    navigationController(_:willShow:animated:)
+//    animateTransition(using:)
+//    animatePushTransition(using:)
+//    fromVC: viewDidDisappear(_:)
+//    toVC: viewDidAppear(_:)
+//    navigationController(_:didShow:animated:)
+//    animationEnded(_:)
+//
+// Push 取消时：
+//    navigationController(_:animationControllerFor:from:to:)
+//    navigationController(_:interactionControllerFor:)
+//    toVC: viewDidLoad()
+//    fromVC: viewWillDisappear(_:)
+//    toVC: viewWillAppear(_:)
+//    navigationController(_:willShow:animated:)
+//    animateTransition(using:)
+//    animatePushTransition(using:)
+//    toVC: viewWillDisappear(_:)
+//    toVC: viewDidDisappear(_:)
+//    fromVC: viewWillAppear(_:)
+//    fromVC: viewDidAppear(_:)
+//    animationEnded(_:)
+//
+// Pop 成功时：
+//    navigationController(_:animationControllerFor:from:to:)
+//    navigationController(_:interactionControllerFor:)
+//    fromVC: viewWillDisappear(_:)
+//    toVC: viewWillAppear(_:)
+//    navigationController(_:willShow:animated:)
+//    animateTransition(using:)
+//    animatePopTransition(using:)
+//    fromVC: viewDidDisappear(_:)
+//    toVC: viewDidAppear(_:)
+//    navigationController(_:didShow:animated:)
+//    animationEnded(_:)
+// Pop 取消时：
+//    navigationController(_:animationControllerFor:from:to:)
+//    navigationController(_:interactionControllerFor:)
+//    fromVC: viewWillDisappear(_:)
+//    toVC: viewWillAppear(_:)
+//    navigationController(_:willShow:animated:)
+//    animateTransition(using:)
+//    animatePopTransition(using:)
+//    toVC: viewWillDisappear(_:)
+//    toVC: viewDidDisappear(_:)
+//    fromVC: viewWillAppear(_:)
+//    fromVC: viewDidAppear(_:)
+//    animationEnded(_:)
