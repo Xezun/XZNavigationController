@@ -68,6 +68,7 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
         // 此方法会在 viewDidLoad 之后，但是在转场动画开始之前触发；转场如果取消，此方法不会调用。
         // 需要在转场动画开始前更新导航条样式，因为在进入自定义转场动画时，控制器的布局已经确定。
         // 导航控制器第一次显示时，栈底控制器如果不是通过初始化方法传入的，可能会造成此方法会被调用，但是 didShow 不调用，所以需要转场事件的回调。
+        // 此方法触发时，viewController 已经加入到导航栈中
         
         // 设置导航条的值，会同时保存到自定义导航条中，所以先设置为 nil
         navigationController.navigationBar.customNavigationBar = nil

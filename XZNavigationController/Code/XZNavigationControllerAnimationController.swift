@@ -22,12 +22,15 @@ public class XZNavigationControllerAnimationController: NSObject, UIViewControll
     public var isInteractive: Bool {
         return interactiveTransition != nil
     }
+    /// 导航条在转场前是否隐藏。
+    let navigationBarHidden: Bool
     
     public init?(for navigationController: XZNavigationController, operation: UINavigationController.Operation, isInteractive: Bool) {
         guard operation != .none else { return nil }
         self.navigationController  = navigationController
         self.operation             = operation
         self.interactiveTransition = (isInteractive ? UIPercentDrivenInteractiveTransition() : nil)
+        self.navigationBarHidden   = navigationController.isNavigationBarHidden
         super.init()
     }
     
@@ -128,8 +131,24 @@ extension XZNavigationControllerAnimationController {
             navBar.setNeedsLayout()
         }
         
-        if fromNavBar != nil && toNavBar != nil {
+        var navBarFrame2: CGRect?
+        if fromNavBarFrame2 != nil && toNavBarFrame2 != nil {
             navigationBar.superview?.sendSubviewToBack(navigationBar)
+        } else if fromNavBarFrame2 != nil {
+            if navigationController.isNavigationBarHidden {
+                navigationBar.superview?.sendSubviewToBack(navigationBar)
+            } else {
+                navigationBar.frame = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
+                navBarFrame2 = navBarRect
+            }
+        } else if toNavBarFrame2 != nil {
+            if self.navigationBarHidden { // 导航条当前的状态，是 toNavBar 的状态，这里要判断转场前的状态。
+                navigationBar.superview?.sendSubviewToBack(navigationBar)
+            } else {
+                navBarFrame2 = navBarRect.offsetBy(dx: direction * -navBarRect.width, dy: 0)
+            }
+        } else {
+            // keep
         }
         
         // todo: 执行动画时，是否需要将系统导航条放到转场容器最底层，作为自定义导航条的背景。
@@ -162,6 +181,9 @@ extension XZNavigationControllerAnimationController {
             if let frame = toNavBarFrame2 {
                 toNavBar!.frame = frame
             }
+            if let frame = navBarFrame2 {
+                navigationBar.frame = frame
+            }
             
             if let tabBar = tabBar {
                 tabBar.frame = tabBarFrame2
@@ -173,6 +195,7 @@ extension XZNavigationControllerAnimationController {
             
             // 自定义导航条在转场过程中，仅仅作为转场效果出现，将起放置到导航条上有导航控制器处理，所以这里要移除。
             navigationBar.superview?.bringSubviewToFront(navigationBar)
+            navigationBar.frame = navBarRect
             fromNavBar?.removeFromSuperview()
             toNavBar?.removeFromSuperview()
             
@@ -190,7 +213,7 @@ extension XZNavigationControllerAnimationController {
                     navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
                     self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
                 } else {
-                    // 转场前的状态无法记录，状态无法恢复
+                    self.navigationController.setNavigationBarHidden(self.navigationBarHidden, animated: true)
                 }
                 transitionContext.completeTransition(false)
                 navigationBar.customNavigationBar = fromNavBar
@@ -260,8 +283,24 @@ extension XZNavigationControllerAnimationController {
             navBar.setNeedsLayout()
         }
         
-        if fromNavBar != nil && toNavBar != nil {
+        var navBarFrame2: CGRect?
+        if fromNavBarFrame2 != nil && toNavBarFrame2 != nil {
             navigationBar.superview?.sendSubviewToBack(navigationBar)
+        } else if fromNavBarFrame2 != nil {
+            if navigationController.isNavigationBarHidden {
+                navigationBar.superview?.sendSubviewToBack(navigationBar)
+            } else {
+                navigationBar.frame = navBarRect.offsetBy(dx: direction * -navBarRect.width, dy: 0)
+                navBarFrame2 = navBarRect
+            }
+        } else if toNavBarFrame2 != nil {
+            if self.navigationBarHidden {
+                navigationBar.superview?.sendSubviewToBack(navigationBar)
+            } else {
+                navBarFrame2 = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
+            }
+        } else {
+            //
         }
          
         // 由于 tabBar 的层级比较高，且将 tabBar 添加到 containerView 上，会导致 tabBar 在动画时到显示不正确
@@ -294,6 +333,9 @@ extension XZNavigationControllerAnimationController {
             if let frame = toNavBarFrame2 {
                 toNavBar!.frame = frame
             }
+            if let frame = navBarFrame2 {
+                navigationBar.frame = frame
+            }
             
             if let tabBar = tabBar {
                 tabBar.frame = tabBarFrame2
@@ -305,6 +347,7 @@ extension XZNavigationControllerAnimationController {
 
             // 自定义导航条在转场过程中，仅仅作为转场效果出现，将起放置到导航条上有导航控制器处理，所以这里要移除。
             navigationBar.superview?.bringSubviewToFront(navigationBar)
+            navigationBar.frame = navBarRect
             fromNavBar?.removeFromSuperview()
             toNavBar?.removeFromSuperview()
             
@@ -323,7 +366,7 @@ extension XZNavigationControllerAnimationController {
                     navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
                     self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
                 } else {
-                    // 状态无法恢复
+                    self.navigationController.setNavigationBarHidden(self.navigationBarHidden, animated: true)
                 }
                 transitionContext.completeTransition(false)
                 navigationBar.customNavigationBar = fromNavBar

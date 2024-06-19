@@ -89,6 +89,7 @@ extension UINavigationBar {
     }
     @objc(__xz_setPrefersLargeTitles:) func setPrefersLargeTitles(_ prefersLargeTitles: Bool) {
     }
+    
 }
 
 private class XZCustomizableNavigationBar: UINavigationBar {
