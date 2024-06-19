@@ -18,10 +18,10 @@ public protocol XZNavigationController: UINavigationController {
 
 extension XZNavigationController {
     
-    /// 开启自定义导航栏模式。
+    /// 开启自定义模式。
     /// - Note: 当前导航控制的 delegate 事件已被 transitionController 接管。可通过设置 transitionController 的 delegate 来获取事件。
     /// - Note: 因为会访问的控制器的 view 属性，请在 viewDidLoad 之后再设置此属性。
-    public var isNavigationBarCustomizable: Bool {
+    public var isCustomizable: Bool {
         get {
             return self.transitionController != nil
         }
@@ -47,6 +47,16 @@ extension XZNavigationController {
                     popGestureRecognizer.require(toFail: transitionController.interactiveNavigationGestureRecognizer)
                 }
             }
+        }
+    }
+    
+    @available(iOS, introduced: 13.0, deprecated: 13.0, renamed: "isCustomizable")
+    public var isNavigationBarCustomizable: Bool {
+        get {
+            return self.isCustomizable
+        }
+        set {
+            self.isCustomizable = newValue
         }
     }
     
