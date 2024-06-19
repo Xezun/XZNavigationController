@@ -12,7 +12,7 @@ class ExampleNextViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         navigationBar.title = "中间页"
         navigationBar.barTintColor = .systemMint
         navigationBar.isHidden = false
@@ -46,6 +46,10 @@ extension ExampleNextViewController: XZNavigationGestureDrivable {
             return sb.instantiateViewController(withIdentifier: "last")
         }
         return nil
+    }
+    
+    func navigationController(_ navigationController: UINavigationController, edgeInsetsForGestureNavigation operation: UINavigationController.Operation) -> NSDirectionalEdgeInsets? {
+        return .init(top: 0, leading: 20, bottom: 0, trailing: 20)
     }
     
 }

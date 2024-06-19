@@ -29,10 +29,6 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
         return nil
     }
     
-    func navigationController(_ navigationController: UINavigationController, edgeInsetsForGestureNavigation operation: UINavigationController.Operation) -> NSDirectionalEdgeInsets? {
-        return .init(top: 0, leading: 20, bottom: 0, trailing: 20)
-    }
-    
     @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {
         navigationBar.setHidden(sender.isOn, animated: true)
     }
