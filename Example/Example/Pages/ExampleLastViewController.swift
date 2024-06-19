@@ -21,18 +21,17 @@ class ExampleLastViewController: UITableViewController {
     }
     
     @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {
-        navigationBar.setHidden(sender.isOn, animated: true)
+        navigationController?.setNavigationBarHidden(sender.isOn, animated: true)
     }
 
     @IBAction func navigationBarTranslucentChanged(_ sender: UISwitch) {
-        navigationBar.isTranslucent = sender.isOn
+        navigationController?.navigationBar.isTranslucent = sender.isOn
     }
 
     @IBAction func navigationBarPrefersLargeTitlesChanged(_ sender: UISwitch) {
-        navigationBar.prefersLargeTitles = sender.isOn
+        navigationController?.navigationBar.prefersLargeTitles = sender.isOn
     }
-
-
+    
 }
 
 extension ExampleLastViewController: XZNavigationBarCustomizable {

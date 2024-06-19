@@ -8,30 +8,49 @@
 
 import UIKit
 
+/// 自定义导航条可以继承 XZNavigationBar 也可以继承其它视图控件，实现 XZNavigationBarProtocol 协议即可。
+/// 自定义导航条所必须实现的协议。
+/// - Note: 因为 tintColor 会自动从父视图继承，所以自定义导航条没有设置 tintColor 的话，那么最终可能会影响自定义导航条的外观，因为自定义导航条的父视图，在转场过程中会发生变化。
+@objc public protocol XZNavigationBarProtocol: NSObjectProtocol {
+    var isTranslucent: Bool { get set }
+    var prefersLargeTitles: Bool { get set }
+}
+
+/// 导航条是否可以自定义。
+public protocol XZNavigationBarCustomizable: UIViewController {
+    typealias NavigationBar = XZNavigationBarProtocol & UIView
+    /// 控制器自定义导航条。
+    /// - Note: 导航条的获取时机会被 viewDidLoad 更早，因此，在其中访问到 view 属性，可能会造成控制器生命周期提前。
+    var navigationBarIfLoaded: NavigationBar? { get }
+    
+}
+
 /// 自定义导航条。tintColor 有默认值，不从父类继承。
 @objc open class XZNavigationBar: UIView, XZNavigationBarProtocol {
     
     open override var isHidden: Bool {
         didSet {
-            viewController.navigationController?.navigationBar.setHidden(isHidden)
+            if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
+                navigationBar.setHidden(isHidden)
+            }
         }
-    }
-    
-    open func setHidden(_ isHidden: Bool, animated: Bool) {
-        viewController.navigationController?.setNavigationBarHidden(isHidden, animated: animated)
     }
     
     /// 控制背景透明，默认 true 。
     open var isTranslucent = true {
         didSet {
-            viewController.navigationController?.navigationBar.setTranslucent(isTranslucent)
+            if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
+                navigationBar.setTranslucent(isTranslucent)
+            }
         }
     }
     
     /// 默认 false 。
     open var prefersLargeTitles = false {
         didSet {
-            viewController.navigationController?.navigationBar.setPrefersLargeTitles(prefersLargeTitles)
+            if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
+                navigationBar.setPrefersLargeTitles(prefersLargeTitles)
+            }
         }
     }
     

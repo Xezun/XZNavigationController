@@ -228,7 +228,7 @@
         <!--空页面-->
         <scene sceneID="2vE-cb-xG6">
             <objects>
-                <tableViewController id="fcM-Hm-rVE" sceneMemberID="viewController">
+                <tableViewController hidesBottomBarWhenPushed="YES" id="fcM-Hm-rVE" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="76k-Yy-090">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -617,7 +617,7 @@
         <!--手势页面-->
         <scene sceneID="n82-W5-LMs">
             <objects>
-                <tableViewController id="B4K-9S-Z5K" customClass="ExampleGestureViewController" customModule="Example" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController hidesBottomBarWhenPushed="YES" id="B4K-9S-Z5K" customClass="ExampleGestureViewController" customModule="Example" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="Pdt-kL-2Re">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -684,7 +684,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Jw1-FB-8y3"/>
+        <segue reference="gtp-OE-8F6"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="icon-tab-home" width="25" height="25"/>

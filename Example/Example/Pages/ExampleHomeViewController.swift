@@ -13,8 +13,12 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationBar.title = "首页"
-        self.navigationBar.barTintColor = .brown
+        navigationBar.title        = "首页"
+        navigationBar.barTintColor = .brown
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
 
     @IBAction func unwindToHome(_ unwindSegue: UIStoryboardSegue) {
@@ -30,16 +34,20 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     }
     
     @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {
-        navigationBar.setHidden(sender.isOn, animated: true)
+        navigationController?.setNavigationBarHidden(sender.isOn, animated: true)
     }
-    
+
     @IBAction func navigationBarTranslucentChanged(_ sender: UISwitch) {
-        navigationBar.isTranslucent = sender.isOn
+        navigationController?.navigationBar.isTranslucent = sender.isOn
+    }
+
+    @IBAction func navigationBarPrefersLargeTitlesChanged(_ sender: UISwitch) {
+        navigationController?.navigationBar.prefersLargeTitles = sender.isOn
     }
     
-    @IBAction func navigationBarPrefersLargeTitlesChanged(_ sender: UISwitch) {
-        navigationBar.prefersLargeTitles = sender.isOn
-    }
+    
+    
+    
     
 }
 

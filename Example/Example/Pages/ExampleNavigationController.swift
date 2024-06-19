@@ -14,7 +14,15 @@ class ExampleNavigationController: UINavigationController, XZNavigationControlle
         super.viewDidLoad()
 
         view.backgroundColor = .white
-        self.isCustomizable = true
+        self.isCustomizable  = true
+//        self.isCustomizable  = false
+
+        
     }
-    
+
+    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+        print("\(type(of: self)).\(#function) \(type(of: viewController)) \(animated)")
+        super.pushViewController(viewController, animated: animated)
+    }
+  
 }
