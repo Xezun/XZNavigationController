@@ -74,7 +74,7 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
         // 此方法触发时，viewController 已经加入到导航栈中
         
         // animated = false 时，上面两个方法不会触发。
-//        navigationController.navigationBar.customNavigationBar = nil
+        navigationController.navigationBar.navigationBar = nil
         
         // 更新导航条状态
         if let navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
@@ -90,9 +90,11 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
             // 最后，在 transitionCoordinator 中操作，可以解决隐藏异常的问题，但是会导致原生的导航条在动画过程中，
             // 被移动到顶层而显示出来，即使在动画中，已经将导航条后置了。
             // 所以，在已有自定义导航条的控制器中，不建议使用原生的方法控制导航条的显示或隐藏
-//            navigationController.navigationBar.isTranslucent      = navigationBar.isTranslucent
-//            navigationController.navigationBar.prefersLargeTitles = navigationBar.prefersLargeTitles
-//            navigationController.setNavigationBarHidden(navigationBar.isHidden, animated: animated)
+            navigationController.navigationBar.isTranslucent      = navigationBar.isTranslucent
+            navigationController.navigationBar.prefersLargeTitles = navigationBar.prefersLargeTitles
+            if navigationController.isNavigationBarHidden != navigationBar.isHidden {
+                navigationController.setNavigationBarHidden(navigationBar.isHidden, animated: animated)
+            }
 //            print("\(#function) setNavigationBarHidden(\(navigationBar.isHidden))")
         } else {
             // 没有自定义导航条，导航条样式保持不变。新页面使用系统导航条，样式值与当前自定义导航条一致。

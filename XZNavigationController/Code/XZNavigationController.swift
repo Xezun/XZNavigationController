@@ -56,23 +56,6 @@ extension XZNavigationController {
                     popGestureRecognizer.isEnabled = false
                     popGestureRecognizer.require(toFail: transitionController.interactiveNavigationGestureRecognizer)
                 }
-                
-                let aClass = UINavigationController.self
-                if objc_getAssociatedObject(aClass, &_addChildViewController) == nil {
-                    objc_setAssociatedObject(aClass, &_addChildViewController, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-                    
-                    let selector1 = #selector(UINavigationController.pushViewController(_:animated:));
-                    let selector2 = #selector(UINavigationController.__xz_exchange_pushViewController(_:animated:));
-                    let selector3 = #selector(UINavigationController.setViewControllers(_:animated:));
-                    let selector4 = #selector(UINavigationController.__xz_exchange_setViewControllers(_:animated:));
-                    method_exchangeImplementations(class_getInstanceMethod(aClass, selector1)!, class_getInstanceMethod(aClass, selector2)!)
-                    method_exchangeImplementations(class_getInstanceMethod(aClass, selector3)!, class_getInstanceMethod(aClass, selector4)!)
-                    
-                    for viewController in viewControllers {
-                        UINavigationController.handleViewWillAppear(for: viewController)
-                    }
-                }
-  
             }
         }
     }
@@ -98,105 +81,5 @@ extension XZNavigationController {
     
 }
 
-public extension UINavigationController {
-
-//    @objc func __xz_exchange_pushViewController(_ viewController: UIViewController, animated: Bool) {
-//        print("\(type(of: self)).\(#function) \(type(of: viewController)) \(animated)")
-//        UINavigationController.handleViewWillAppear(for: viewController)
-//        navigationBar.customNavigationBar = nil
-//        // 直接写 __xz_exchange_pushViewController(viewController, animated) 会被编译器优化调用方式，从而导致循环调用
-//        // 参数 animated 必须写 0 和 1 ，否则会被解析为 false
-//        perform(#selector(__xz_exchange_pushViewController(_:animated:)), with: viewController, with: animated ? 1 : 0)
-//    }
-//
-//    @objc func __xz_exchange_setViewControllers(_ viewControllers: [UIViewController], animated: Bool) {
-//        navigationBar.customNavigationBar = nil
-//        for viewController in viewControllers {
-//            UINavigationController.handleViewWillAppear(for: viewController)
-//        }
-//        perform(#selector(__xz_exchange_setViewControllers(_:animated:)), with: viewControllers, with: animated ? 1 : 0)
-//    }
-    
-    @objc(__xz_handleViewWillAppearForViewController:)
-    static func handleViewWillAppear(for viewController: UIViewController) {
-        let aClass = type(of: viewController)
-        guard objc_getAssociatedObject(aClass, &_viewWillAppear) == nil else { return }
-        objc_setAssociatedObject(aClass, &_viewWillAppear, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-        
-        guard viewController is XZNavigationBarCustomizable else { return }
-        
-        let selector1 = #selector(UIViewController.viewWillAppear(_:))
-        
-        if let method1 = xz_objc_class_getInstanceMethod(aClass, selector1) {
-            // 方法已实现，添加待交换的方法
-            let selector2 = #selector(UINavigationController.__xz_exchange_viewWillAppear(_:));
-            let method2 = class_getInstanceMethod(UINavigationController.self, selector2)!
-            xz_objc_class_addMethodByCopyingMethod(aClass, method2, nil)
-            // 交换实现
-            let method3 = class_getInstanceMethod(aClass, selector2)!
-            method_exchangeImplementations(method1, method3)
-        } else {
-            // 方法未实现，添加一个重写的方法
-            xz_objc_class_copyMethodFromClass(aClass, UINavigationController.self, selector1, nil)
-        }
-    }
-    
-    @objc(__xz_viewController:viewWillAppear:)
-    static func viewController(_ viewController: UIViewController, viewWillAppear animated: Bool) {
-        print("\(type(of: viewController)).\(#function) \(animated)")
-        guard let viewController = viewController as? XZNavigationBarCustomizable else { return }
-        guard let customNavigationBar = viewController.navigationBarIfLoaded else {
-            return
-        }
-        guard let navigationController = viewController.navigationController else {
-            return
-        }
-        let navigationBar = navigationController.navigationBar
-        navigationBar.isTranslucent      = customNavigationBar.isTranslucent
-        navigationBar.prefersLargeTitles = customNavigationBar.prefersLargeTitles
-        if navigationController.isNavigationBarHidden != customNavigationBar.isHidden {
-            navigationController.setNavigationBarHidden(customNavigationBar.isHidden, animated: animated)
-            print("setNavigationBarHidden(\(customNavigationBar.isHidden), animated: \(animated))")
-        }
-    }
-}
-
-//@objc public class XZCustomizableViewController: UIViewController {
-//
-//    public override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//
-//        XZCustomizableViewController.viewWillAppear(self, animated: animated)
-//    }
-//
-//    @objc func __xz_exchange_viewWillAppear(_ animated: Bool) {
-//        // 直接写 __xz_exchange_viewWillAppear(animated) 会被编译器优化调用方式，从而导致循环调用
-//        // 参数 animated 必须写 0 和 1 ，否则会被解析为 false
-//        perform(#selector(__xz_exchange_viewWillAppear(_:)), with: animated ? 1 : 0)
-//
-//        XZCustomizableViewController.viewWillAppear(self, animated: animated)
-//    }
-//
-//    @objc(__xz_viewWillAppear:animated:) public static func viewWillAppear(_ viewController: UIViewController, animated: Bool) {
-//        print("\(type(of: viewController)).\(#function) \(animated)")
-//        guard let viewController = viewController as? XZNavigationBarCustomizable else { return }
-//        guard let customNavigationBar = viewController.navigationBarIfLoaded else {
-//            return
-//        }
-//        guard let navigationController = viewController.navigationController else {
-//            return
-//        }
-//        let navigationBar = navigationController.navigationBar
-//        navigationBar.isTranslucent      = customNavigationBar.isTranslucent
-//        navigationBar.prefersLargeTitles = customNavigationBar.prefersLargeTitles
-//        if navigationController.isNavigationBarHidden != customNavigationBar.isHidden {
-//            navigationController.setNavigationBarHidden(customNavigationBar.isHidden, animated: animated)
-//            print("\(type(of: viewController)).\(#function) setNavigationBarHidden=\(customNavigationBar.isHidden)")
-//        }
-//    }
-//}
-
-private var _viewWillAppear = 0
-private var _addChildViewController = 0
 private var _transitionController = 0
 

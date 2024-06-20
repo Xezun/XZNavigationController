@@ -23,13 +23,10 @@ import XZDefines
 
 extension UINavigationBar {
     
-    public typealias NavigationBar = (XZNavigationBarProtocol & UIView)
-    
     /// 记录了当前正在显示的自定义的导航条。在控制器转场过程中，此属性为 nil 。
-    @objc(xz_navigationBar)
-    public var navigationBar: NavigationBar? {
+    public internal(set) var navigationBar: XZNavigationBarProtocol? {
         get {
-            return objc_getAssociatedObject(self, &_navigationBar) as? NavigationBar
+            return objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarProtocol
         }
         set {
             let oldValue = self.navigationBar

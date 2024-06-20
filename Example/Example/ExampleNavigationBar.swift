@@ -59,7 +59,7 @@ public class ExampleNavigationBar: XZNavigationBar {
 
 extension XZNavigationBarCustomizable {
     
-    public var navigationBarIfLoaded: NavigationBar? {
+    public var navigationBarIfLoaded: XZNavigationBarProtocol? {
         return self.navigationBar
     }
     

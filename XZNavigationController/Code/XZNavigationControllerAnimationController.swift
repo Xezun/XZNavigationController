@@ -205,19 +205,24 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
             // 恢复 TabBar 。
             tabBar?.isFrozen = false
             
-            // 恢复导航条状态。如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
-            // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
-            // 由于 animationEnded(_:) 是在控制器 viewDidAppear 或 viewDidDisappear 之后被调用（见页面底部文档），此时再来恢复导航条样式已无济于事。
-            // 至于在Demo中放在前后都可以，可能是因为计算少速度快导致的，但是项目计算量多时，放后面就无法及时抓取正确的状态，从而导致问题。
             if transitionContext.transitionWasCancelled {
-                
-//                if let fromNavBar = fromNavBar {
-//                    navigationBar.isTranslucent      = fromNavBar.isTranslucent
-//                    navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
-//                    self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
-//                } else {
-//                    self.navigationController.setNavigationBarHidden(self.isNavigationBarHidden, animated: true)
-//                }
+                // 关于转场取消时，恢复导航条状态：
+                // 当调用 transitionContext.completeTransition(false) 方法时，
+                // 会触发页面的 viewWillAppear/viewDidAppear 以及 animationEnded(_:) 方法，
+                // 所以应当将恢复操作放在它们之前处理。
+                // 如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
+                // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
+                // 由于 animationEnded(_:) 是在控制器 viewDidAppear 或 viewDidDisappear 之后被调用（见页面底部文档），此时再来恢复导航条样式已无济于事。
+                // 至于在Demo中放在前后都可以，可能是因为计算少速度快导致的，但是项目计算量多时，放后面就无法及时抓取正确的状态，从而导致问题。
+                if let fromNavBar = fromNavBar {
+                    navigationBar.isTranslucent      = fromNavBar.isTranslucent
+                    navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
+                    if self.navigationController.isNavigationBarHidden != fromNavBar.isHidden {
+                        self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
+                    }
+                } else if self.navigationController.isNavigationBarHidden != self.isNavigationBarHidden {
+                    self.navigationController.setNavigationBarHidden(self.isNavigationBarHidden, animated: true)
+                }
                 transitionContext.completeTransition(false) // 调此方法触发 animationEnded(_:) 方法
                 navigationBar.navigationBar = fromNavBar
             } else {
@@ -358,19 +363,15 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
             tabBar?.isFrozen = false
             
             if transitionContext.transitionWasCancelled {
-                // 如果转场取消，恢复导航条样式。
-                // 如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
-                // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
-                // 由于 animationEnded(_:) 是在控制器 viewDidAppear 或 viewDidDisappear 之后被调用（见页面底部文档），此时再来恢复导航条样式已无济于事。
-                // 至于在Demo中放在前后都可以，可能是因为计算少速度快导致的，但是项目计算量达时，放后面就无法及时抓取正确的状态，从而导致问题。
-//                if let fromNavBar = fromNavBar {
-//                    navigationBar.isTranslucent      = fromNavBar.isTranslucent
-//                    navigationBar.tintColor          = fromNavBar.tintColor
-//                    navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
-//                    self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
-//                } else {
-//                    self.navigationController.setNavigationBarHidden(self.isNavigationBarHidden, animated: true)
-//                }
+                if let fromNavBar = fromNavBar {
+                    navigationBar.isTranslucent      = fromNavBar.isTranslucent
+                    navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
+                    if self.navigationController.isNavigationBarHidden != fromNavBar.isHidden {
+                        self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
+                    }
+                } else if self.navigationController.isNavigationBarHidden != self.isNavigationBarHidden {
+                    self.navigationController.setNavigationBarHidden(self.isNavigationBarHidden, animated: true)
+                }
                 transitionContext.completeTransition(false)
                 navigationBar.navigationBar = fromNavBar
             } else {
