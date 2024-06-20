@@ -38,7 +38,6 @@ public class XZNavigationControllerAnimationController: NSObject {
 
 extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTransitioning {
     
-    /// 系统默认转场动画时长为 0.3 秒，此处也一样。
     public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.35
     }
@@ -136,19 +135,20 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
         // Note: 使用 sendSubviewToBack 方法，虽然可以使导航条不可见，但是会产生一个问题。有一种情形，
         // 页面 A 导航条显示，页面 B 导航条隐藏，在 A => B 的手势转场中，如果取消了转场，那么在这个取消的转场
         // 完成之后，系统会将导航条隐藏（即使已经恢复到顶层）。
+        // 导航条向上偏移 200+ 以避免导航条上的内容会展示出来。
         var navBarFrame2: CGRect?
         if fromNavBarFrame2 != nil && toNavBarFrame2 != nil {
-            navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -navBarRect.maxY)
+            navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
         } else if fromNavBarFrame2 != nil {
             if navigationController.isNavigationBarHidden {
-                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -navBarRect.maxY)
+                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
             } else {
                 navigationBar.frame = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
                 navBarFrame2 = navBarRect
             }
         } else if toNavBarFrame2 != nil {
             if self.isNavigationBarHidden { // 导航条当前的状态，是 toNavBar 的状态，这里要判断转场前的状态。
-                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -navBarRect.maxY)
+                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
             } else {
                 navBarFrame2 = navBarRect.offsetBy(dx: direction * -navBarRect.width, dy: 0)
             }
@@ -193,7 +193,6 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
                 tabBar.isFrozen = true
             }
         }, completion: { (finished) in
-            //print("\(#function) animation completion start")
             // 删除阴影。
             shadowView.removeFromSuperview()
             
@@ -207,13 +206,13 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
             
             if transitionContext.transitionWasCancelled {
                 // 关于转场取消时，恢复导航条状态：
+                // 恢复的操作最恰当的时机是在 viewWillAppear 中进行，但是
                 // 当调用 transitionContext.completeTransition(false) 方法时，
                 // 会触发页面的 viewWillAppear/viewDidAppear 以及 animationEnded(_:) 方法，
-                // 所以应当将恢复操作放在它们之前处理。
-                // 如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
-                // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
-                // 由于 animationEnded(_:) 是在控制器 viewDidAppear 或 viewDidDisappear 之后被调用（见页面底部文档），此时再来恢复导航条样式已无济于事。
-                // 至于在Demo中放在前后都可以，可能是因为计算少速度快导致的，但是项目计算量多时，放后面就无法及时抓取正确的状态，从而导致问题。
+                // 也就是说，在这里 Apple 并没有提供合适的时机来介入 viewWillAppear 来处理导航栏的恢复。
+                // 在 viewWillAppear 之前处理恢复，唯一的问题是，如果用户在 viewWillAppear 中进行了导航栏的处理
+                // 那么我们是没有机会进行覆盖的，即导航条的状态可能与自定义导航条属性不一致。
+                // 所以，在使用自定义导航条的控制器中，不应在转场的生命周期方法中，直接操作原生的导航条。
                 if let fromNavBar = fromNavBar {
                     navigationBar.isTranslucent      = fromNavBar.isTranslucent
                     navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
@@ -223,14 +222,12 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
                 } else if self.navigationController.isNavigationBarHidden != self.isNavigationBarHidden {
                     self.navigationController.setNavigationBarHidden(self.isNavigationBarHidden, animated: true)
                 }
-                transitionContext.completeTransition(false) // 调此方法触发 animationEnded(_:) 方法
+                transitionContext.completeTransition(false)
                 navigationBar.navigationBar = fromNavBar
             } else {
                 transitionContext.completeTransition(true)
                 navigationBar.navigationBar = toNavBar;
             }
-            
-            //print("\(#function) animation completion end")
         })
     }
 
@@ -294,17 +291,17 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
         
         var navBarFrame2: CGRect?
         if fromNavBarFrame2 != nil && toNavBarFrame2 != nil {
-            navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -navBarRect.maxY)
+            navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
         } else if fromNavBarFrame2 != nil {
             if navigationController.isNavigationBarHidden {
-                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -navBarRect.maxY)
+                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
             } else {
                 navigationBar.frame = navBarRect.offsetBy(dx: direction * -navBarRect.width, dy: 0)
                 navBarFrame2 = navBarRect
             }
         } else if toNavBarFrame2 != nil {
             if self.isNavigationBarHidden {
-                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -navBarRect.maxY)
+                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
             } else {
                 navBarFrame2 = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
             }
