@@ -21,6 +21,7 @@
 		295AB13F2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295AB13E2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift */; };
 		299170B12C21A3720031A816 /* ExampleLastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299170B02C21A3720031A816 /* ExampleLastViewController.swift */; };
 		29D257D92C2291EB00F89D43 /* ExampleGestureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D257D82C2291EB00F89D43 /* ExampleGestureViewController.swift */; };
+		29D257E12C24A31D00F89D43 /* ExampleNativeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D257E02C24A31D00F89D43 /* ExampleNativeViewController.swift */; };
 		59E15C18067457479ACADEA3 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67A9B5850C28A1112C6F15FC /* Pods_Example.framework */; };
 		CC43A69F5314125D15460630 /* Pods_ExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D88C379986373C2D4B2ACBA /* Pods_ExampleTests.framework */; };
 		DCC7F8A4681B6AAF9F8784DA /* Pods_ExampleUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C428CC0BAFAE0D6F0088D21 /* Pods_ExampleUITests.framework */; };
@@ -62,6 +63,7 @@
 		295AB13E2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleNavigationBar.swift; sourceTree = "<group>"; };
 		299170B02C21A3720031A816 /* ExampleLastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleLastViewController.swift; sourceTree = "<group>"; };
 		29D257D82C2291EB00F89D43 /* ExampleGestureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleGestureViewController.swift; sourceTree = "<group>"; };
+		29D257E02C24A31D00F89D43 /* ExampleNativeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleNativeViewController.swift; sourceTree = "<group>"; };
 		2B791975BF2894531F4C7657 /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
 		37EAF59554F23A3576D4F9BF /* Pods-ExampleUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleUITests.debug.xcconfig"; path = "Target Support Files/Pods-ExampleUITests/Pods-ExampleUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		5D88C379986373C2D4B2ACBA /* Pods_ExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -177,6 +179,7 @@
 				295AB13C2C1EB30F0046CBF6 /* ExampleNextViewController.swift */,
 				299170B02C21A3720031A816 /* ExampleLastViewController.swift */,
 				29D257D82C2291EB00F89D43 /* ExampleGestureViewController.swift */,
+				29D257E02C24A31D00F89D43 /* ExampleNativeViewController.swift */,
 			);
 			path = Pages;
 			sourceTree = "<group>";
@@ -419,6 +422,7 @@
 				295AB13F2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift in Sources */,
 				295AB13B2C1EB1F10046CBF6 /* ExampleNavigationController.swift in Sources */,
 				294DF8812C19CFDE0023E41F /* AppDelegate.swift in Sources */,
+				29D257E12C24A31D00F89D43 /* ExampleNativeViewController.swift in Sources */,
 				294DF8832C19CFDE0023E41F /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

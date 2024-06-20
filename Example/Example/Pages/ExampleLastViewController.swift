@@ -15,9 +15,10 @@ class ExampleLastViewController: UITableViewController {
 
         navigationBar.title = "尾页"
         navigationBar.barTintColor = .systemBrown
-        navigationBar.isHidden = false
-        navigationBar.isTranslucent = true
-        navigationBar.prefersLargeTitles = false
+    }
+    
+    @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
+        
     }
     
     @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {

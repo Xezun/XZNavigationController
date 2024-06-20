@@ -15,13 +15,15 @@ class ExampleNextViewController: UITableViewController {
 
         navigationBar.title              = "中间页"
         navigationBar.barTintColor       = .systemMint
-        navigationBar.isHidden           = true
-        navigationBar.isTranslucent      = true
-        navigationBar.prefersLargeTitles = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        print("\(type(of: self)).\(#function) \(animated)")
         super.viewWillAppear(animated)
+    }
+    
+    @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
+        
     }
 
     @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {
@@ -36,6 +38,19 @@ class ExampleNextViewController: UITableViewController {
         navigationController?.navigationBar.prefersLargeTitles = sender.isOn
     }
 
+    @IBOutlet weak var isHiddenSwitch: UISwitch!
+    @IBOutlet weak var isTranslucentSwitch: UISwitch!
+    @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let viewController = segue.destination as? XZNavigationBarCustomizable,
+           let navigationBar = viewController.navigationBarIfLoaded {
+            navigationBar.isHidden = isHiddenSwitch.isOn
+            navigationBar.isTranslucent = isTranslucentSwitch.isOn
+            navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
+        }
+    }
+    
 }
 
 extension ExampleNextViewController: XZNavigationBarCustomizable {
@@ -48,7 +63,13 @@ extension ExampleNextViewController: XZNavigationGestureDrivable {
     func navigationController(_ navigationController: UINavigationController, viewControllerForGestureNavigation operation: UINavigationController.Operation) -> UIViewController? {
         if operation == .push {
             let sb = UIStoryboard.init(name: "Main", bundle: nil)
-            return sb.instantiateViewController(withIdentifier: "last")
+            let vc = sb.instantiateViewController(withIdentifier: "last")
+            if let navigationBar = (vc as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
+                navigationBar.isHidden = isHiddenSwitch.isOn
+                navigationBar.isTranslucent = isTranslucentSwitch.isOn
+                navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
+            }
+            return vc
         }
         return nil
     }

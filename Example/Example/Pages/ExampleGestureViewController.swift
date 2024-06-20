@@ -23,4 +23,7 @@ class ExampleGestureViewController: UITableViewController, XZNavigationGestureDr
         return nil
     }
 
+    @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
+        
+    }
 }

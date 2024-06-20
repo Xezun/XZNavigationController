@@ -15,20 +15,28 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
         
         navigationBar.title        = "首页"
         navigationBar.barTintColor = .brown
+        navigationBar.isTranslucent = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        print("\(type(of: self)).\(#function) \(animated)")
         super.viewWillAppear(animated)
     }
 
-    @IBAction func unwindToHome(_ unwindSegue: UIStoryboardSegue) {
+    @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
         
     }
     
     func navigationController(_ navigationController: UINavigationController, viewControllerForGestureNavigation operation: UINavigationController.Operation) -> UIViewController? {
         if operation == .push {
             let sb = UIStoryboard.init(name: "Main", bundle: nil)
-            return sb.instantiateViewController(withIdentifier: "next")
+            let vc = sb.instantiateViewController(withIdentifier: "next")
+            if let navigationBar = (vc as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
+                navigationBar.isHidden = isHiddenSwitch.isOn
+                navigationBar.isTranslucent = isTranslucentSwitch.isOn
+                navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
+            }
+            return vc
         }
         return nil
     }
@@ -45,9 +53,17 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
         navigationController?.navigationBar.prefersLargeTitles = sender.isOn
     }
     
+    @IBOutlet weak var isHiddenSwitch: UISwitch!
+    @IBOutlet weak var isTranslucentSwitch: UISwitch!
+    @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
     
-    
-    
-    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let viewController = segue.destination as? XZNavigationBarCustomizable,
+           let navigationBar = viewController.navigationBarIfLoaded {
+            navigationBar.isHidden = isHiddenSwitch.isOn
+            navigationBar.isTranslucent = isTranslucentSwitch.isOn
+            navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
+        }
+    }
 }
 
