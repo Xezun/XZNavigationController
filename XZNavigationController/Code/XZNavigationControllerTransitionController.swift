@@ -81,21 +81,12 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
             // 有一种情形，从 A 页面 Push 到 B 页面，如果在 B.viewWillAppear 中调用
             // `navigationController.setNavigationBarHidden(true, animated: animated)`
             // 即使已经将 B.navigationBar 添加到原生导航条上，B.navigationBar 也收不到 setHidden(true) 的消息，
-            // 大概是因为 animated 的原因，设置隐藏的操作被延迟了。因此当代码运行到此处，`navigationBar.isHidden` 的
-            // 值实际上是 false 的，并没有达到隐藏导航条的目的，但意外的是，此处如果不放在 transitionCoordinator 中
-            // 执行的话，设置导航条不隐藏的操作就无法生效，不知道是不是因为已经设置过的原因。
-            // 还有，如果此时 Push 取消了的话，在 animation controler 动画中，执行了恢复导航条的操作也是无效的，
-            // 甚至在后续，原生内部还执行了设置导航条隐藏的操作，且由于此时已经把 A.naviagationBar 添加到原生导航条上，
-            // 导致 A 页面的导航条进入隐藏状态。原因分析，可能是在 B.viewWillAppear 中的操作，在动画后最终生效了。
-            // 最后，在 transitionCoordinator 中操作，可以解决隐藏异常的问题，但是会导致原生的导航条在动画过程中，
-            // 被移动到顶层而显示出来，即使在动画中，已经将导航条后置了。
-            // 所以，在已有自定义导航条的控制器中，不建议使用原生的方法控制导航条的显示或隐藏
+            // 大概是因为 animated 的原因，设置隐藏的操作被延迟了。
             navigationController.navigationBar.isTranslucent      = navigationBar.isTranslucent
             navigationController.navigationBar.prefersLargeTitles = navigationBar.prefersLargeTitles
             if navigationController.isNavigationBarHidden != navigationBar.isHidden {
                 navigationController.setNavigationBarHidden(navigationBar.isHidden, animated: animated)
             }
-//            print("\(#function) setNavigationBarHidden(\(navigationBar.isHidden))")
         } else {
             // 没有自定义导航条，导航条样式保持不变。新页面使用系统导航条，样式值与当前自定义导航条一致。
         }
