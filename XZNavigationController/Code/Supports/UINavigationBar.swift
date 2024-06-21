@@ -95,7 +95,7 @@ extension XZNavigationControllerCustomizableNavigationBar {
             if let navigationBar = navigationBar {
                 navigationBar.isHidden = newValue
             } else {
-                __xz_setHidden(newValue)
+                setHidden(newValue)
             }
         }
     }
@@ -108,7 +108,7 @@ extension XZNavigationControllerCustomizableNavigationBar {
             if let navigationBar = navigationBar {
                 navigationBar.isTranslucent = newValue
             } else {
-                __xz_setTranslucent(newValue)
+                setTranslucent(newValue)
             }
         }
     }
@@ -122,7 +122,7 @@ extension XZNavigationControllerCustomizableNavigationBar {
             if let navigationBar = navigationBar {
                 navigationBar.prefersLargeTitles = newValue
             } else {
-                __xz_setPrefersLargeTitles(newValue)
+                setPrefersLargeTitles(newValue)
             }
         }
     }
