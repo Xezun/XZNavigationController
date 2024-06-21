@@ -64,32 +64,32 @@ extension XZNavigationController {
                     let source = XZNavigationControllerRuntimeController.self
                     
                     let selector11 = #selector(UINavigationController.pushViewController(_:animated:));
-                    let selector12 = #selector(XZNavigationControllerRuntimeController.__xz_override_pushViewController(_:animated:));
-                    let selector13 = #selector(XZNavigationControllerRuntimeController.__xz_exchange_pushViewController(_:animated:));
+                    let selector12 = #selector(XZNavigationControllerRuntimeController.__xz_navc_override_pushViewController(_:animated:));
+                    let selector13 = #selector(XZNavigationControllerRuntimeController.__xz_navc_exchange_pushViewController(_:animated:));
                     XZNavigationControllerRuntimeController.addMethod(aClass, selector: selector11, source: source, override: selector12, exchange: selector13)
                     
                     let selector21 = #selector(UINavigationController.setViewControllers(_:animated:));
-                    let selector22 = #selector(XZNavigationControllerRuntimeController.__xz_override_setViewControllers(_:animated:));
-                    let selector23 = #selector(XZNavigationControllerRuntimeController.__xz_exchange_setViewControllers(_:animated:));
+                    let selector22 = #selector(XZNavigationControllerRuntimeController.__xz_navc_override_setViewControllers(_:animated:));
+                    let selector23 = #selector(XZNavigationControllerRuntimeController.__xz_navc_exchange_setViewControllers(_:animated:));
                     XZNavigationControllerRuntimeController.addMethod(aClass, selector: selector21, source: source, override: selector22, exchange: selector23)
                     
                     let selector31 = #selector(UINavigationController.popViewController(animated:));
-                    let selector32 = #selector(XZNavigationControllerRuntimeController.__xz_override_popViewController(animated:));
-                    let selector33 = #selector(XZNavigationControllerRuntimeController.__xz_exchange_popViewController(animated:));
+                    let selector32 = #selector(XZNavigationControllerRuntimeController.__xz_navc_override_popViewController(animated:));
+                    let selector33 = #selector(XZNavigationControllerRuntimeController.__xz_navc_exchange_popViewController(animated:));
                     XZNavigationControllerRuntimeController.addMethod(aClass, selector: selector31, source: source, override: selector32, exchange: selector33)
                     
                     let selector41 = #selector(UINavigationController.popToViewController(_:animated:));
-                    let selector42 = #selector(XZNavigationControllerRuntimeController.__xz_override_popToViewController(_:animated:));
-                    let selector43 = #selector(XZNavigationControllerRuntimeController.__xz_exchange_popToViewController(_:animated:));
+                    let selector42 = #selector(XZNavigationControllerRuntimeController.__xz_navc_override_popToViewController(_:animated:));
+                    let selector43 = #selector(XZNavigationControllerRuntimeController.__xz_navc_exchange_popToViewController(_:animated:));
                     XZNavigationControllerRuntimeController.addMethod(aClass, selector: selector41, source: source, override: selector42, exchange: selector43)
                     
                     let selector51 = #selector(UINavigationController.popToRootViewController(animated:));
-                    let selector52 = #selector(XZNavigationControllerRuntimeController.__xz_override_popToRootViewController(animated:));
-                    let selector53 = #selector(XZNavigationControllerRuntimeController.__xz_exchange_popToRootViewController(animated:));
+                    let selector52 = #selector(XZNavigationControllerRuntimeController.__xz_navc_override_popToRootViewController(animated:));
+                    let selector53 = #selector(XZNavigationControllerRuntimeController.__xz_navc_exchange_popToRootViewController(animated:));
                     XZNavigationControllerRuntimeController.addMethod(aClass, selector: selector51, source: source, override: selector52, exchange: selector53)
                     
                     for viewController in viewControllers {
-                        XZNavigationControllerRuntimeController.__xz_customizeViewController(viewController)
+                        XZNavigationControllerRuntimeController.__xz_navc_customizeViewController(viewController)
                     }
                 }
   
@@ -121,7 +121,7 @@ extension XZNavigationController {
 extension XZNavigationControllerRuntimeController {
 
     /// 向控制器的 viewWillAppear/viewDidAppear 中注入代码。
-    @objc public static func __xz_customizeViewController(_ viewController: UIViewController) {
+    @objc public static func __xz_navc_customizeViewController(_ viewController: UIViewController) {
         let aClass = type(of: viewController)
         guard objc_getAssociatedObject(aClass, &_viewController) == nil else { return }
         objc_setAssociatedObject(aClass, &_viewController, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
@@ -130,13 +130,13 @@ extension XZNavigationControllerRuntimeController {
         // 注入 viewWillAppear 用以更新导航条状态
         addMethod(aClass, selector: #selector(UIViewController.viewWillAppear(_:)),
                   source: XZNavigationControllerRuntimeController.self,
-                  override: #selector(XZNavigationControllerRuntimeController.__xz_override_viewWillAppear(_:)),
-                  exchange: #selector(XZNavigationControllerRuntimeController.__xz_exchange_viewWillAppear(_:)))
+                  override: #selector(XZNavigationControllerRuntimeController.__xz_navc_override_viewWillAppear(_:)),
+                  exchange: #selector(XZNavigationControllerRuntimeController.__xz_navc_exchange_viewWillAppear(_:)))
         // 注入 viewDidAppear 用来将自定义导航条与原生导航条绑定
         addMethod(aClass, selector: #selector(UIViewController.viewDidAppear(_:)),
                   source: XZNavigationControllerRuntimeController.self,
-                  override: #selector(XZNavigationControllerRuntimeController.__xz_override_viewDidAppear(_:)),
-                  exchange: #selector(XZNavigationControllerRuntimeController.__xz_exchange_viewDidAppear(_:)))
+                  override: #selector(XZNavigationControllerRuntimeController.__xz_navc_override_viewDidAppear(_:)),
+                  exchange: #selector(XZNavigationControllerRuntimeController.__xz_navc_exchange_viewDidAppear(_:)))
     }
     
     fileprivate static func addMethod(_ aClass: AnyClass, selector: Selector, source: AnyClass, override: Selector, exchange: Selector) {
@@ -155,7 +155,7 @@ extension XZNavigationControllerRuntimeController {
     }
     
     /// 转场已开始，转场动画即将开始：更新导航条样式。
-    @objc static public func __xz_viewController(_ viewController: UIViewController, viewWillAppear animated: Bool) {
+    @objc static public func __xz_navc_viewController(_ viewController: UIViewController, viewWillAppear animated: Bool) {
         // print("\(type(of: viewController)).\(#function) \(animated)")
         guard let viewController = viewController as? XZNavigationBarCustomizable else { return }
         guard let customNavigationBar = viewController.navigationBarIfLoaded else {
@@ -177,12 +177,12 @@ extension XZNavigationControllerRuntimeController {
     }
     
     // 转场完成，自定义导航条与原生导航条绑定。任何对原生导航条的操作，都会保存到自定义导航条上，并用于下一次转场。
-    @objc static public func __xz_viewController(_ viewController: UIViewController, viewDidAppear animated: Bool) {
+    @objc static public func __xz_navc_viewController(_ viewController: UIViewController, viewDidAppear animated: Bool) {
         viewController.navigationController?.navigationBar.navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
     }
     
     // 转场开始，自定义导航条与原生导航条解除绑定。转场过程中的导航条操作，最终会在 viewWillAppear 的注入逻辑覆盖。
-    @objc static public func __xz_prepareForNavigationTransition(_ navigationController: UINavigationController) {
+    @objc static public func __xz_navc_prepareForNavigationTransition(_ navigationController: UINavigationController) {
         navigationController.navigationBar.navigationBar = nil
     }
 }

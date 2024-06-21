@@ -89,7 +89,7 @@ extension XZNavigationControllerCustomizableNavigationBar {
     
     open override var isHidden: Bool {
         get {
-            return __xz_isHidden()
+            return __xz_navc_isHidden()
         }
         set {
             if let navigationBar = navigationBar {
@@ -102,7 +102,7 @@ extension XZNavigationControllerCustomizableNavigationBar {
     
     open override var isTranslucent: Bool {
         get {
-            return __xz_isTranslucent()
+            return __xz_navc_isTranslucent()
         }
         set {
             if let navigationBar = navigationBar {
@@ -116,7 +116,7 @@ extension XZNavigationControllerCustomizableNavigationBar {
     @available(iOS 11.0, *)
     open override var prefersLargeTitles: Bool {
         get {
-            return __xz_prefersLargeTitles()
+            return __xz_navc_prefersLargeTitles()
         }
         set {
             if let navigationBar = navigationBar {
@@ -128,7 +128,7 @@ extension XZNavigationControllerCustomizableNavigationBar {
     }
     
     open override func layoutSubviews() {
-        __xz_layoutSubviews()
+        __xz_navc_layoutSubviews()
 
         if let customNavigationBar = navigationBar {
             customNavigationBar.frame = bounds
@@ -138,45 +138,45 @@ extension XZNavigationControllerCustomizableNavigationBar {
     // 当原生导航条添加子视图时，保证自定义导航条始终显示在最上面。
 
     open override func addSubview(_ view: UIView) {
-        __xz_addSubview(view)
+        __xz_navc_addSubview(view)
 
         if let navigationBar = navigationBar {
-            __xz_bringSubview(toFront: navigationBar)
+            __xz_navc_bringSubview(toFront: navigationBar)
         }
     }
 
     open override func bringSubviewToFront(_ view: UIView) {
-        __xz_bringSubview(toFront: view)
+        __xz_navc_bringSubview(toFront: view)
 
         if let navigationBar = navigationBar {
             if view == navigationBar {
                 return
             }
-            __xz_bringSubview(toFront: navigationBar)
+            __xz_navc_bringSubview(toFront: navigationBar)
         }
     }
 
     open override func insertSubview(_ view: UIView, aboveSubview siblingSubview: UIView) {
-        __xz_insertSubview(view, aboveSubview: siblingSubview)
+        __xz_navc_insertSubview(view, aboveSubview: siblingSubview)
         
         if siblingSubview == navigationBar {
-            __xz_bringSubview(toFront: siblingSubview)
+            __xz_navc_bringSubview(toFront: siblingSubview)
         }
     }
 
     open override func insertSubview(_ view: UIView, at index: Int) {
-        __xz_insertSubview(view, at: index)
+        __xz_navc_insertSubview(view, at: index)
 
         if let navigationBar = navigationBar {
-            __xz_bringSubview(toFront: navigationBar)
+            __xz_navc_bringSubview(toFront: navigationBar)
         }
     }
 
     open override func insertSubview(_ view: UIView, belowSubview siblingSubview: UIView) {
         if view == navigationBar {
-            __xz_addSubview(view)
+            __xz_navc_addSubview(view)
         } else {
-            __xz_insertSubview(view, belowSubview: siblingSubview)
+            __xz_navc_insertSubview(view, belowSubview: siblingSubview)
         }
     }
     

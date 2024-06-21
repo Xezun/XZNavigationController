@@ -39,36 +39,44 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// 为运行时提供方法源，不可使用。
 @interface XZNavigationControllerRuntimeController: UINavigationController
-- (void)__xz_override_viewWillAppear:(BOOL)animated;
-- (void)__xz_exchange_viewWillAppear:(BOOL)animated;
++ (instancetype)alloc NS_UNAVAILABLE;
++ (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+- (void)__xz_navc_override_viewWillAppear:(BOOL)animated;
+- (void)__xz_navc_exchange_viewWillAppear:(BOOL)animated;
 
-- (void)__xz_override_viewDidAppear:(BOOL)animated;
-- (void)__xz_exchange_viewDidAppear:(BOOL)animated;
+- (void)__xz_navc_override_viewDidAppear:(BOOL)animated;
+- (void)__xz_navc_exchange_viewDidAppear:(BOOL)animated;
 
-- (void)__xz_override_pushViewController:(UIViewController *)viewController animated:(BOOL)animated NS_SWIFT_NAME(__xz_override_pushViewController(_:animated:));
-- (void)__xz_exchange_pushViewController:(UIViewController *)viewController animated:(BOOL)animated NS_SWIFT_NAME(__xz_exchange_pushViewController(_:animated:));
+- (void)__xz_navc_override_pushViewController:(UIViewController *)viewController animated:(BOOL)animated NS_SWIFT_NAME(__xz_navc_override_pushViewController(_:animated:));
+- (void)__xz_navc_exchange_pushViewController:(UIViewController *)viewController animated:(BOOL)animated NS_SWIFT_NAME(__xz_navc_exchange_pushViewController(_:animated:));
 
-- (void)__xz_override_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated;
-- (void)__xz_exchange_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated;
+- (void)__xz_navc_override_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated;
+- (void)__xz_navc_exchange_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated;
 
-- (UIViewController *)__xz_override_popViewControllerAnimated:(BOOL)animated;
-- (UIViewController *)__xz_exchange_popViewControllerAnimated:(BOOL)animated;
+- (UIViewController *)__xz_navc_override_popViewControllerAnimated:(BOOL)animated;
+- (UIViewController *)__xz_navc_exchange_popViewControllerAnimated:(BOOL)animated;
 
-- (NSArray<__kindof UIViewController *> *)__xz_override_popToViewController:(UIViewController *)vc animated:(BOOL)animated NS_SWIFT_NAME(__xz_override_popToViewController(_:animated:));
-- (NSArray<__kindof UIViewController *> *)__xz_exchange_popToViewController:(UIViewController *)vc animated:(BOOL)animated NS_SWIFT_NAME(__xz_exchange_popToViewController(_:animated:));
+- (NSArray<__kindof UIViewController *> *)__xz_navc_override_popToViewController:(UIViewController *)vc animated:(BOOL)animated NS_SWIFT_NAME(__xz_navc_override_popToViewController(_:animated:));
+- (NSArray<__kindof UIViewController *> *)__xz_navc_exchange_popToViewController:(UIViewController *)vc animated:(BOOL)animated NS_SWIFT_NAME(__xz_navc_exchange_popToViewController(_:animated:));
 
-- (NSArray<__kindof UIViewController *> *)__xz_override_popToRootViewControllerAnimated:(BOOL)animated;
-- (NSArray<__kindof UIViewController *> *)__xz_exchange_popToRootViewControllerAnimated:(BOOL)animated;
+- (NSArray<__kindof UIViewController *> *)__xz_navc_override_popToRootViewControllerAnimated:(BOOL)animated;
+- (NSArray<__kindof UIViewController *> *)__xz_navc_exchange_popToRootViewControllerAnimated:(BOOL)animated;
 @end
 
+/// 为运行时提供方法源，不可使用。
 @interface XZNavigationControllerFreezableTabBar : UITabBar
-- (CGRect)__xz_bounds;
-- (void)__xz_setBounds:(CGRect)bounds;
-- (CGRect)__xz_frame;
-- (void)__xz_setFrame:(CGRect)frame;
-- (BOOL)__xz_isHidden;
-- (void)__xz_setHidden:(BOOL)hidden;
++ (instancetype)alloc NS_UNAVAILABLE;
++ (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+- (CGRect)__xz_navc_bounds;
+- (void)__xz_navc_setBounds:(CGRect)bounds;
+- (CGRect)__xz_navc_frame;
+- (void)__xz_navc_setFrame:(CGRect)frame;
+- (BOOL)__xz_navc_isHidden;
+- (void)__xz_navc_setHidden:(BOOL)hidden;
 @end
 
 @interface UINavigationBar (XZNavigationController)
@@ -76,31 +84,35 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Note: 调用此方法，不会将状态同步给已绑定自定义导航条。
 /// - Note: 此方法仅对已开启自定义导航条的原生导航条生效，否则此方法不执行任何操作。
 /// - Parameter isHidden: 是否隐藏。
-- (void)__xz_setHidden:(BOOL)isHidden NS_SWIFT_NAME(setHidden(_:));
+- (void)__xz_navc_setHidden:(BOOL)isHidden NS_SWIFT_NAME(setHidden(_:));
 /// 设置导航条的半透明状态。
 /// - Note: 调用此方法，不会将状态同步给已绑定自定义导航条。
 /// - Note: 此方法仅对已开启自定义导航条的原生导航条生效，否则此方法不执行任何操作。
 /// - Parameter isTranslucent: 是否半透明。
-- (void)__xz_setTranslucent:(BOOL)isTranslucent NS_SWIFT_NAME(setTranslucent(_:));
+- (void)__xz_navc_setTranslucent:(BOOL)isTranslucent NS_SWIFT_NAME(setTranslucent(_:));
 /// 设置能否显示大标题模式。
 /// - Note: 调用此方法，不会将状态同步给已绑定自定义导航条。
 /// - Note: 此方法仅对已开启自定义导航条的原生导航条生效，否则此方法不执行任何操作。
 /// - Parameter prefersLargeTitles: 能否展示大标题。
-- (void)__xz_setPrefersLargeTitles:(BOOL)prefersLargeTitles NS_SWIFT_NAME(setPrefersLargeTitles(_:));
+- (void)__xz_navc_setPrefersLargeTitles:(BOOL)prefersLargeTitles NS_SWIFT_NAME(setPrefersLargeTitles(_:));
 @end
 
+/// 为运行时提供方法源，不可使用。
 @interface XZNavigationControllerCustomizableNavigationBar : UINavigationBar
-- (BOOL)__xz_isHidden;
-- (BOOL)__xz_isTranslucent;
-- (BOOL)__xz_prefersLargeTitles;
++ (instancetype)alloc NS_UNAVAILABLE;
++ (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+- (BOOL)__xz_navc_isHidden;
+- (BOOL)__xz_navc_isTranslucent;
+- (BOOL)__xz_navc_prefersLargeTitles;
 
-- (void)__xz_layoutSubviews;
-- (void)__xz_addSubview:(UIView *)view;
-- (void)__xz_bringSubviewToFront:(UIView *)view;
-- (void)__xz_sendSubviewToBack:(UIView *)view;
-- (void)__xz_insertSubview:(UIView *)view atIndex:(NSInteger)index;
-- (void)__xz_insertSubview:(UIView *)view aboveSubview:(UIView *)siblingSubview;
-- (void)__xz_insertSubview:(UIView *)view belowSubview:(UIView *)siblingSubview;
+- (void)__xz_navc_layoutSubviews;
+- (void)__xz_navc_addSubview:(UIView *)view;
+- (void)__xz_navc_bringSubviewToFront:(UIView *)view;
+- (void)__xz_navc_sendSubviewToBack:(UIView *)view;
+- (void)__xz_navc_insertSubview:(UIView *)view atIndex:(NSInteger)index;
+- (void)__xz_navc_insertSubview:(UIView *)view aboveSubview:(UIView *)siblingSubview;
+- (void)__xz_navc_insertSubview:(UIView *)view belowSubview:(UIView *)siblingSubview;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -59,37 +59,37 @@ extension XZNavigationControllerFreezableTabBar {
     /// 自定义类的 frame 属性，在修改值时，先判断当前是否允许修改。
     open override var frame: CGRect {
         get {
-            return __xz_frame()
+            return __xz_navc_frame()
         }
         set {
             if isFrozen {
                 return
             }
-            __xz_setFrame(newValue)
+            __xz_navc_setFrame(newValue)
         }
     }
 
     open override var bounds: CGRect {
         get {
-            return __xz_bounds()
+            return __xz_navc_bounds()
         }
         set {
             if isFrozen {
                 return
             }
-            __xz_setBounds(newValue)
+            __xz_navc_setBounds(newValue)
         }
     }
 
     open override var isHidden: Bool {
         get {
-            return __xz_isHidden()
+            return __xz_navc_isHidden()
         }
         set {
             if isFrozen {
                 return
             }
-            __xz_setHidden(newValue)
+            __xz_navc_setHidden(newValue)
         }
     }
 }
