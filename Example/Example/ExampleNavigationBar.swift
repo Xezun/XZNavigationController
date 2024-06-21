@@ -55,6 +55,24 @@ public class ExampleNavigationBar: XZNavigationBar {
             print("ExampleNavigationBar(\(title ?? "")).setHidden(\(isHidden))")
         }
     }
+    
+    public override var isTranslucent: Bool {
+        didSet {
+            print("ExampleNavigationBar(\(title ?? "")).setTranslucent(\(isTranslucent))")
+        }
+    }
+    
+    public override var prefersLargeTitles: Bool {
+        didSet {
+            print("ExampleNavigationBar(\(title ?? "")).setPrefersLargeTitles(\(prefersLargeTitles))")
+        }
+    }
+    
+    public override var frame: CGRect {
+        didSet {
+            print("ExampleNavigationBar(\(title ?? "")).setFrame(\(frame))")
+        }
+    }
 }
 
 extension XZNavigationBarCustomizable {

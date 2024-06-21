@@ -17,11 +17,6 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
         navigationBar.barTintColor  = .brown
         navigationBar.isTranslucent = true
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        print("\(type(of: self)).\(#function) \(animated)")
-        super.viewWillAppear(animated)
-    }
 
     @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
         
@@ -58,6 +53,9 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "next" else {
+            return
+        }
         if let navigationBar = (segue.destination as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
             navigationBar.isHidden           = isHiddenSwitch.isOn
             navigationBar.isTranslucent      = isTranslucentSwitch.isOn

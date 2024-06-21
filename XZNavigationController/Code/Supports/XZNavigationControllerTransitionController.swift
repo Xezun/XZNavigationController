@@ -44,8 +44,6 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
     
     /// 1. 获取转场动画控制器。
     public func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        // 转场开始，自定义导航条从原生导航条上移除。
-        navigationController.navigationBar.navigationBar = nil // (toVC as? XZNavigationBarCustomizable)?.navigationBarIfLoaded;
         // 优先使用自定义转场
         if let animationController = delegate?.navigationController?(navigationController, animationControllerFor: operation, from: fromVC, to: toVC) {
             return animationController
@@ -72,25 +70,6 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
         // 需要在转场动画开始前更新导航条样式，因为在进入自定义转场动画时，控制器的布局已经确定。
         // 导航控制器第一次显示时，栈底控制器如果不是通过初始化方法传入的，可能会造成此方法会被调用，但是 didShow 不调用，所以需要转场事件的回调。
         // 此方法触发时，viewController 已经加入到导航栈中
-        
-        // animated = false 时，上面两个方法不会触发。
-        navigationController.navigationBar.navigationBar = nil
-        
-        // 更新导航条状态
-        if let navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
-            // 有一种情形，从 A 页面 Push 到 B 页面，如果在 B.viewWillAppear 中调用
-            // `navigationController.setNavigationBarHidden(true, animated: animated)`
-            // 即使已经将 B.navigationBar 添加到原生导航条上，B.navigationBar 也收不到 setHidden(true) 的消息，
-            // 大概是因为 animated 的原因，设置隐藏的操作被延迟了。
-            navigationController.navigationBar.isTranslucent      = navigationBar.isTranslucent
-            navigationController.navigationBar.prefersLargeTitles = navigationBar.prefersLargeTitles
-            if navigationController.isNavigationBarHidden != navigationBar.isHidden {
-                navigationController.setNavigationBarHidden(navigationBar.isHidden, animated: animated)
-            }
-        } else {
-            // 没有自定义导航条，导航条样式保持不变。新页面使用系统导航条，样式值与当前自定义导航条一致。
-        }
-        
         delegate?.navigationController?(navigationController, willShow: viewController, animated: animated)
     }
     
@@ -98,8 +77,6 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
     public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         // 设置 customNavigationBar 的值，其实在自定义转场动画中已处理。但是非动画转场，不会走自定义转场动画的逻辑，所以这里需要补上。
         // 另外，如果转场取消，此方法不会调用，属性 customNavigationBar 的值，也是在自定义转场动画的逻辑中处理的，
-        navigationController.navigationBar.navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
-        
         delegate?.navigationController?(navigationController, didShow: viewController, animated: animated)
     }
     

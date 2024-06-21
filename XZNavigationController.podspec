@@ -38,6 +38,7 @@ Pod::Spec.new do |s|
   
   s.subspec 'Code' do |ss|
     ss.source_files = 'XZNavigationController/Code/**/*.{h,m,swift}'
+    ss.public_header_files = 'XZNavigationController/Code/**/*.h'
     ss.dependency 'XZDefines/XZRuntime', '>= 1.1.0'
   end
   

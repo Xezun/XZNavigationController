@@ -29,7 +29,7 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     open override var isHidden: Bool {
         didSet {
             if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
-                navigationBar.setHidden(isHidden)
+                navigationBar.__xz_setHidden(isHidden)
             }
         }
     }
@@ -38,7 +38,7 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     open var isTranslucent = true {
         didSet {
             if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
-                navigationBar.setTranslucent(isTranslucent)
+                navigationBar.__xz_setTranslucent(isTranslucent)
             }
         }
     }
@@ -47,7 +47,7 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     open var prefersLargeTitles = false {
         didSet {
             if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
-                navigationBar.setPrefersLargeTitles(prefersLargeTitles)
+                navigationBar.__xz_setPrefersLargeTitles(prefersLargeTitles)
             }
         }
     }

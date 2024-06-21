@@ -17,11 +17,7 @@ class ExampleNextViewController: UITableViewController {
         navigationBar.barTintColor = .systemMint
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        print("\(type(of: self)).\(#function) \(animated)")
-        super.viewWillAppear(animated)
-    }
-    
+
     @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
         
     }
@@ -43,6 +39,9 @@ class ExampleNextViewController: UITableViewController {
     @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "next" else {
+            return
+        }
         if let navigationBar = (segue.destination as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
             navigationBar.isHidden           = isHiddenSwitch.isOn
             navigationBar.isTranslucent      = isTranslucentSwitch.isOn
