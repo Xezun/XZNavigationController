@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/cocoapods/l/XZNavigationController.svg?style=flat)](https://cocoapods.org/pods/XZNavigationController)
 [![Platform](https://img.shields.io/cocoapods/p/XZNavigationController.svg?style=flat)](https://cocoapods.org/pods/XZNavigationController)
 
-XZNavigationController 为原生的 UINavigationController 组件拓展了自定义导航条的功能，且与原生导航条兼容。
+一款 iOS 面向协议的、拓展 UINavigationController 支持自定义导航条功能的、支持全屏手势导航的导航控制器辅助组件。
 
 ## 功能特性
 

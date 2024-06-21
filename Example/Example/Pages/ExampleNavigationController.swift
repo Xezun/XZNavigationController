@@ -15,8 +15,6 @@ class ExampleNavigationController: UINavigationController, XZNavigationControlle
 
         view.backgroundColor = .white
         self.isCustomizable  = true
-//        self.isCustomizable  = false
-   
     }
 
 }

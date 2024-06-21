@@ -13,8 +13,8 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationBar.title        = "首页"
-        navigationBar.barTintColor = .brown
+        navigationBar.title         = "首页"
+        navigationBar.barTintColor  = .brown
         navigationBar.isTranslucent = true
     }
     
@@ -58,10 +58,9 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let viewController = segue.destination as? XZNavigationBarCustomizable,
-           let navigationBar = viewController.navigationBarIfLoaded {
-            navigationBar.isHidden = isHiddenSwitch.isOn
-            navigationBar.isTranslucent = isTranslucentSwitch.isOn
+        if let navigationBar = (segue.destination as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
+            navigationBar.isHidden           = isHiddenSwitch.isOn
+            navigationBar.isTranslucent      = isTranslucentSwitch.isOn
             navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
         }
     }

@@ -13,7 +13,7 @@ class ExampleLastViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationBar.title = "尾页"
+        navigationBar.title        = "尾页"
         navigationBar.barTintColor = .systemBrown
     }
     
