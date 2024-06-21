@@ -5,13 +5,13 @@
 [![License](https://img.shields.io/cocoapods/l/XZNavigationController.svg?style=flat)](https://cocoapods.org/pods/XZNavigationController)
 [![Platform](https://img.shields.io/cocoapods/p/XZNavigationController.svg?style=flat)](https://cocoapods.org/pods/XZNavigationController)
 
-一款 iOS 面向协议的、拓展 UINavigationController 支持自定义导航条功能的、支持全屏手势导航的导航控制器辅助组件。
+这是一款能使 UINavigationController 支持自定义导航条、全屏手势导航功能的、面向协议的 iOS 组件。
 
 ## 功能特性
 
 ### 一、面向协议
 
-UINavigationController 要开启自定义导航条支持，遵循 XZNavigationController 协议即可，不需要改变基类，不会带来额外风险。
+若要开启自定义导航条支持，遵循 XZNavigationController 协议即可，不需要改变基类，零接入成本。
 
 ```swift
 // 让您的控制器遵循协议，即可获得自定义导航栏开关属性
@@ -20,7 +20,7 @@ class ExampleNavigationController: UINavigationController, XZNavigationControlle
     override func viewDidLoad() {
         super.viewDidLoad()
         // 打开自定义导航栏开关
-        self.isNavigationBarCustomizable = true
+        self.isCustomizable = true
     }
     
 }
@@ -32,7 +32,7 @@ class ExampleNavigationController: UINavigationController, XZNavigationControlle
 
 > 框架默认不会提供自定义导航条，基类 `XZNavigationBar` 只是一个开发选项，自定义导航条仅需要遵循协议即可，并非必须以它为基类。
 
-在下面的示例代码中，
+在内置 Demo 中，利用 XZNavigationBar 模拟了原生导航条，代码极其简单，甚至不用考虑布局。
 
 ```swift
 public class ExampleNavigationBar: XZNavigationBar {
