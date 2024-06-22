@@ -96,7 +96,13 @@ extension XZNavigationController {
                     XZNavigationControllerRuntimeController.__xz_navc_navigationController(self, customizeViewController: viewController)
                 }
                 // 因为非自定义模式，转场走的时原生的逻辑，因此即使在转场过程被调用，如下处理也是没有问题的。
-                navigationBar.navigationBar = (self.topViewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
+                if let navigationBar = (topViewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
+                    self.navigationBar.isHidden           = navigationBar.isHidden
+                    self.navigationBar.isTranslucent      = navigationBar.isTranslucent
+                    self.navigationBar.prefersLargeTitles = navigationBar.prefersLargeTitles
+                    self.navigationBar.navigationBar      = navigationBar
+                }
+                
             }
         }
     }
