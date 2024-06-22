@@ -136,7 +136,7 @@ extension XZNavigationControllerCustomizableNavigationBar {
     open override func addSubview(_ view: UIView) {
         __xz_navc_addSubview(view)
 
-        if let navigationBar = navigationBar {
+        if let navigationBar = navigationBar, navigationBar != view {
             __xz_navc_bringSubview(toFront: navigationBar)
         }
     }
@@ -144,10 +144,7 @@ extension XZNavigationControllerCustomizableNavigationBar {
     open override func bringSubviewToFront(_ view: UIView) {
         __xz_navc_bringSubview(toFront: view)
 
-        if let navigationBar = navigationBar {
-            if view == navigationBar {
-                return
-            }
+        if let navigationBar = navigationBar, navigationBar != view {
             __xz_navc_bringSubview(toFront: navigationBar)
         }
     }
@@ -169,10 +166,9 @@ extension XZNavigationControllerCustomizableNavigationBar {
     }
 
     open override func insertSubview(_ view: UIView, belowSubview siblingSubview: UIView) {
-        if view == navigationBar {
-            __xz_navc_addSubview(view)
-        } else {
-            __xz_navc_insertSubview(view, belowSubview: siblingSubview)
+        __xz_navc_insertSubview(view, belowSubview: siblingSubview)
+        if navigationBar == view {
+            __xz_navc_bringSubview(toFront: view)
         }
     }
     
