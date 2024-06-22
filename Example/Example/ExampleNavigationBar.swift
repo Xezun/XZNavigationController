@@ -85,7 +85,7 @@ extension XZNavigationBarCustomizable {
         if let navigationBar = objc_getAssociatedObject(self, &_navigationBar) as? ExampleNavigationBar {
             return navigationBar
         }
-        let navigationBar = ExampleNavigationBar(for: self, frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 0))
+        let navigationBar = ExampleNavigationBar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 0))
         objc_setAssociatedObject(self, &_navigationBar, navigationBar, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return navigationBar
     }
