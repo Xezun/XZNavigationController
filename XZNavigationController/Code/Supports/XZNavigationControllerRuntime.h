@@ -40,7 +40,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// 为运行时提供方法源，不可使用。
-@interface XZNavigationControllerRuntimeController: UINavigationController
+@interface XZNavigationControllerRuntime: UINavigationController
 + (instancetype)alloc NS_UNAVAILABLE;
 + (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
