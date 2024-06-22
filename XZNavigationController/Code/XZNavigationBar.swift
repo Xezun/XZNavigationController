@@ -123,19 +123,23 @@ public protocol XZNavigationBarCustomizable: UIViewController {
         // 它们的大小完全由开发者控制，以避免强制调整而造成的不符合预期的情况。
         // 比如，当 title 比较宽的时候，如果自动缩短了 back/info 的长度，那么当 title 变短的时候，back/info 却不能变长，
         // 所以将它们的大小完全交给开发者处理。
-        // 普通高度：44 大标题最小高度： 44 + 52
+        // 普通高度：44
+        // 横屏高度：32
+        // 大标题高度： 44 + 52
+        
+        let navHeight = min(bounds.size.height, 44.0)
         
         if let titleView = self.titleView {
             titleView.isHidden = bounds.height > 64.0
             let frame = titleView.frame
             let x = (bounds.width - frame.width) * 0.5
-            let y = (44.0 - frame.height) * 0.5
+            let y = (navHeight - frame.height) * 0.5
             titleView.frame = CGRect.init(x: x, y: y, width: frame.width, height: frame.height)
         }
         
         if let largeTitleView = self.largeTitleView {
             largeTitleView.isHidden = !(bounds.height > 64.0 && prefersLargeTitles)
-            largeTitleView.frame = CGRect(x: bounds.minX, y: 44.0, width: bounds.width, height: bounds.height - 44.0)
+            largeTitleView.frame = CGRect(x: bounds.minX, y: navHeight, width: bounds.width, height: bounds.height - navHeight)
         }
 
         let isLeftToRight = (self.effectiveUserInterfaceLayoutDirection == .leftToRight)
@@ -143,14 +147,14 @@ public protocol XZNavigationBarCustomizable: UIViewController {
         if let infoView = self.infoView {
             let oFrame = infoView.frame
             let x = (isLeftToRight ? bounds.maxX - oFrame.width : 0)
-            let y = (44.0 - oFrame.height) * 0.5
+            let y = (navHeight - oFrame.height) * 0.5
             infoView.frame = CGRect.init(x: x, y: y, width: oFrame.width, height: oFrame.height)
         }
 
         if let backView = self.backView {
             let oFrame = backView.frame
             let x = (isLeftToRight ? 0 : bounds.maxX - oFrame.width)
-            let y = (44.0 - oFrame.height) * 0.5
+            let y = (navHeight - oFrame.height) * 0.5
             backView.frame = CGRect.init(x: x, y: y, width: oFrame.width, height: oFrame.height)
         }
 
