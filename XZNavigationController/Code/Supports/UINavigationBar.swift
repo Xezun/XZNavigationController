@@ -29,20 +29,19 @@ extension UINavigationBar {
             return objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarProtocol
         }
         set {
-            let oldValue = self.navigationBar
-            
-            if newValue === oldValue {
-                return
+            // 移除旧的
+            if let oldValue = self.navigationBar {
+                oldValue.navigationBar = nil
+                oldValue.removeFromSuperview()
             }
+            
             // 记录新值
             objc_setAssociatedObject(self, &_navigationBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            
-            // 移除旧的
-            oldValue?.removeFromSuperview()
             
             // 添加新的
             if let newValue = newValue {
                 newValue.frame = bounds
+                newValue.navigationBar = self
                 // 使用 autoresizing 布局，自定义导航条的 frame 会在父视图变化时改变，
                 // 而自定义导航条父视图，在转场时会发生改变。
                 super.addSubview(newValue)

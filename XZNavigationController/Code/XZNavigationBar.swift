@@ -16,6 +16,34 @@ public protocol XZNavigationBarProtocol: UIView {
     var prefersLargeTitles: Bool { get set }
 }
 
+extension XZNavigationBarProtocol {
+    
+    /// 原生导航条。
+    /// - Note: 更新导航条状态，请使用如下方法，直接设置原生导航条属性，会造成循环调用。
+    /// 1. `setHidden(_:)`
+    /// 2. `setTranslucent(_:)`
+    /// 3. `setPrefersLargeTitles(_:)`
+    /// - Note: 此属性为 nil 时，自定义导航条未展示，或者处于转场的过程中。
+    public internal(set) var navigationBar: UINavigationBar? {
+        get {
+            return (objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarWeakWrapper)?.value
+        }
+        set {
+            if let wrapper = objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarWeakWrapper {
+                wrapper.value = newValue
+            } else {
+                let value = XZNavigationBarWeakWrapper.init(value: newValue)
+                objc_setAssociatedObject(self, &_navigationBar, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            }
+        }
+    }
+    
+}
+
+
+
+
+
 /// 导航条是否可以自定义。
 public protocol XZNavigationBarCustomizable: UIViewController {
     /// 控制器自定义导航条。
@@ -28,27 +56,21 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     
     open override var isHidden: Bool {
         didSet {
-            if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
-                navigationBar.setHidden(isHidden)
-            }
+            navigationBar?.setHidden(isHidden)
         }
     }
     
     /// 控制背景透明，默认 true 。
     open var isTranslucent = true {
         didSet {
-            if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
-                navigationBar.setTranslucent(isTranslucent)
-            }
+            navigationBar?.setTranslucent(isTranslucent)
         }
     }
     
     /// 默认 false 。
     open var prefersLargeTitles = false {
         didSet {
-            if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
-                navigationBar.setPrefersLargeTitles(prefersLargeTitles)
-            }
+            navigationBar?.setPrefersLargeTitles(prefersLargeTitles)
         }
     }
     
@@ -277,3 +299,4 @@ private enum CodingKey: String {
     case prefersLargeTitles  = "XZNavigationBar.prefersLargeTitles"
 }
 
+private var _navigationBar = 0
