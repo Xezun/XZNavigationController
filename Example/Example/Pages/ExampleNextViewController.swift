@@ -17,6 +17,18 @@ class ExampleNextViewController: UITableViewController {
         navigationBar.barTintColor = .systemMint
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+//        如下操作会导致自定义导航条丢失，因为 set 操作会认为是转场开始，而移除了导航条。
+//        但实际上第二次 set 时，并没有转场发生，viewDidAppear 也不会执行。
+//        if let navigationController = navigationController {
+//            let viewControllers = navigationController.viewControllers
+//            navigationController.setViewControllers([], animated: false)
+//            navigationController.setViewControllers(viewControllers, animated: false)
+//        }
+        
+    }
 
     @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
         

@@ -18,6 +18,12 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
         navigationBar.isTranslucent = true
     }
 
+    @IBAction func isCustomizableValueChanged(_ sender: UISwitch) {
+        guard let navigationController = self.navigationController as? XZNavigationController else { return }
+        
+        navigationController.isCustomizable = sender.isOn
+    }
+    
     @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
         
     }
