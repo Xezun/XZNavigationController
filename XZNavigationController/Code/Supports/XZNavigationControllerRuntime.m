@@ -43,7 +43,7 @@
 
 
 - (void)__xz_navc_override_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [XZNavigationControllerRuntimeController __xz_navc_customizeViewController:viewController];
+    [XZNavigationControllerRuntimeController __xz_navc_navigationController:self customizeViewController:viewController];
     
     struct objc_super _super = {
         .receiver = self,
@@ -56,7 +56,7 @@
 }
 
 - (void)__xz_navc_exchange_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [XZNavigationControllerRuntimeController __xz_navc_customizeViewController:viewController];
+    [XZNavigationControllerRuntimeController __xz_navc_navigationController:self customizeViewController:viewController];
     [self __xz_navc_exchange_pushViewController:viewController animated:animated];
     [XZNavigationControllerRuntimeController __xz_navc_prepareForNavigationTransition:self];
 }
@@ -65,7 +65,7 @@
 
 - (void)__xz_navc_override_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated {
     for (UIViewController *viewController in viewControllers) {
-        [XZNavigationControllerRuntimeController __xz_navc_customizeViewController:viewController];
+        [XZNavigationControllerRuntimeController __xz_navc_navigationController:self customizeViewController:viewController];
     }
     
     UIViewController * const topViewController = self.topViewController;
@@ -83,7 +83,7 @@
 
 - (void)__xz_navc_exchange_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated {
     for (UIViewController *viewController in viewControllers) {
-        [XZNavigationControllerRuntimeController __xz_navc_customizeViewController:viewController];
+        [XZNavigationControllerRuntimeController __xz_navc_navigationController:self customizeViewController:viewController];
     }
     
     UIViewController * const topViewController = self.topViewController;
