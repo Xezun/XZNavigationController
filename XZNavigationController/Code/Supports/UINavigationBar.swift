@@ -34,55 +34,51 @@ extension UINavigationBar {
             if newValue === oldValue {
                 return
             }
-
+            // 记录新值
+            objc_setAssociatedObject(self, &_navigationBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            
             // 移除旧的
             oldValue?.removeFromSuperview()
             
             // 添加新的
             if let newValue = newValue {
                 newValue.frame = bounds
-                // 设置 autoresizing 后，自定义导航条的 frame 会在父视图变化时改变，难以预期
+                // 使用 autoresizing 布局，自定义导航条的 frame 会在父视图变化时改变，
+                // 而自定义导航条父视图，在转场时会发生改变。
                 super.addSubview(newValue)
-                
-                // 复制样式，在外部处理：
-                // 在转场过程中，要先更新导航条，然后才能转场，最后才将导航条放到系统导航条上，所以到这一步样式其实已经复制了。
             }
-            
-            // 记录新值
-            objc_setAssociatedObject(self, &_navigationBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
-    /// 导航条是否可以自定义。
-    var isCustomizable: Bool {
+    /// 导航条是否已开启自定义。
+    public internal(set) var isCustomizable: Bool {
         get {
-            return false
+            return __xz_navc_isCustomizable()
         }
         set {
-            let oldValue = isCustomizable
-            if newValue == oldValue {
+            if newValue == isCustomizable {
                 return
             }
             
-            if oldValue {
-                object_setClass(self, self.superclass!)
-            } else {  
+            if newValue {
                 let OldClass = type(of: self)
                 
-                if let NewClass = objc_getAssociatedObject(OldClass, &_CustomizableClass) as? UINavigationBar.Type {
-                    _ = object_setClass(self, NewClass)
-                } else if let NewClass = xz_objc_createClass(OldClass, { (NewClass) in
-                        xz_objc_class_copyMethodsFromClass(NewClass, XZNavigationControllerCustomizableNavigationBar.self);
+                if let CustomizableClass = objc_getAssociatedObject(OldClass, &_CustomizableClass) as? UINavigationBar.Type {
+                    _ = object_setClass(self, CustomizableClass)
+                } else if let CustomizableClass = xz_objc_createClass(OldClass, { (CustomizableClass) in
+                        xz_objc_class_copyMethodsFromClass(CustomizableClass, XZNavigationControllerCustomizableNavigationBar.self);
                 }) as? UINavigationBar.Type {
-                    objc_setAssociatedObject(OldClass, &_CustomizableClass, NewClass, .OBJC_ASSOCIATION_ASSIGN)
-                    _ = object_setClass(self, NewClass)
+                    objc_setAssociatedObject(OldClass, &_CustomizableClass, CustomizableClass, .OBJC_ASSOCIATION_ASSIGN)
+                    _ = object_setClass(self, CustomizableClass)
                 } else {
                     fatalError("无法自定义\(OldClass)")
                 }
+            } else {
+                object_setClass(self, self.superclass!)
             }
         }
     }
-    
+        
 }
 
 extension XZNavigationControllerCustomizableNavigationBar {

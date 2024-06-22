@@ -218,6 +218,10 @@
 
 @implementation UINavigationBar (XZNavigationController)
 
+- (BOOL)__xz_navc_isCustomizable {
+    return NO;
+}
+
 - (void)__xz_navc_setHidden:(BOOL)isHidden {
 
 }
@@ -233,6 +237,10 @@
 @end
 
 @implementation XZNavigationControllerCustomizableNavigationBar
+
+- (BOOL)__xz_navc_isCustomizable {
+    return YES;
+}
 
 - (BOOL)__xz_navc_isHidden {
     struct objc_super _super = {

@@ -95,6 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Note: 此方法仅对已开启自定义导航条的原生导航条生效，否则此方法不执行任何操作。
 /// - Parameter prefersLargeTitles: 能否展示大标题。
 - (void)__xz_navc_setPrefersLargeTitles:(BOOL)prefersLargeTitles NS_SWIFT_NAME(setPrefersLargeTitles(_:));
+/// 原生导航条返回 NO 不支持定义。
+- (BOOL)__xz_navc_isCustomizable;
 @end
 
 /// 为运行时提供方法源，不可使用。
@@ -102,6 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)alloc NS_UNAVAILABLE;
 + (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+
 - (BOOL)__xz_navc_isHidden;
 - (BOOL)__xz_navc_isTranslucent;
 - (BOOL)__xz_navc_prefersLargeTitles;
