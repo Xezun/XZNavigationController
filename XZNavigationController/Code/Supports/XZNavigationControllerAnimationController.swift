@@ -102,7 +102,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
         // 阴影
         let shadowFrame2 = containerView.bounds // vc 可能要比 containerView 小，不能直接用 vc 的 frame
         let shadowFrame1 = shadowFrame2.offsetBy(dx: direction * shadowFrame2.width, dy: 0);
-        let shadowView = XZNavigationTransitionShadowView.init(frame: shadowFrame1)
+        let shadowView = XZNavigationControllerShadowView.init(frame: shadowFrame1)
         containerView.insertSubview(shadowView, belowSubview: toView)
         
         // 转场容器与导航条不在同一个层次上，坐标系需要转换。
@@ -239,7 +239,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
         // 阴影
         let shadowFrame1 = containerView.bounds
         let shadowFrame2 = shadowFrame1.offsetBy(dx: direction * shadowFrame1.width, dy: 0)
-        let shadowView = XZNavigationTransitionShadowView.init(frame: shadowFrame1)
+        let shadowView = XZNavigationControllerShadowView.init(frame: shadowFrame1)
         containerView.insertSubview(shadowView, belowSubview: fromView)
         
         // 转场容器与导航条不在同一个层次上，坐标系需要转换。
@@ -283,7 +283,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
                 navBarFrame2 = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
             }
         } else {
-            //
+            // nav bar is hidden
         }
          
         // 由于 tabBar 的层级比较高，且将 tabBar 添加到 containerView 上，会导致 tabBar 在动画时到显示不正确
@@ -343,7 +343,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
 }
 
 /// 转场过程中的阴影视图。
-fileprivate class XZNavigationTransitionShadowView: UIView {
+fileprivate class XZNavigationControllerShadowView: UIView {
     public override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor     = UIColor.white
