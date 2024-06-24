@@ -23,7 +23,7 @@ public protocol XZNavigationGestureDrivable: UIViewController {
     func navigationController(_ navigationController: UINavigationController, edgeInsetsForGestureNavigation operation: UINavigationController.Operation) -> NSDirectionalEdgeInsets?
     
     /// 当手势导航行为触发时，此方法将被调用。
-    /// 1. Push 时，必须返回目的控制器，否则不会发生导航行为。
+    /// 1. Push 时，返回目标控制器，即触发 push 进入目标页面，返回 nil 不触发。
     /// 2. Pop 时，返回 nil 表示返回上一个页面，返回其它值，表示返回到指定的栈内页面。
     ///
     /// - Parameter navigationController: 当前控制器所在的导航控制器。
