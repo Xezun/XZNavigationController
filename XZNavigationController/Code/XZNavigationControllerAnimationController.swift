@@ -10,7 +10,7 @@ import UIKit
 
 
 /// 动画控制器，处理了导航控制器的转场过程中的动画效果。
-public class XZNavigationControllerAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
+public class XZNavigationControllerAnimationController: NSObject {
     
     /// 导航控制器。
     public unowned let navigationController: XZNavigationController
@@ -22,20 +22,22 @@ public class XZNavigationControllerAnimationController: NSObject, UIViewControll
     public var isInteractive: Bool {
         return interactiveTransition != nil
     }
+    /// 导航条在转场前是否隐藏。
+    let isNavigationBarHidden: Bool
     
     public init?(for navigationController: XZNavigationController, operation: UINavigationController.Operation, isInteractive: Bool) {
         guard operation != .none else { return nil }
         self.navigationController  = navigationController
         self.operation             = operation
         self.interactiveTransition = (isInteractive ? UIPercentDrivenInteractiveTransition() : nil)
+        self.isNavigationBarHidden = navigationController.isNavigationBarHidden
         super.init()
     }
     
 }
 
-extension XZNavigationControllerAnimationController {
+extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTransitioning {
     
-    /// 系统默认转场动画时长为 0.3 秒，此处也一样。
     public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.35
     }
@@ -54,6 +56,7 @@ extension XZNavigationControllerAnimationController {
     
     /// 6. 转场结束。
     public func animationEnded(_ transitionCompleted: Bool) {
+        // print("\(#function): \(transitionCompleted)");
         // 此方法在 UIViewControllerContextTransitioning.completeTransition(_:) 中被调用。
         // 且调用后，系统内部处理了一些操作，致使在这里处理取消导航的恢复操作无法生效，所以取消导航的恢复操作放在了动画的 completion 回调中处理。
         // navigationController.transitionController.navigationController(navigationController, animationController: self, animatedTransitionDidEnd: transitionCompleted)
@@ -98,12 +101,12 @@ extension XZNavigationControllerAnimationController {
         
         // 阴影
         let shadowFrame2 = containerView.bounds // vc 可能要比 containerView 小，不能直接用 vc 的 frame
-        let shadowView = XZNavigationTransitionShadowView.init(frame: shadowFrame2.offsetBy(dx: direction * shadowFrame2.width, dy: 0))
+        let shadowFrame1 = shadowFrame2.offsetBy(dx: direction * shadowFrame2.width, dy: 0);
+        let shadowView = XZNavigationTransitionShadowView.init(frame: shadowFrame1)
         containerView.insertSubview(shadowView, belowSubview: toView)
         
         // 转场容器与导航条不在同一个层次上，坐标系需要转换。
         let navigationBar = navigationController.navigationBar // 系统导航条。
-        navigationBar.customNavigationBar = nil
         let navBarRect = navigationBar.convert(navigationBar.bounds, to: containerView)
         
         // 获取自定义导航条，并配置导航条。
@@ -128,11 +131,30 @@ extension XZNavigationControllerAnimationController {
             navBar.setNeedsLayout()
         }
         
-        if fromNavBar != nil && toNavBar != nil {
-            navigationBar.superview?.sendSubviewToBack(navigationBar)
+        // 处理原生导航条：当不需要展示原生导航条时，将原生导航条移动到屏幕外，而不是 sendToBack 移动到后面
+        // Note: 使用 sendSubviewToBack 方法，虽然可以使导航条不可见，但是会产生一个问题。有一种情形，
+        // 页面 A 导航条显示，页面 B 导航条隐藏，在 A => B 的手势转场中，如果取消了转场，那么在这个取消的转场
+        // 完成之后，系统会将导航条隐藏（即使已经恢复到顶层）。
+        // 导航条向上偏移 200+ 以避免导航条上的内容会展示出来。
+        var navBarFrame2: CGRect?
+        if fromNavBarFrame2 != nil && toNavBarFrame2 != nil {
+            navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
+        } else if fromNavBarFrame2 != nil {
+            if navigationController.isNavigationBarHidden {
+                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
+            } else {
+                navigationBar.frame = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
+                navBarFrame2 = navBarRect
+            }
+        } else if toNavBarFrame2 != nil {
+            if self.isNavigationBarHidden { // 导航条当前的状态，是 toNavBar 的状态，这里要判断转场前的状态。
+                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
+            } else {
+                navBarFrame2 = navBarRect.offsetBy(dx: direction * -navBarRect.width, dy: 0)
+            }
+        } else {
+            // keep
         }
-        
-        // todo: 执行动画时，是否需要将系统导航条放到转场容器最底层，作为自定义导航条的背景。
         
         // 由于 tabBar 在最顶层，所以平移一个屏宽，而非三分之一
         var tabBar: UITabBar?
@@ -162,6 +184,9 @@ extension XZNavigationControllerAnimationController {
             if let frame = toNavBarFrame2 {
                 toNavBar!.frame = frame
             }
+            if let frame = navBarFrame2 {
+                navigationBar.frame = frame
+            }
             
             if let tabBar = tabBar {
                 tabBar.frame = tabBarFrame2
@@ -172,31 +197,36 @@ extension XZNavigationControllerAnimationController {
             shadowView.removeFromSuperview()
             
             // 自定义导航条在转场过程中，仅仅作为转场效果出现，将起放置到导航条上有导航控制器处理，所以这里要移除。
-            navigationBar.superview?.bringSubviewToFront(navigationBar)
+            navigationBar.frame = containerView.convert(navBarRect, to: navigationBar.superview)
             fromNavBar?.removeFromSuperview()
             toNavBar?.removeFromSuperview()
             
             // 恢复 TabBar 。
             tabBar?.isFrozen = false
             
-            // 恢复导航条状态。如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
-            // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
-            // 由于 animationEnded(_:) 是在控制器 viewDidAppear 或 viewDidDisappear 之后被调用（见页面底部文档），此时再来恢复导航条样式已无济于事。
-            // 至于在Demo中放在前后都可以，可能是因为计算少速度快导致的，但是项目计算量多时，放后面就无法及时抓取正确的状态，从而导致问题。
             if transitionContext.transitionWasCancelled {
+                // 关于转场取消时，恢复导航条状态：
+                // 恢复的操作最恰当的时机是在 viewWillAppear 中进行，但是
+                // 当调用 transitionContext.completeTransition(false) 方法时，
+                // 会触发页面的 viewWillAppear/viewDidAppear 以及 animationEnded(_:) 方法，
+                // 也就是说，在这里 Apple 并没有提供合适的时机来介入 viewWillAppear 来处理导航栏的恢复。
+                // 在 viewWillAppear 之前处理恢复，唯一的问题是，如果用户在 viewWillAppear 中进行了导航栏的处理
+                // 那么我们是没有机会进行覆盖的，即导航条的状态可能与自定义导航条属性不一致。
+                // 所以，在使用自定义导航条的控制器中，不应在转场的生命周期方法中，直接操作原生的导航条。
                 if let fromNavBar = fromNavBar {
                     navigationBar.isTranslucent      = fromNavBar.isTranslucent
-                    navigationBar.tintColor          = fromNavBar.tintColor
                     navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
-                    self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
-                } else {
-                    // 转场前的状态无法记录，状态无法恢复
+                    if self.navigationController.isNavigationBarHidden != fromNavBar.isHidden {
+                        self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
+                    }
+                } else if self.navigationController.isNavigationBarHidden != self.isNavigationBarHidden {
+                    self.navigationController.setNavigationBarHidden(self.isNavigationBarHidden, animated: true)
                 }
                 transitionContext.completeTransition(false)
-                navigationBar.customNavigationBar = fromNavBar
+                navigationBar.navigationBar = fromNavBar
             } else {
                 transitionContext.completeTransition(true)
-                navigationBar.customNavigationBar = toNavBar;
+                navigationBar.navigationBar = toNavBar;
             }
         })
     }
@@ -237,7 +267,6 @@ extension XZNavigationControllerAnimationController {
         
         // 转场容器与导航条不在同一个层次上，坐标系需要转换。
         let navigationBar = navigationController.navigationBar // 系统导航条。
-        navigationBar.customNavigationBar = nil
         let navBarRect = navigationBar.convert(navigationBar.bounds, to: containerView)
         
         // 获取自定义导航条，并配置导航条。
@@ -260,8 +289,24 @@ extension XZNavigationControllerAnimationController {
             navBar.setNeedsLayout()
         }
         
-        if fromNavBar != nil && toNavBar != nil {
-            navigationBar.superview?.sendSubviewToBack(navigationBar)
+        var navBarFrame2: CGRect?
+        if fromNavBarFrame2 != nil && toNavBarFrame2 != nil {
+            navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
+        } else if fromNavBarFrame2 != nil {
+            if navigationController.isNavigationBarHidden {
+                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
+            } else {
+                navigationBar.frame = navBarRect.offsetBy(dx: direction * -navBarRect.width, dy: 0)
+                navBarFrame2 = navBarRect
+            }
+        } else if toNavBarFrame2 != nil {
+            if self.isNavigationBarHidden {
+                navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
+            } else {
+                navBarFrame2 = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
+            }
+        } else {
+            //
         }
          
         // 由于 tabBar 的层级比较高，且将 tabBar 添加到 containerView 上，会导致 tabBar 在动画时到显示不正确
@@ -294,6 +339,9 @@ extension XZNavigationControllerAnimationController {
             if let frame = toNavBarFrame2 {
                 toNavBar!.frame = frame
             }
+            if let frame = navBarFrame2 {
+                navigationBar.frame = frame
+            }
             
             if let tabBar = tabBar {
                 tabBar.frame = tabBarFrame2
@@ -304,7 +352,7 @@ extension XZNavigationControllerAnimationController {
             shadowView.removeFromSuperview()
 
             // 自定义导航条在转场过程中，仅仅作为转场效果出现，将起放置到导航条上有导航控制器处理，所以这里要移除。
-            navigationBar.superview?.bringSubviewToFront(navigationBar)
+            navigationBar.frame = containerView.convert(navBarRect, to: navigationBar.superview)
             fromNavBar?.removeFromSuperview()
             toNavBar?.removeFromSuperview()
             
@@ -312,24 +360,20 @@ extension XZNavigationControllerAnimationController {
             tabBar?.isFrozen = false
             
             if transitionContext.transitionWasCancelled {
-                // 如果转场取消，恢复导航条样式。
-                // 如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
-                // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
-                // 由于 animationEnded(_:) 是在控制器 viewDidAppear 或 viewDidDisappear 之后被调用（见页面底部文档），此时再来恢复导航条样式已无济于事。
-                // 至于在Demo中放在前后都可以，可能是因为计算少速度快导致的，但是项目计算量达时，放后面就无法及时抓取正确的状态，从而导致问题。
                 if let fromNavBar = fromNavBar {
                     navigationBar.isTranslucent      = fromNavBar.isTranslucent
-                    navigationBar.tintColor          = fromNavBar.tintColor
                     navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
-                    self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
-                } else {
-                    // 状态无法恢复
+                    if self.navigationController.isNavigationBarHidden != fromNavBar.isHidden {
+                        self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
+                    }
+                } else if self.navigationController.isNavigationBarHidden != self.isNavigationBarHidden {
+                    self.navigationController.setNavigationBarHidden(self.isNavigationBarHidden, animated: true)
                 }
                 transitionContext.completeTransition(false)
-                navigationBar.customNavigationBar = fromNavBar
+                navigationBar.navigationBar = fromNavBar
             } else {
                 transitionContext.completeTransition(true)
-                navigationBar.customNavigationBar = toNavBar // 其实可以不要
+                navigationBar.navigationBar = toNavBar // 其实可以不要
             }
         })
     }

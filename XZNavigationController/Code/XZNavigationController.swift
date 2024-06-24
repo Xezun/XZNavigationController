@@ -7,7 +7,17 @@
 //
 
 import UIKit
+import XZDefines
 
+// 为了将更新导航条的操作放在 viewWillAppear 中：
+// 一、 方法交换，重写 UIViewController 基类的 viewWillAppear 方法，遇到一下问题：
+//      1. 某些页面，交换后的方法不执行（猜测可能是因为Swift消息派发机制，没有把方法按 objc 消息派发问题）
+//      2. 控制器重写的逻辑，在交换方法的逻辑之后运行，导致页面可能没有按照自定义导航条的配置来展示。
+//      3. 重写 UIViewController 基类，影响较大。
+// 二、重写 UINavigationController 的 addChildViewController 方法。
+//      1. 方法不调用
+// 三、监听 viewControllers 属性
+//      1. KVO 触发
 
 /// XZNavigationController 提供了 全屏手势 和 自定义导航条 的功能。
 /// - Note: 当栈内控制器支持自定义时，系统自带导航条将不可见（非隐藏）。
@@ -68,23 +78,6 @@ extension XZNavigationController {
             objc_setAssociatedObject(self, &_transitionController, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
-    
-}
-
-/// 自定义导航条可以继承 XZNavigationBar 也可以继承其它视图控件，实现 XZNavigationBarProtocol 协议即可。
-/// 自定义导航条所必须实现的协议。
-/// - Note: 因为 tintColor 会自动从父视图继承，所以自定义导航条没有设置 tintColor 的话，那么最终可能会影响自定义导航条的外观，因为自定义导航条的父视图，在转场过程中会发生变化。
-public protocol XZNavigationBarProtocol: UIView {
-    var isTranslucent: Bool { get set }
-    var prefersLargeTitles: Bool { get set }
-}
-
-/// 导航条是否可以自定义。
-public protocol XZNavigationBarCustomizable: UIViewController {
-    
-    /// 控制器自定义导航条。
-    /// - Note: 导航条的获取时机会被 viewDidLoad 更早，因此，在其中访问到 view 属性，可能会造成控制器生命周期提前。
-    var navigationBarIfLoaded: XZNavigationBarProtocol? { get }
     
 }
 

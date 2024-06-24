@@ -12,29 +12,49 @@ class ExampleNextViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        navigationBar.title              = "中间页"
+        navigationBar.barTintColor       = .systemMint
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        print("\(type(of: self)).\(#function) \(animated)")
+        super.viewWillAppear(animated)
+    }
+    
+    @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
         
-        navigationBar.title = "中间页"
-        navigationBar.barTintColor = .systemMint
-        navigationBar.isHidden = false
-        navigationBar.isTranslucent = true
-        navigationBar.prefersLargeTitles = false
     }
 
     @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {
-        navigationBar.setHidden(sender.isOn, animated: true)
+        navigationController?.setNavigationBarHidden(sender.isOn, animated: true)
     }
 
     @IBAction func navigationBarTranslucentChanged(_ sender: UISwitch) {
-        navigationBar.isTranslucent = sender.isOn
+        navigationController?.navigationBar.isTranslucent = sender.isOn
     }
 
     @IBAction func navigationBarPrefersLargeTitlesChanged(_ sender: UISwitch) {
-        navigationBar.prefersLargeTitles = sender.isOn
+        navigationController?.navigationBar.prefersLargeTitles = sender.isOn
     }
 
+    @IBOutlet weak var isHiddenSwitch: UISwitch!
+    @IBOutlet weak var isTranslucentSwitch: UISwitch!
+    @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let viewController = segue.destination as? XZNavigationBarCustomizable,
+           let navigationBar = viewController.navigationBarIfLoaded {
+            navigationBar.isHidden = isHiddenSwitch.isOn
+            navigationBar.isTranslucent = isTranslucentSwitch.isOn
+            navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
+        }
+    }
+    
 }
 
 extension ExampleNextViewController: XZNavigationBarCustomizable {
+ 
 
 }
 
@@ -43,9 +63,19 @@ extension ExampleNextViewController: XZNavigationGestureDrivable {
     func navigationController(_ navigationController: UINavigationController, viewControllerForGestureNavigation operation: UINavigationController.Operation) -> UIViewController? {
         if operation == .push {
             let sb = UIStoryboard.init(name: "Main", bundle: nil)
-            return sb.instantiateViewController(withIdentifier: "last")
+            let vc = sb.instantiateViewController(withIdentifier: "last")
+            if let navigationBar = (vc as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
+                navigationBar.isHidden = isHiddenSwitch.isOn
+                navigationBar.isTranslucent = isTranslucentSwitch.isOn
+                navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
+            }
+            return vc
         }
         return nil
+    }
+    
+    func navigationController(_ navigationController: UINavigationController, edgeInsetsForGestureNavigation operation: UINavigationController.Operation) -> NSDirectionalEdgeInsets? {
+        return .init(top: 0, leading: 20, bottom: 0, trailing: 20)
     }
     
 }

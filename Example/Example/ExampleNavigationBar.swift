@@ -47,8 +47,14 @@ public class ExampleNavigationBar: XZNavigationBar {
         }
     }
     
-    private let titleLabel = UILabel.init()
+    private let titleLabel      = UILabel.init()
     private let largeTitleLabel = UILabel.init()
+    
+    public override var isHidden: Bool {
+        didSet {
+            print("ExampleNavigationBar(\(title ?? "")).setHidden(\(isHidden))")
+        }
+    }
 }
 
 extension XZNavigationBarCustomizable {

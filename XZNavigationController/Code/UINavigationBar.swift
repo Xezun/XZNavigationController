@@ -24,12 +24,12 @@ import XZDefines
 extension UINavigationBar {
     
     /// 记录了当前正在显示的自定义的导航条。在控制器转场过程中，此属性为 nil 。
-    public internal(set) var customNavigationBar: XZNavigationBarProtocol? {
+    public internal(set) var navigationBar: XZNavigationBarProtocol? {
         get {
-            return objc_getAssociatedObject(self, &_customNavigationBar) as? (UIView & XZNavigationBarProtocol)
+            return objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarProtocol
         }
         set {
-            let oldValue = self.customNavigationBar
+            let oldValue = self.navigationBar
             
             if newValue === oldValue {
                 return
@@ -49,7 +49,7 @@ extension UINavigationBar {
             }
             
             // 记录新值
-            objc_setAssociatedObject(self, &_customNavigationBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &_navigationBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
@@ -89,6 +89,7 @@ extension UINavigationBar {
     }
     @objc(__xz_setPrefersLargeTitles:) func setPrefersLargeTitles(_ prefersLargeTitles: Bool) {
     }
+    
 }
 
 private class XZCustomizableNavigationBar: UINavigationBar {
@@ -123,8 +124,8 @@ private class XZCustomizableNavigationBar: UINavigationBar {
             return super.isHidden
         }
         set {
-            if let customNavigationBar = customNavigationBar {
-                customNavigationBar.isHidden = newValue
+            if let navigationBar = navigationBar {
+                navigationBar.isHidden = newValue
             } else {
                 super.isHidden = newValue
             }
@@ -136,8 +137,8 @@ private class XZCustomizableNavigationBar: UINavigationBar {
             return super.isTranslucent
         }
         set {
-            if let customNavigationBar = customNavigationBar {
-                customNavigationBar.isTranslucent = newValue
+            if let navigationBar = navigationBar {
+                navigationBar.isTranslucent = newValue
             } else {
                 super.isTranslucent = newValue
             }
@@ -150,11 +151,19 @@ private class XZCustomizableNavigationBar: UINavigationBar {
             return super.prefersLargeTitles
         }
         set {
-            if let customNavigationBar = customNavigationBar {
-                customNavigationBar.prefersLargeTitles = newValue
+            if let navigationBar = navigationBar {
+                navigationBar.prefersLargeTitles = newValue
             } else {
                 super.prefersLargeTitles = newValue
             }
+        }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if let customNavigationBar = navigationBar {
+            customNavigationBar.frame = bounds
         }
     }
     
@@ -162,14 +171,14 @@ private class XZCustomizableNavigationBar: UINavigationBar {
 
     override func addSubview(_ view: UIView) {
         super.addSubview(view)
-        if let customNavigationBar = customNavigationBar {
+        if let customNavigationBar = navigationBar {
             super.bringSubviewToFront(customNavigationBar)
         }
     }
     
     override func bringSubviewToFront(_ view: UIView) {
         super.bringSubviewToFront(view)
-        if let customNavigationBar = customNavigationBar {
+        if let customNavigationBar = navigationBar {
             if view == customNavigationBar {
                 return
             }
@@ -179,7 +188,7 @@ private class XZCustomizableNavigationBar: UINavigationBar {
     
     override func insertSubview(_ view: UIView, aboveSubview siblingSubview: UIView) {
         super.insertSubview(view, aboveSubview: siblingSubview)
-        if siblingSubview == customNavigationBar {
+        if siblingSubview == navigationBar {
             super.bringSubviewToFront(siblingSubview)
         }
     }
@@ -187,28 +196,20 @@ private class XZCustomizableNavigationBar: UINavigationBar {
     override func insertSubview(_ view: UIView, at index: Int) {
         super.insertSubview(view, at: index)
         
-        if let customNavigationBar = customNavigationBar {
+        if let customNavigationBar = navigationBar {
             super.bringSubviewToFront(customNavigationBar)
         }
     }
     
     override func insertSubview(_ view: UIView, belowSubview siblingSubview: UIView) {
-        if view == customNavigationBar {
+        if view == navigationBar {
             super.addSubview(view)
         } else {
             super.insertSubview(view, belowSubview: siblingSubview)
         }
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        if let customNavigationBar = customNavigationBar {
-            customNavigationBar.frame = bounds
-        }
-    }
 
 }
 
-private var _customNavigationBar = 0
+private var _navigationBar = 0
 private var _CustomizableClass = 0;

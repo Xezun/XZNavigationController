@@ -15,24 +15,24 @@ class ExampleLastViewController: UITableViewController {
 
         navigationBar.title = "尾页"
         navigationBar.barTintColor = .systemBrown
-        navigationBar.isHidden = false
-        navigationBar.isTranslucent = true
-        navigationBar.prefersLargeTitles = false
+    }
+    
+    @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
+        
     }
     
     @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {
-        navigationBar.setHidden(sender.isOn, animated: true)
+        navigationController?.setNavigationBarHidden(sender.isOn, animated: true)
     }
 
     @IBAction func navigationBarTranslucentChanged(_ sender: UISwitch) {
-        navigationBar.isTranslucent = sender.isOn
+        navigationController?.navigationBar.isTranslucent = sender.isOn
     }
 
     @IBAction func navigationBarPrefersLargeTitlesChanged(_ sender: UISwitch) {
-        navigationBar.prefersLargeTitles = sender.isOn
+        navigationController?.navigationBar.prefersLargeTitles = sender.isOn
     }
-
-
+    
 }
 
 extension ExampleLastViewController: XZNavigationBarCustomizable {
