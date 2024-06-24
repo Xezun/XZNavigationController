@@ -102,7 +102,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
         // 阴影
         let shadowFrame2 = containerView.bounds // vc 可能要比 containerView 小，不能直接用 vc 的 frame
         let shadowFrame1 = shadowFrame2.offsetBy(dx: direction * shadowFrame2.width, dy: 0);
-        let shadowView = XZNavigationTransitionShadowView.init(frame: shadowFrame1)
+        let shadowView = XZNavigationControllerShadowView.init(frame: shadowFrame1)
         containerView.insertSubview(shadowView, belowSubview: toView)
         
         // 转场容器与导航条不在同一个层次上，坐标系需要转换。
@@ -153,7 +153,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
                 navBarFrame2 = navBarRect.offsetBy(dx: direction * -navBarRect.width, dy: 0)
             }
         } else {
-            // keep
+            // nav bar is hidden
         }
         
         // 由于 tabBar 在最顶层，所以平移一个屏宽，而非三分之一
@@ -204,30 +204,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
             // 恢复 TabBar 。
             tabBar?.isFrozen = false
             
-            if transitionContext.transitionWasCancelled {
-                // 关于转场取消时，恢复导航条状态：
-                // 恢复的操作最恰当的时机是在 viewWillAppear 中进行，但是
-                // 当调用 transitionContext.completeTransition(false) 方法时，
-                // 会触发页面的 viewWillAppear/viewDidAppear 以及 animationEnded(_:) 方法，
-                // 也就是说，在这里 Apple 并没有提供合适的时机来介入 viewWillAppear 来处理导航栏的恢复。
-                // 在 viewWillAppear 之前处理恢复，唯一的问题是，如果用户在 viewWillAppear 中进行了导航栏的处理
-                // 那么我们是没有机会进行覆盖的，即导航条的状态可能与自定义导航条属性不一致。
-                // 所以，在使用自定义导航条的控制器中，不应在转场的生命周期方法中，直接操作原生的导航条。
-                if let fromNavBar = fromNavBar {
-                    navigationBar.isTranslucent      = fromNavBar.isTranslucent
-                    navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
-                    if self.navigationController.isNavigationBarHidden != fromNavBar.isHidden {
-                        self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
-                    }
-                } else if self.navigationController.isNavigationBarHidden != self.isNavigationBarHidden {
-                    self.navigationController.setNavigationBarHidden(self.isNavigationBarHidden, animated: true)
-                }
-                transitionContext.completeTransition(false)
-                navigationBar.navigationBar = fromNavBar
-            } else {
-                transitionContext.completeTransition(true)
-                navigationBar.navigationBar = toNavBar;
-            }
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
     }
 
@@ -262,7 +239,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
         // 阴影
         let shadowFrame1 = containerView.bounds
         let shadowFrame2 = shadowFrame1.offsetBy(dx: direction * shadowFrame1.width, dy: 0)
-        let shadowView = XZNavigationTransitionShadowView.init(frame: shadowFrame1)
+        let shadowView = XZNavigationControllerShadowView.init(frame: shadowFrame1)
         containerView.insertSubview(shadowView, belowSubview: fromView)
         
         // 转场容器与导航条不在同一个层次上，坐标系需要转换。
@@ -272,21 +249,21 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
         // 获取自定义导航条，并配置导航条。
         let fromNavBar = (fromVC as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
         var fromNavBarFrame2: CGRect?
-        if let navBar = fromNavBar, !navBar.isHidden {
-            let fromNavBarFrame1 = navigationBar.convert(navBar.frame, to: containerView)
-            navBar.frame = fromNavBarFrame1
+        if let fromNavBar = fromNavBar, !fromNavBar.isHidden {
+            let fromNavBarFrame1 = navigationBar.convert(fromNavBar.frame, to: containerView)
+            fromNavBar.frame = fromNavBarFrame1
             fromNavBarFrame2 = fromNavBarFrame1.offsetBy(dx: direction * navBarRect.width, dy: 0)
-            containerView.insertSubview(navBar, aboveSubview: fromView)
-            navBar.setNeedsLayout()
+            containerView.insertSubview(fromNavBar, aboveSubview: fromView)
+            fromNavBar.setNeedsLayout()
         }
         
         let toNavBar = (toVC as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
         var toNavBarFrame2: CGRect?
-        if let navBar = toNavBar, !navBar.isHidden {
-            navBar.frame = navBarRect.offsetBy(dx: direction * -navBarRect.width / 3.0, dy: 0)
+        if let toNavBar = toNavBar, !toNavBar.isHidden {
+            toNavBar.frame = navBarRect.offsetBy(dx: direction * -navBarRect.width / 3.0, dy: 0)
             toNavBarFrame2 = navBarRect
-            containerView.insertSubview(navBar, aboveSubview: toView)
-            navBar.setNeedsLayout()
+            containerView.insertSubview(toNavBar, aboveSubview: toView)
+            toNavBar.setNeedsLayout()
         }
         
         var navBarFrame2: CGRect?
@@ -306,7 +283,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
                 navBarFrame2 = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
             }
         } else {
-            //
+            // nav bar is hidden
         }
          
         // 由于 tabBar 的层级比较高，且将 tabBar 添加到 containerView 上，会导致 tabBar 在动画时到显示不正确
@@ -359,29 +336,14 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
             // 恢复 TabBar 。
             tabBar?.isFrozen = false
             
-            if transitionContext.transitionWasCancelled {
-                if let fromNavBar = fromNavBar {
-                    navigationBar.isTranslucent      = fromNavBar.isTranslucent
-                    navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
-                    if self.navigationController.isNavigationBarHidden != fromNavBar.isHidden {
-                        self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
-                    }
-                } else if self.navigationController.isNavigationBarHidden != self.isNavigationBarHidden {
-                    self.navigationController.setNavigationBarHidden(self.isNavigationBarHidden, animated: true)
-                }
-                transitionContext.completeTransition(false)
-                navigationBar.navigationBar = fromNavBar
-            } else {
-                transitionContext.completeTransition(true)
-                navigationBar.navigationBar = toNavBar // 其实可以不要
-            }
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
     }
     
 }
 
 /// 转场过程中的阴影视图。
-fileprivate class XZNavigationTransitionShadowView: UIView {
+fileprivate class XZNavigationControllerShadowView: UIView {
     public override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor     = UIColor.white

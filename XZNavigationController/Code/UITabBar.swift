@@ -17,7 +17,7 @@ import XZDefines
 extension UITabBar {
     
     /// 当此属性为 true 时，可以通过 *isFrozen* 属性冻结 tabBar 防止其它地方修改 frame 值。
-    @objc(__xz_isFreezable) var isFreezable: Bool {
+    @objc var isFreezable: Bool {
         return false
     }
     
@@ -37,7 +37,7 @@ extension UITabBar {
             if let FreezableTabBarClass = objc_getAssociatedObject(TabBarClass, &_FreezableTabBarClass) as? AnyClass {
                 _ = object_setClass(self, FreezableTabBarClass)
             } else if let FreezableTabBarClass = xz_objc_createClass(TabBarClass, { (FreezableTabBarClass) in
-                    xz_objc_class_copyMethodsFromClass(FreezableTabBarClass, XZFreezableTabBar.self)
+                    xz_objc_class_copyMethodsFromClass(FreezableTabBarClass, XZNavigationControllerFreezableTabBar.self)
             }) as? UITabBar.Type {
                 _ = object_setClass(self, FreezableTabBarClass)
                 objc_setAssociatedObject(TabBarClass, &_FreezableTabBarClass, FreezableTabBarClass, .OBJC_ASSOCIATION_ASSIGN)
@@ -49,47 +49,47 @@ extension UITabBar {
     
 }
 
-private class XZFreezableTabBar: UITabBar {
+extension XZNavigationControllerFreezableTabBar {
     
     /// 返回 true 。
     override var isFreezable: Bool {
         return true
     }
-    
+
     /// 自定义类的 frame 属性，在修改值时，先判断当前是否允许修改。
-    override var frame: CGRect {
+    open override var frame: CGRect {
         get {
-            return super.frame
+            return __xz_navc_frame()
         }
         set {
             if isFrozen {
                 return
             }
-            super.frame = newValue
+            __xz_navc_setFrame(newValue)
         }
     }
-    
-    override var bounds: CGRect {
+
+    open override var bounds: CGRect {
         get {
-            return super.bounds
+            return __xz_navc_bounds()
         }
         set {
             if isFrozen {
                 return
             }
-            super.bounds = newValue
+            __xz_navc_setBounds(newValue)
         }
     }
-    
-    override var isHidden: Bool {
+
+    open override var isHidden: Bool {
         get {
-            return super.isHidden
+            return __xz_navc_isHidden()
         }
         set {
             if isFrozen {
                 return
             }
-            super.isHidden =  newValue
+            __xz_navc_setHidden(newValue)
         }
     }
 }

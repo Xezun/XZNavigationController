@@ -16,6 +16,34 @@ public protocol XZNavigationBarProtocol: UIView {
     var prefersLargeTitles: Bool { get set }
 }
 
+extension XZNavigationBarProtocol {
+    
+    /// 原生导航条。
+    /// - Note: 更新导航条状态，请使用如下方法，直接设置原生导航条属性，会造成循环调用。
+    /// 1. `setHidden(_:)`
+    /// 2. `setTranslucent(_:)`
+    /// 3. `setPrefersLargeTitles(_:)`
+    /// - Note: 此属性为 nil 时，自定义导航条未展示，或者处于转场的过程中。
+    public internal(set) var navigationBar: UINavigationBar? {
+        get {
+            return (objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarWeakWrapper)?.value
+        }
+        set {
+            if let wrapper = objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarWeakWrapper {
+                wrapper.value = newValue
+            } else {
+                let value = XZNavigationBarWeakWrapper.init(value: newValue)
+                objc_setAssociatedObject(self, &_navigationBar, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            }
+        }
+    }
+    
+}
+
+
+
+
+
 /// 导航条是否可以自定义。
 public protocol XZNavigationBarCustomizable: UIViewController {
     /// 控制器自定义导航条。
@@ -28,27 +56,21 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     
     open override var isHidden: Bool {
         didSet {
-            if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
-                navigationBar.setHidden(isHidden)
-            }
+            navigationBar?.setHidden(isHidden)
         }
     }
     
     /// 控制背景透明，默认 true 。
     open var isTranslucent = true {
         didSet {
-            if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
-                navigationBar.setTranslucent(isTranslucent)
-            }
+            navigationBar?.setTranslucent(isTranslucent)
         }
     }
     
     /// 默认 false 。
     open var prefersLargeTitles = false {
         didSet {
-            if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.navigationBar == self {
-                navigationBar.setPrefersLargeTitles(prefersLargeTitles)
-            }
+            navigationBar?.setPrefersLargeTitles(prefersLargeTitles)
         }
     }
     
@@ -58,11 +80,7 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     /// 导航条阴影视图。
     public let shadowImageView: UIImageView
     
-    public unowned let viewController: UIViewController
-    
-    public init(for viewController: UIViewController, frame: CGRect) {
-        self.viewController = viewController
-        
+    public override init(frame: CGRect) {
         backgroundImageView = UIImageView.init(frame: CGRect(x: 0, y: -20, width: frame.width, height: 64));
         backgroundImageView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         backgroundImageView.backgroundColor  = UIColor.white
@@ -79,10 +97,26 @@ public protocol XZNavigationBarCustomizable: UIViewController {
         self.addSubview(shadowImageView)
     }
     
-    required public init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    public required init?(coder aDecoder: NSCoder) {
+        guard let backgroundImageView = aDecoder.decodeObject(forKey: CodingKey.backgroundImageView) as? UIImageView else { return nil }
+        guard let shadowImageView     = aDecoder.decodeObject(forKey: CodingKey.shadowImageView) as? UIImageView else { return nil }
+        self.backgroundImageView = backgroundImageView
+        self.shadowImageView     = shadowImageView
+        self.isTranslucent       = aDecoder.decodeBool(forKey: CodingKey.isTranslucent)
+        self.prefersLargeTitles  = aDecoder.decodeBool(forKey: CodingKey.prefersLargeTitles)
+        super.init(coder: aDecoder)
+        self.addSubview(backgroundImageView)
+        self.addSubview(shadowImageView)
     }
     
+    open override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(isTranslucent, forKey: CodingKey.isTranslucent)
+        aCoder.encode(backgroundImageView, forKey: CodingKey.backgroundImageView)
+        aCoder.encode(shadowImageView, forKey: CodingKey.shadowImageView)
+        aCoder.encode(prefersLargeTitles, forKey: CodingKey.prefersLargeTitles)
+    }
+
     /// 此属性直接修改的是导航条背景视图的背景色。
     open var barTintColor: UIColor? {
         get { return backgroundImageView.backgroundColor }
@@ -115,7 +149,7 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     /// 导航条将按照当前视图布局方向布局 titleView、infoView、backView、shadowImageView、backgroundImageView 。
     override open func layoutSubviews() {
         super.layoutSubviews()
-
+        
         let bounds = self.bounds
 
         // titleView\backView\infoView 只在初次赋值时，检测是否有大小并尝试自动调整。
@@ -123,19 +157,23 @@ public protocol XZNavigationBarCustomizable: UIViewController {
         // 它们的大小完全由开发者控制，以避免强制调整而造成的不符合预期的情况。
         // 比如，当 title 比较宽的时候，如果自动缩短了 back/info 的长度，那么当 title 变短的时候，back/info 却不能变长，
         // 所以将它们的大小完全交给开发者处理。
-        // 普通高度：44 大标题最小高度： 44 + 52
+        // 普通高度：44
+        // 横屏高度：32
+        // 大标题高度：44 + 52
+        
+        let navHeight = min(bounds.size.height, 44.0)
         
         if let titleView = self.titleView {
             titleView.isHidden = bounds.height > 64.0
             let frame = titleView.frame
             let x = (bounds.width - frame.width) * 0.5
-            let y = (44.0 - frame.height) * 0.5
+            let y = (navHeight - frame.height) * 0.5
             titleView.frame = CGRect.init(x: x, y: y, width: frame.width, height: frame.height)
         }
         
         if let largeTitleView = self.largeTitleView {
             largeTitleView.isHidden = !(bounds.height > 64.0 && prefersLargeTitles)
-            largeTitleView.frame = CGRect(x: bounds.minX, y: 44.0, width: bounds.width, height: bounds.height - 44.0)
+            largeTitleView.frame = CGRect(x: bounds.minX, y: navHeight, width: bounds.width, height: bounds.height - navHeight)
         }
 
         let isLeftToRight = (self.effectiveUserInterfaceLayoutDirection == .leftToRight)
@@ -143,14 +181,14 @@ public protocol XZNavigationBarCustomizable: UIViewController {
         if let infoView = self.infoView {
             let oFrame = infoView.frame
             let x = (isLeftToRight ? bounds.maxX - oFrame.width : 0)
-            let y = (44.0 - oFrame.height) * 0.5
+            let y = (navHeight - oFrame.height) * 0.5
             infoView.frame = CGRect.init(x: x, y: y, width: oFrame.width, height: oFrame.height)
         }
 
         if let backView = self.backView {
             let oFrame = backView.frame
             let x = (isLeftToRight ? 0 : bounds.maxX - oFrame.width)
-            let y = (44.0 - oFrame.height) * 0.5
+            let y = (navHeight - oFrame.height) * 0.5
             backView.frame = CGRect.init(x: x, y: y, width: oFrame.width, height: oFrame.height)
         }
 
@@ -173,28 +211,31 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     /// - Note: 如果设置值时，视图没有大小，则会自动尝试调用 sizeToFit() 方法。
     open var titleView: UIView? {
         get {
-            return objc_getAssociatedObject(self, &AssociationKey.titleView) as? UIView
+            return _titleView
         }
         set {
-            self.titleView?.removeFromSuperview()
+            _titleView?.removeFromSuperview()
+            
             if let titleView = newValue {
                 if titleView.frame.isEmpty {
                     titleView.sizeToFit()
                 }
                 self.addSubview(titleView)
             }
-            objc_setAssociatedObject(self, &AssociationKey.titleView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            
+            _titleView = newValue
         }
     }
+    private var _titleView: UIView?
     
     /// 大标题视图。
     /// - Note: 正常的导航条高度为 44.0，当显示大标题视图时，导航条高度增加，增加的区域就是大标题视图的区域。
     open var largeTitleView: UIView? {
         get {
-            return objc_getAssociatedObject(self, &AssociationKey.largeTitleView) as? UIView
+            return _largeTitleView
         }
         set {
-            self.largeTitleView?.removeFromSuperview()
+            _largeTitleView?.removeFromSuperview()
             if let largeTitleView = newValue {
                 if largeTitleView.frame.isEmpty {
                     largeTitleView.sizeToFit()
@@ -205,9 +246,10 @@ public protocol XZNavigationBarCustomizable: UIViewController {
                     addSubview(largeTitleView)
                 }
             }
-            objc_setAssociatedObject(self, &AssociationKey.largeTitleView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            _largeTitleView = newValue
         }
     }
+    private var _largeTitleView: UIView?
 
     /// 在导航条上的返回视图。
     /// - Note: 自适应布局方向，在水平方向上，leading 对齐。
@@ -215,10 +257,10 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     /// - Note: 不会与标题视图重叠，优先显示标题视图。
     open var backView: UIView? {
         get {
-            return objc_getAssociatedObject(self, &AssociationKey.backView) as? UIView
+            return _backView
         }
         set {
-            self.backView?.removeFromSuperview()
+            _backView?.removeFromSuperview()
             if let backView = newValue {
                 if backView.frame.isEmpty {
                     backView.sizeToFit()
@@ -229,9 +271,10 @@ public protocol XZNavigationBarCustomizable: UIViewController {
                     self.addSubview(backView)
                 }
             }
-            objc_setAssociatedObject(self, &AssociationKey.backView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            _backView = newValue
         }
     }
+    private var _backView: UIView?
 
     /// 导航条上信息视图。
     /// - Note: 自适应布局方向，在水平方向上，trailing 对象。
@@ -239,10 +282,10 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     /// - Note: 不会与标题视图重叠，优先显示标题视图。
     open var infoView: UIView? {
         get {
-            return objc_getAssociatedObject(self, &AssociationKey.infoView) as? UIView
+            return _infoView
         }
         set {
-            self.infoView?.removeFromSuperview()
+            _infoView?.removeFromSuperview()
             if let infoView = newValue {
                 if infoView.frame.isEmpty {
                     infoView.sizeToFit()
@@ -253,23 +296,24 @@ public protocol XZNavigationBarCustomizable: UIViewController {
                     self.addSubview(infoView)
                 }
             }
-            objc_setAssociatedObject(self, &AssociationKey.infoView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            _infoView = newValue
         }
     }
+    private var _infoView: UIView?
 
 }
 
-private struct AssociationKey {
-    static var backView  = 0
-    static var infoView  = 1
-    static var titleView = 2
-    static var largeTitleView = 3
+private class XZNavigationBarWeakWrapper {
+    weak var value: UINavigationBar?
+    init(value: UINavigationBar? = nil) {
+        self.value = value
+    }
 }
 
-private enum CodingKey: String {
-    case isTranslucent       = "XZNavigationBar.isTranslucent"
-    case backgroundImageView = "XZNavigationBar.backgroundImageView"
-    case shadowImageView     = "XZNavigationBar.shadowImageView"
-    case prefersLargeTitles  = "XZNavigationBar.prefersLargeTitles"
-}
-
+private var _navigationBar = 0
+private let CodingKey      = (
+    isTranslucent       : "XZNavigationBar.isTranslucent",
+    backgroundImageView : "XZNavigationBar.backgroundImageView",
+    shadowImageView     : "XZNavigationBar.shadowImageView",
+    prefersLargeTitles  : "XZNavigationBar.prefersLargeTitles"
+)

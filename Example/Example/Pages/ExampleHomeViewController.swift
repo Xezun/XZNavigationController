@@ -13,16 +13,17 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationBar.title        = "首页"
-        navigationBar.barTintColor = .brown
+        navigationBar.title         = "首页"
+        navigationBar.barTintColor  = .brown
         navigationBar.isTranslucent = true
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        print("\(type(of: self)).\(#function) \(animated)")
-        super.viewWillAppear(animated)
-    }
 
+    @IBAction func isCustomizableValueChanged(_ sender: UISwitch) {
+        guard let navigationController = self.navigationController as? XZNavigationController else { return }
+        
+        navigationController.isCustomizable = sender.isOn
+    }
+    
     @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
         
     }
@@ -58,10 +59,12 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let viewController = segue.destination as? XZNavigationBarCustomizable,
-           let navigationBar = viewController.navigationBarIfLoaded {
-            navigationBar.isHidden = isHiddenSwitch.isOn
-            navigationBar.isTranslucent = isTranslucentSwitch.isOn
+        guard segue.identifier == "next" else {
+            return
+        }
+        if let navigationBar = (segue.destination as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
+            navigationBar.isHidden           = isHiddenSwitch.isOn
+            navigationBar.isTranslucent      = isTranslucentSwitch.isOn
             navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
         }
     }

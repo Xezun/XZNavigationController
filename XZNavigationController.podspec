@@ -10,8 +10,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XZNavigationController'
-  s.version          = '1.1.0'
-  s.summary          = '支持全屏手势导航、自定义导航栏的协议框架'
+  s.version          = '1.2.5'
+  s.summary          = 'iOS 支持全屏手势导航、自定义导航栏的协议框架'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -30,14 +30,15 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/Xezun/XZNavigationController.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '13.0'
+  s.ios.deployment_target = '11.0'
   s.pod_target_xcconfig   = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'XZ_FRAMEWORK=1' }
   s.swift_version         = "5.0"
   
   s.default_subspec = 'Code'
   
   s.subspec 'Code' do |ss|
-    ss.source_files = 'XZNavigationController/Code/**/*.{h,m,swift}'
+    ss.source_files        = 'XZNavigationController/Code/**/*.{h,m,swift}'
+    ss.public_header_files = 'XZNavigationController/Code/**/*.h'
     ss.dependency 'XZDefines/XZRuntime', '>= 1.1.0'
   end
   
