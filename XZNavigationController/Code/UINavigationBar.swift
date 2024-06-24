@@ -9,18 +9,6 @@
 import UIKit
 import XZDefines
 
-// 关于系统导航条：
-// 如果 isTranslucent == false ，那么导航条背景色 alpha 会被设置为 1.0，但是大标题模式背景色却是白色的。
-// 如果 isTranslucent == true ，设置透明色，则导航条可以透明。
-//
-// 设置导航条透明：
-// self.backgroundColor = UIColor.clear
-// self.isHidden        = false
-// self.barTintColor    = UIColor(white: 1.0, alpha: 0)
-// self.shadowImage     = UIImage()
-// self.isTranslucent   = true
-// self.setBackgroundImage(UIImage(), for: .default)
-
 extension UINavigationBar {
     
     /// 记录了当前正在显示的自定义的导航条。在控制器转场过程中，此属性为 nil 。
@@ -77,7 +65,7 @@ extension UINavigationBar {
             }
         }
     }
-        
+    
 }
 
 extension XZNavigationControllerCustomizableNavigationBar {
