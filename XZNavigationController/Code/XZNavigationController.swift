@@ -18,10 +18,10 @@ public protocol XZNavigationController: UINavigationController {
 
 extension XZNavigationController {
     
-    /// 开启自定义导航栏模式。
+    /// 开启自定义模式。
     /// - Note: 当前导航控制的 delegate 事件已被 transitionController 接管。可通过设置 transitionController 的 delegate 来获取事件。
     /// - Note: 因为会访问的控制器的 view 属性，请在 viewDidLoad 之后再设置此属性。
-    public var isNavigationBarCustomizable: Bool {
+    public var isCustomizable: Bool {
         get {
             return self.transitionController != nil
         }
@@ -50,6 +50,16 @@ extension XZNavigationController {
         }
     }
     
+    @available(iOS, introduced: 13.0, deprecated: 13.0, renamed: "isCustomizable")
+    public var isNavigationBarCustomizable: Bool {
+        get {
+            return self.isCustomizable
+        }
+        set {
+            self.isCustomizable = newValue
+        }
+    }
+    
     public private(set) var transitionController: XZNavigationControllerTransitionController? {
         get {
             return objc_getAssociatedObject(self, &_transitionController) as? XZNavigationControllerTransitionController
@@ -73,10 +83,10 @@ public protocol XZNavigationBarProtocol: UIView {
 public protocol XZNavigationBarCustomizable: UIViewController {
     
     /// 控制器自定义导航条。
+    /// - Note: 导航条的获取时机会被 viewDidLoad 更早，因此，在其中访问到 view 属性，可能会造成控制器生命周期提前。
     var navigationBarIfLoaded: XZNavigationBarProtocol? { get }
     
 }
 
-
-
 private var _transitionController = 0
+

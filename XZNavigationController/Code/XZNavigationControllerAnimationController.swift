@@ -110,8 +110,10 @@ extension XZNavigationControllerAnimationController {
         let fromNavBar = (fromVC as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
         var fromNavBarFrame2: CGRect?
         if let navBar = fromNavBar, !navBar.isHidden {
-            navBar.frame = navBarRect
-            fromNavBarFrame2 = navBarRect.offsetBy(dx: direction * -navBarRect.width / 3.0, dy: 0)
+            // from 导航条使用原始状态
+            let fromNavBarFrame1 = navigationBar.convert(navBar.frame, to: containerView)
+            navBar.frame = fromNavBarFrame1
+            fromNavBarFrame2 = fromNavBarFrame1.offsetBy(dx: direction * -navBarRect.width / 3.0, dy: 0)
             containerView.insertSubview(navBar, aboveSubview: fromView)
             // 解决因为状态栏变化而造成的导航条布局问题：导航条 frame 没变，但是覆盖状态栏的背景，需要根据状态栏变化。
             navBar.setNeedsLayout()
@@ -124,6 +126,10 @@ extension XZNavigationControllerAnimationController {
             toNavBarFrame2 = navBarRect
             containerView.insertSubview(navBar, aboveSubview: toView)
             navBar.setNeedsLayout()
+        }
+        
+        if fromNavBar != nil && toNavBar != nil {
+            navigationBar.superview?.sendSubviewToBack(navigationBar)
         }
         
         // todo: 执行动画时，是否需要将系统导航条放到转场容器最底层，作为自定义导航条的背景。
@@ -164,34 +170,30 @@ extension XZNavigationControllerAnimationController {
         }, completion: { (finished) in
             // 删除阴影。
             shadowView.removeFromSuperview()
-
-            // 恢复 TabBar 。
-            if let tabBar = tabBar {
-                tabBar.isFrozen = false
-            }
             
             // 自定义导航条在转场过程中，仅仅作为转场效果出现，将起放置到导航条上有导航控制器处理，所以这里要移除。
+            navigationBar.superview?.bringSubviewToFront(navigationBar)
             fromNavBar?.removeFromSuperview()
             toNavBar?.removeFromSuperview()
+            
+            // 恢复 TabBar 。
+            tabBar?.isFrozen = false
             
             // 恢复导航条状态。如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
             // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
             // 由于 animationEnded(_:) 是在控制器 viewDidAppear 或 viewDidDisappear 之后被调用（见页面底部文档），此时再来恢复导航条样式已无济于事。
             // 至于在Demo中放在前后都可以，可能是因为计算少速度快导致的，但是项目计算量多时，放后面就无法及时抓取正确的状态，从而导致问题。
             if transitionContext.transitionWasCancelled {
-                if let fromNavigationBar = fromNavBar {
-                    navigationBar.isTranslucent      = fromNavigationBar.isTranslucent
-                    navigationBar.tintColor          = fromNavigationBar.tintColor
-                    navigationBar.isHidden           = fromNavigationBar.isHidden
-                    navigationBar.prefersLargeTitles = fromNavigationBar.prefersLargeTitles
+                if let fromNavBar = fromNavBar {
+                    navigationBar.isTranslucent      = fromNavBar.isTranslucent
+                    navigationBar.tintColor          = fromNavBar.tintColor
+                    navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
+                    self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
                 } else {
-                    navigationBar.isTranslucent      = true
-                    navigationBar.tintColor          = nil
-                    navigationBar.isHidden           = true
-                    navigationBar.prefersLargeTitles = false
+                    // 转场前的状态无法记录，状态无法恢复
                 }
                 transitionContext.completeTransition(false)
-                navigationBar.customNavigationBar = fromNavBar;
+                navigationBar.customNavigationBar = fromNavBar
             } else {
                 transitionContext.completeTransition(true)
                 navigationBar.customNavigationBar = toNavBar;
@@ -242,8 +244,9 @@ extension XZNavigationControllerAnimationController {
         let fromNavBar = (fromVC as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
         var fromNavBarFrame2: CGRect?
         if let navBar = fromNavBar, !navBar.isHidden {
-            navBar.frame = navBarRect
-            fromNavBarFrame2 = navBarRect.offsetBy(dx: direction * navBarRect.width, dy: 0)
+            let fromNavBarFrame1 = navigationBar.convert(navBar.frame, to: containerView)
+            navBar.frame = fromNavBarFrame1
+            fromNavBarFrame2 = fromNavBarFrame1.offsetBy(dx: direction * navBarRect.width, dy: 0)
             containerView.insertSubview(navBar, aboveSubview: fromView)
             navBar.setNeedsLayout()
         }
@@ -255,6 +258,10 @@ extension XZNavigationControllerAnimationController {
             toNavBarFrame2 = navBarRect
             containerView.insertSubview(navBar, aboveSubview: toView)
             navBar.setNeedsLayout()
+        }
+        
+        if fromNavBar != nil && toNavBar != nil {
+            navigationBar.superview?.sendSubviewToBack(navigationBar)
         }
          
         // 由于 tabBar 的层级比较高，且将 tabBar 添加到 containerView 上，会导致 tabBar 在动画时到显示不正确
@@ -296,34 +303,33 @@ extension XZNavigationControllerAnimationController {
             // 删除阴影。
             shadowView.removeFromSuperview()
 
-            // 恢复 TabBar 。
-            tabBar?.isFrozen = false
-            
             // 自定义导航条在转场过程中，仅仅作为转场效果出现，将起放置到导航条上有导航控制器处理，所以这里要移除。
+            navigationBar.superview?.bringSubviewToFront(navigationBar)
             fromNavBar?.removeFromSuperview()
             toNavBar?.removeFromSuperview()
             
-            // 恢复导航条状态。如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
-            // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
-            // 由于 animationEnded(_:) 是在控制器 viewDidAppear 或 viewDidDisappear 之后被调用（见页面底部文档），此时再来恢复导航条样式已无济于事。
-            // 至于在Demo中放在前后都可以，可能是因为计算少速度快导致的，但是项目计算量达时，放后面就无法及时抓取正确的状态，从而导致问题。
+            // 恢复 TabBar 。
+            tabBar?.isFrozen = false
+            
             if transitionContext.transitionWasCancelled {
-                if let fromNavigationBar = fromNavBar {
-                    navigationBar.isTranslucent      = fromNavigationBar.isTranslucent
-                    navigationBar.tintColor          = fromNavigationBar.tintColor
-                    navigationBar.isHidden           = fromNavigationBar.isHidden
-                    navigationBar.prefersLargeTitles = fromNavigationBar.prefersLargeTitles
+                // 如果转场取消，恢复导航条样式。
+                // 如果将恢复操作放在 animationEnded(_:) 方法中，在Demo中没有问题，但是在实际项目中却遇到了未知问题：
+                // 页面A导航条透明，页面B导航条不透明。从 B 返回（pop）到 A ，如果操作取消，那么最终 B 页面的导航条属性为不透明，但是从布局（控制器view）上看却是透明的。
+                // 由于 animationEnded(_:) 是在控制器 viewDidAppear 或 viewDidDisappear 之后被调用（见页面底部文档），此时再来恢复导航条样式已无济于事。
+                // 至于在Demo中放在前后都可以，可能是因为计算少速度快导致的，但是项目计算量达时，放后面就无法及时抓取正确的状态，从而导致问题。
+                if let fromNavBar = fromNavBar {
+                    navigationBar.isTranslucent      = fromNavBar.isTranslucent
+                    navigationBar.tintColor          = fromNavBar.tintColor
+                    navigationBar.prefersLargeTitles = fromNavBar.prefersLargeTitles
+                    self.navigationController.setNavigationBarHidden(fromNavBar.isHidden, animated: true)
                 } else {
-                    navigationBar.isTranslucent      = true
-                    navigationBar.tintColor          = nil
-                    navigationBar.isHidden           = true
-                    navigationBar.prefersLargeTitles = false
+                    // 状态无法恢复
                 }
                 transitionContext.completeTransition(false)
                 navigationBar.customNavigationBar = fromNavBar
             } else {
                 transitionContext.completeTransition(true)
-                navigationBar.customNavigationBar = toNavBar
+                navigationBar.customNavigationBar = toNavBar // 其实可以不要
             }
         })
     }

@@ -11,16 +11,41 @@ import UIKit
 /// 自定义导航条。tintColor 有默认值，不从父类继承。
 @objc open class XZNavigationBar: UIView, XZNavigationBarProtocol {
     
+    open override var isHidden: Bool {
+        didSet {
+            viewController.navigationController?.navigationBar.setHidden(isHidden)
+        }
+    }
+    
+    open func setHidden(_ isHidden: Bool, animated: Bool) {
+        viewController.navigationController?.setNavigationBarHidden(isHidden, animated: animated)
+    }
+    
     /// 控制背景透明，默认 true 。
-    open var isTranslucent: Bool
+    open var isTranslucent = true {
+        didSet {
+            viewController.navigationController?.navigationBar.setTranslucent(isTranslucent)
+        }
+    }
+    
     /// 默认 false 。
-    open var prefersLargeTitles: Bool
+    open var prefersLargeTitles = false {
+        didSet {
+            viewController.navigationController?.navigationBar.setPrefersLargeTitles(prefersLargeTitles)
+        }
+    }
+    
     /// 导航条的背景视图。
     public let backgroundImageView: UIImageView
+    
     /// 导航条阴影视图。
     public let shadowImageView: UIImageView
     
-    public override init(frame: CGRect) {
+    public unowned let viewController: UIViewController
+    
+    public init(for viewController: UIViewController, frame: CGRect) {
+        self.viewController = viewController
+        
         backgroundImageView = UIImageView.init(frame: CGRect(x: 0, y: -20, width: frame.width, height: 64));
         backgroundImageView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         backgroundImageView.backgroundColor  = UIColor.white
@@ -28,9 +53,6 @@ import UIKit
         shadowImageView = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: frame.width, height: 1.0 / UIScreen.main.scale))
         shadowImageView.autoresizingMask = [.flexibleTopMargin, .flexibleWidth]
         shadowImageView.backgroundColor = UIColor(white: 0, alpha: 0.3)
-        
-        isTranslucent      = true
-        prefersLargeTitles = false
         
         super.init(frame: CGRect(x: 0, y: 0, width: frame.width, height: 44));
         
@@ -40,26 +62,10 @@ import UIKit
         self.addSubview(shadowImageView)
     }
     
-    public required init?(coder aDecoder: NSCoder) {
-        guard let backgroundImageView = aDecoder.decodeObject(forKey: CodingKey.backgroundImageView.rawValue) as? UIImageView else { return nil }
-        guard let shadowImageView     = aDecoder.decodeObject(forKey: CodingKey.shadowImageView.rawValue) as? UIImageView else { return nil }
-        self.backgroundImageView = backgroundImageView
-        self.shadowImageView     = shadowImageView
-        self.isTranslucent       = aDecoder.decodeBool(forKey: CodingKey.isTranslucent.rawValue)
-        self.prefersLargeTitles  = aDecoder.decodeBool(forKey: CodingKey.prefersLargeTitles.rawValue)
-        super.init(coder: aDecoder)
-        self.addSubview(backgroundImageView)
-        self.addSubview(shadowImageView)
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    open override func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(isTranslucent, forKey: CodingKey.isTranslucent.rawValue)
-        aCoder.encode(backgroundImageView, forKey: CodingKey.backgroundImageView.rawValue)
-        aCoder.encode(shadowImageView, forKey: CodingKey.shadowImageView.rawValue)
-        aCoder.encode(prefersLargeTitles, forKey: CodingKey.prefersLargeTitles.rawValue)
-    }
-
     /// 此属性直接修改的是导航条背景视图的背景色。
     open var barTintColor: UIColor? {
         get { return backgroundImageView.backgroundColor }
@@ -93,54 +99,56 @@ import UIKit
     override open func layoutSubviews() {
         super.layoutSubviews()
 
-        let BOUNDS = self.bounds
+        let bounds = self.bounds
 
         // titleView\backView\infoView 只在初次赋值时，检测是否有大小并尝试自动调整。
         // 切在导航条整个生命周期中，不主动调整它们的大小，只是按照规则将它们放在左中右。
         // 它们的大小完全由开发者控制，以避免强制调整而造成的不符合预期的情况。
         // 比如，当 title 比较宽的时候，如果自动缩短了 back/info 的长度，那么当 title 变短的时候，back/info 却不能变长，
         // 所以将它们的大小完全交给开发者处理。
-        // 普通高度：44 大标题高度： 96
+        // 普通高度：44 大标题最小高度： 44 + 52
         
         if let titleView = self.titleView {
+            titleView.isHidden = bounds.height > 64.0
             let frame = titleView.frame
-            let x = (BOUNDS.width - frame.width) * 0.5
+            let x = (bounds.width - frame.width) * 0.5
             let y = (44.0 - frame.height) * 0.5
             titleView.frame = CGRect.init(x: x, y: y, width: frame.width, height: frame.height)
-            titleView.isHidden = BOUNDS.height >= 60.0
         }
         
         if let largeTitleView = self.largeTitleView {
-            largeTitleView.isHidden = BOUNDS.height < 60
-            largeTitleView.frame = CGRect(x: BOUNDS.minX, y: 44.0, width: BOUNDS.width, height: BOUNDS.height - 44.0)
+            largeTitleView.isHidden = !(bounds.height > 64.0 && prefersLargeTitles)
+            largeTitleView.frame = CGRect(x: bounds.minX, y: 44.0, width: bounds.width, height: bounds.height - 44.0)
         }
 
         let isLeftToRight = (self.effectiveUserInterfaceLayoutDirection == .leftToRight)
 
         if let infoView = self.infoView {
             let oFrame = infoView.frame
-            let x = (isLeftToRight ? BOUNDS.maxX - oFrame.width : 0)
+            let x = (isLeftToRight ? bounds.maxX - oFrame.width : 0)
             let y = (44.0 - oFrame.height) * 0.5
             infoView.frame = CGRect.init(x: x, y: y, width: oFrame.width, height: oFrame.height)
         }
 
         if let backView = self.backView {
             let oFrame = backView.frame
-            let x = (isLeftToRight ? 0 : BOUNDS.maxX - oFrame.width)
+            let x = (isLeftToRight ? 0 : bounds.maxX - oFrame.width)
             let y = (44.0 - oFrame.height) * 0.5
             backView.frame = CGRect.init(x: x, y: y, width: oFrame.width, height: oFrame.height)
         }
 
         shadowImageView.frame = CGRect.init(
-            x: BOUNDS.minX,
-            y: BOUNDS.maxY,
-            width: BOUNDS.width,
+            x: bounds.minX,
+            y: bounds.maxY,
+            width: bounds.width,
             height: shadowImageView.image?.size.height ?? 1.0 / UIScreen.main.scale
         )
 
-        guard let window = self.window else { return }
-        let minY = min(0, window.convert(window.bounds.origin, to: self).y)
-        backgroundImageView.frame = CGRect.init(x: BOUNDS.minX, y: minY, width: BOUNDS.width, height: BOUNDS.maxY - minY)
+        if let window = self.window {
+            let safeAreaInsets = window.safeAreaInsets
+            let y = -safeAreaInsets.top;
+            backgroundImageView.frame = CGRect.init(x: bounds.minX, y: y, width: bounds.width, height: bounds.height + safeAreaInsets.top)
+        }
     }
 
     /// 在导航条上居中显示的标题视图。
@@ -174,7 +182,11 @@ import UIKit
                 if largeTitleView.frame.isEmpty {
                     largeTitleView.sizeToFit()
                 }
-                self.addSubview(largeTitleView)
+                if let titleView = titleView {
+                    insertSubview(largeTitleView, belowSubview: titleView)
+                } else {
+                    addSubview(largeTitleView)
+                }
             }
             objc_setAssociatedObject(self, &AssociationKey.largeTitleView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }

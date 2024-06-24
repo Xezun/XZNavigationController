@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import XZDefines
 
 // 在 right-to-left 布局的环境中，当导航控制器使用了自定义的转场动画后，
 // tabBar 在转场的过程中的动画效果，与 left-to-right 环境一样，不符合要求。
@@ -16,7 +17,7 @@ import UIKit
 extension UITabBar {
     
     /// 当此属性为 true 时，可以通过 *isFrozen* 属性冻结 tabBar 防止其它地方修改 frame 值。
-    @objc(xz_isFreezable) var isFreezable: Bool {
+    @objc(__xz_isFreezable) var isFreezable: Bool {
         return false
     }
     
@@ -41,7 +42,7 @@ extension UITabBar {
                 _ = object_setClass(self, FreezableTabBarClass)
                 objc_setAssociatedObject(TabBarClass, &_FreezableTabBarClass, FreezableTabBarClass, .OBJC_ASSOCIATION_ASSIGN)
             } else {
-                // tabBar 的动画可能异常
+                print("无法自定义\(TabBarClass)，转场动画时 tabBar 的动画可能异常")
             }
         }
     }
@@ -51,7 +52,7 @@ extension UITabBar {
 private class XZFreezableTabBar: UITabBar {
     
     /// 返回 true 。
-    @objc override var isFreezable: Bool {
+    override var isFreezable: Bool {
         return true
     }
     

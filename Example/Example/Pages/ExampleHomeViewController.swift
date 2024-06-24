@@ -1,5 +1,5 @@
 //
-//  HomeViewController.swift
+//  ExampleHomeViewController.swift
 //  Example
 //
 //  Created by 徐臻 on 2024/6/12.
@@ -8,14 +8,13 @@
 import UIKit
 import XZNavigationController
 
-class HomeViewController: UITableViewController, XZNavigationBarCustomizable, XZNavigationGestureDrivable {
+class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomizable, XZNavigationGestureDrivable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationBar.title = "Home"
-        self.navigationBar.barTintColor = .red
-        self.navigationBar.isTranslucent = false
+        self.navigationBar.title = "首页"
+        self.navigationBar.barTintColor = .brown
     }
 
     @IBAction func unwindToHome(_ unwindSegue: UIStoryboardSegue) {
@@ -33,5 +32,18 @@ class HomeViewController: UITableViewController, XZNavigationBarCustomizable, XZ
     func navigationController(_ navigationController: UINavigationController, edgeInsetsForGestureNavigation operation: UINavigationController.Operation) -> NSDirectionalEdgeInsets? {
         return .init(top: 0, leading: 20, bottom: 0, trailing: 20)
     }
+    
+    @IBAction func navigationBarHiddenChanged(_ sender: UISwitch) {
+        navigationBar.setHidden(sender.isOn, animated: true)
+    }
+    
+    @IBAction func navigationBarTranslucentChanged(_ sender: UISwitch) {
+        navigationBar.isTranslucent = sender.isOn
+    }
+    
+    @IBAction func navigationBarPrefersLargeTitlesChanged(_ sender: UISwitch) {
+        navigationBar.prefersLargeTitles = sender.isOn
+    }
+    
 }
 

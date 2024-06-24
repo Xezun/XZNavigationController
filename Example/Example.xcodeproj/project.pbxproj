@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		294DF8812C19CFDE0023E41F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294DF8802C19CFDE0023E41F /* AppDelegate.swift */; };
 		294DF8832C19CFDE0023E41F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294DF8822C19CFDE0023E41F /* SceneDelegate.swift */; };
-		294DF8852C19CFDE0023E41F /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294DF8842C19CFDE0023E41F /* HomeViewController.swift */; };
+		294DF8852C19CFDE0023E41F /* ExampleHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294DF8842C19CFDE0023E41F /* ExampleHomeViewController.swift */; };
 		294DF8882C19CFDE0023E41F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 294DF8862C19CFDE0023E41F /* Main.storyboard */; };
 		294DF88A2C19CFDF0023E41F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 294DF8892C19CFDF0023E41F /* Assets.xcassets */; };
 		294DF88D2C19CFDF0023E41F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 294DF88B2C19CFDF0023E41F /* LaunchScreen.storyboard */; };
@@ -17,8 +17,9 @@
 		294DF8A22C19CFE00023E41F /* ExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294DF8A12C19CFE00023E41F /* ExampleUITests.swift */; };
 		294DF8A42C19CFE00023E41F /* ExampleUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294DF8A32C19CFE00023E41F /* ExampleUITestsLaunchTests.swift */; };
 		295AB13B2C1EB1F10046CBF6 /* ExampleNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295AB13A2C1EB1F10046CBF6 /* ExampleNavigationController.swift */; };
-		295AB13D2C1EB30F0046CBF6 /* NextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295AB13C2C1EB30F0046CBF6 /* NextViewController.swift */; };
+		295AB13D2C1EB30F0046CBF6 /* ExampleNextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295AB13C2C1EB30F0046CBF6 /* ExampleNextViewController.swift */; };
 		295AB13F2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295AB13E2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift */; };
+		299170B12C21A3720031A816 /* ExampleLastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299170B02C21A3720031A816 /* ExampleLastViewController.swift */; };
 		59E15C18067457479ACADEA3 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67A9B5850C28A1112C6F15FC /* Pods_Example.framework */; };
 		CC43A69F5314125D15460630 /* Pods_ExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D88C379986373C2D4B2ACBA /* Pods_ExampleTests.framework */; };
 		DCC7F8A4681B6AAF9F8784DA /* Pods_ExampleUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C428CC0BAFAE0D6F0088D21 /* Pods_ExampleUITests.framework */; };
@@ -45,7 +46,7 @@
 		294DF87D2C19CFDE0023E41F /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		294DF8802C19CFDE0023E41F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		294DF8822C19CFDE0023E41F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		294DF8842C19CFDE0023E41F /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		294DF8842C19CFDE0023E41F /* ExampleHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleHomeViewController.swift; sourceTree = "<group>"; };
 		294DF8872C19CFDE0023E41F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		294DF8892C19CFDF0023E41F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		294DF88C2C19CFDF0023E41F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -56,8 +57,9 @@
 		294DF8A12C19CFE00023E41F /* ExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleUITests.swift; sourceTree = "<group>"; };
 		294DF8A32C19CFE00023E41F /* ExampleUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		295AB13A2C1EB1F10046CBF6 /* ExampleNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleNavigationController.swift; sourceTree = "<group>"; };
-		295AB13C2C1EB30F0046CBF6 /* NextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextViewController.swift; sourceTree = "<group>"; };
+		295AB13C2C1EB30F0046CBF6 /* ExampleNextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleNextViewController.swift; sourceTree = "<group>"; };
 		295AB13E2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleNavigationBar.swift; sourceTree = "<group>"; };
+		299170B02C21A3720031A816 /* ExampleLastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleLastViewController.swift; sourceTree = "<group>"; };
 		2B791975BF2894531F4C7657 /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
 		37EAF59554F23A3576D4F9BF /* Pods-ExampleUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleUITests.debug.xcconfig"; path = "Target Support Files/Pods-ExampleUITests/Pods-ExampleUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		5D88C379986373C2D4B2ACBA /* Pods_ExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -139,9 +141,7 @@
 				294DF8802C19CFDE0023E41F /* AppDelegate.swift */,
 				294DF8822C19CFDE0023E41F /* SceneDelegate.swift */,
 				295AB13E2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift */,
-				295AB13A2C1EB1F10046CBF6 /* ExampleNavigationController.swift */,
-				294DF8842C19CFDE0023E41F /* HomeViewController.swift */,
-				295AB13C2C1EB30F0046CBF6 /* NextViewController.swift */,
+				299170B22C21BC6E0031A816 /* Pages */,
 				294DF8862C19CFDE0023E41F /* Main.storyboard */,
 				294DF8892C19CFDF0023E41F /* Assets.xcassets */,
 				294DF88B2C19CFDF0023E41F /* LaunchScreen.storyboard */,
@@ -165,6 +165,17 @@
 				294DF8A32C19CFE00023E41F /* ExampleUITestsLaunchTests.swift */,
 			);
 			path = ExampleUITests;
+			sourceTree = "<group>";
+		};
+		299170B22C21BC6E0031A816 /* Pages */ = {
+			isa = PBXGroup;
+			children = (
+				295AB13A2C1EB1F10046CBF6 /* ExampleNavigationController.swift */,
+				294DF8842C19CFDE0023E41F /* ExampleHomeViewController.swift */,
+				295AB13C2C1EB30F0046CBF6 /* ExampleNextViewController.swift */,
+				299170B02C21A3720031A816 /* ExampleLastViewController.swift */,
+			);
+			path = Pages;
 			sourceTree = "<group>";
 		};
 		C5D2675516A41C3B0D987DC7 /* Frameworks */ = {
@@ -398,8 +409,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				295AB13D2C1EB30F0046CBF6 /* NextViewController.swift in Sources */,
-				294DF8852C19CFDE0023E41F /* HomeViewController.swift in Sources */,
+				295AB13D2C1EB30F0046CBF6 /* ExampleNextViewController.swift in Sources */,
+				299170B12C21A3720031A816 /* ExampleLastViewController.swift in Sources */,
+				294DF8852C19CFDE0023E41F /* ExampleHomeViewController.swift in Sources */,
 				295AB13F2C1F1ECE0046CBF6 /* ExampleNavigationBar.swift in Sources */,
 				295AB13B2C1EB1F10046CBF6 /* ExampleNavigationController.swift in Sources */,
 				294DF8812C19CFDE0023E41F /* AppDelegate.swift in Sources */,
