@@ -30,7 +30,9 @@
 //     let _object     = Unmanaged<AnyObject>.passUnretained(object)
 //     let objectSuper = objc_super(receiver: _object, super_class: class_getSuperclass(object_getClass(object))!);
 //     withUnsafePointer(to: objectSuper) { _objectSuper in
-//         unsafeBitCast(msgSendSuper, to: (@convention(c) (UnsafePointer<objc_super>, Selector, Bool) -> Void ).self)(_objectSuper, selector,  value1)
+//         unsafeBitCast(msgSendSuper, to: (
+//             @convention(c) (UnsafePointer<objc_super>, Selector, Bool) -> Void
+//         ).self)(_objectSuper, selector,  value1)
 //     }
 // }
 // ```
@@ -64,58 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<__kindof UIViewController *> *)__xz_navc_override_popToRootViewControllerAnimated:(BOOL)animated;
 - (NSArray<__kindof UIViewController *> *)__xz_navc_exchange_popToRootViewControllerAnimated:(BOOL)animated;
-@end
-
-/// 为运行时提供方法源，不可使用。
-@interface XZNavigationControllerFreezableTabBar : UITabBar
-+ (instancetype)alloc NS_UNAVAILABLE;
-+ (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-- (CGRect)__xz_navc_bounds;
-- (void)__xz_navc_setBounds:(CGRect)bounds;
-- (CGRect)__xz_navc_frame;
-- (void)__xz_navc_setFrame:(CGRect)frame;
-- (BOOL)__xz_navc_isHidden;
-- (void)__xz_navc_setHidden:(BOOL)hidden;
-@end
-
-@interface UINavigationBar (XZNavigationController)
-/// 设置导航条的隐藏状态。
-/// - Note: 调用此方法，不会将状态同步给已绑定自定义导航条。
-/// - Note: 此方法仅对已开启自定义导航条的原生导航条生效，否则此方法不执行任何操作。
-/// - Parameter isHidden: 是否隐藏。
-- (void)__xz_navc_setHidden:(BOOL)isHidden NS_SWIFT_NAME(setHidden(_:));
-/// 设置导航条的半透明状态。
-/// - Note: 调用此方法，不会将状态同步给已绑定自定义导航条。
-/// - Note: 此方法仅对已开启自定义导航条的原生导航条生效，否则此方法不执行任何操作。
-/// - Parameter isTranslucent: 是否半透明。
-- (void)__xz_navc_setTranslucent:(BOOL)isTranslucent NS_SWIFT_NAME(setTranslucent(_:));
-/// 设置能否显示大标题模式。
-/// - Note: 调用此方法，不会将状态同步给已绑定自定义导航条。
-/// - Note: 此方法仅对已开启自定义导航条的原生导航条生效，否则此方法不执行任何操作。
-/// - Parameter prefersLargeTitles: 能否展示大标题。
-- (void)__xz_navc_setPrefersLargeTitles:(BOOL)prefersLargeTitles NS_SWIFT_NAME(setPrefersLargeTitles(_:));
-/// 原生导航条返回 NO 不支持定义。
-- (BOOL)__xz_navc_isCustomizable;
-@end
-
-/// 为运行时提供方法源，不可使用。
-@interface XZNavigationControllerCustomizableNavigationBar : UINavigationBar
-+ (instancetype)alloc NS_UNAVAILABLE;
-+ (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
-- (BOOL)__xz_navc_isHidden;
-- (BOOL)__xz_navc_isTranslucent;
-- (BOOL)__xz_navc_prefersLargeTitles;
-
-- (void)__xz_navc_layoutSubviews;
-- (void)__xz_navc_addSubview:(UIView *)view;
-- (void)__xz_navc_bringSubviewToFront:(UIView *)view;
-- (void)__xz_navc_sendSubviewToBack:(UIView *)view;
-- (void)__xz_navc_insertSubview:(UIView *)view atIndex:(NSInteger)index;
-- (void)__xz_navc_insertSubview:(UIView *)view aboveSubview:(UIView *)siblingSubview;
-- (void)__xz_navc_insertSubview:(UIView *)view belowSubview:(UIView *)siblingSubview;
 @end
 
 NS_ASSUME_NONNULL_END

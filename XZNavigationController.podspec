@@ -10,7 +10,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XZNavigationController'
-  s.version          = '1.2.3'
+  s.version          = '1.2.5'
   s.summary          = 'iOS 支持全屏手势导航、自定义导航栏的协议框架'
 
 # This description is used to generate tags and improve search results.
@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
   s.default_subspec = 'Code'
   
   s.subspec 'Code' do |ss|
-    ss.source_files = 'XZNavigationController/Code/**/*.{h,m,swift}'
+    ss.source_files        = 'XZNavigationController/Code/**/*.{h,m,swift}'
     ss.public_header_files = 'XZNavigationController/Code/**/*.h'
     ss.dependency 'XZDefines/XZRuntime', '>= 1.1.0'
   end
