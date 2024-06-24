@@ -285,12 +285,12 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
                 return true
             }
             
-            // 默认支持边缘 15.0 点内侧滑返回
+            // 默认支持边缘 20.0 点内侧滑返回
             switch navigationController.view.effectiveUserInterfaceLayoutDirection {
             case .leftToRight:
-                return point.x <= bounds.minX + 15.0
+                return point.x <= bounds.minX + 20.0
             case .rightToLeft:
-                return point.x >= bounds.maxX - 15.0
+                return point.x >= bounds.maxX - 20.0
             @unknown default:
                 fatalError()
             }

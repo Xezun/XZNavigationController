@@ -153,7 +153,7 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
                 navBarFrame2 = navBarRect.offsetBy(dx: direction * -navBarRect.width, dy: 0)
             }
         } else {
-            // keep
+            // nav bar is hidden
         }
         
         // 由于 tabBar 在最顶层，所以平移一个屏宽，而非三分之一
