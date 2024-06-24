@@ -9,7 +9,11 @@ import UIKit
 import XZNavigationController
 
 class ExampleNextViewController: UITableViewController {
-
+    
+    @IBOutlet weak var isHiddenSwitch: UISwitch!
+    @IBOutlet weak var isTranslucentSwitch: UISwitch!
+    @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -27,7 +31,14 @@ class ExampleNextViewController: UITableViewController {
 //            navigationController.setViewControllers([], animated: false)
 //            navigationController.setViewControllers(viewControllers, animated: false)
 //        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
+        isHiddenSwitch.isOn = navigationBar.isHidden
+        isTranslucentSwitch.isOn = navigationBar.isTranslucent
+        prefersLargeTitlesSwitch.isOn = navigationBar.prefersLargeTitles
     }
 
     @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
@@ -46,18 +57,18 @@ class ExampleNextViewController: UITableViewController {
         navigationController?.navigationBar.prefersLargeTitles = sender.isOn
     }
 
-    @IBOutlet weak var isHiddenSwitch: UISwitch!
-    @IBOutlet weak var isTranslucentSwitch: UISwitch!
-    @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
+    @IBOutlet weak var nextHiddenSwitch: UISwitch!
+    @IBOutlet weak var nextTranslucentSwitch: UISwitch!
+    @IBOutlet weak var nextPrefersLargeTitlesSwitch: UISwitch!
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard segue.identifier == "next" else {
             return
         }
         if let navigationBar = (segue.destination as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
-            navigationBar.isHidden           = isHiddenSwitch.isOn
-            navigationBar.isTranslucent      = isTranslucentSwitch.isOn
-            navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
+            navigationBar.isHidden           = nextHiddenSwitch.isOn
+            navigationBar.isTranslucent      = nextTranslucentSwitch.isOn
+            navigationBar.prefersLargeTitles = nextPrefersLargeTitlesSwitch.isOn
         }
     }
     
@@ -75,9 +86,9 @@ extension ExampleNextViewController: XZNavigationGestureDrivable {
             let sb = UIStoryboard.init(name: "Main", bundle: nil)
             let vc = sb.instantiateViewController(withIdentifier: "last")
             if let navigationBar = (vc as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
-                navigationBar.isHidden = isHiddenSwitch.isOn
-                navigationBar.isTranslucent = isTranslucentSwitch.isOn
-                navigationBar.prefersLargeTitles = prefersLargeTitlesSwitch.isOn
+                navigationBar.isHidden = nextHiddenSwitch.isOn
+                navigationBar.isTranslucent = nextTranslucentSwitch.isOn
+                navigationBar.prefersLargeTitles = nextPrefersLargeTitlesSwitch.isOn
             }
             return vc
         }
