@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import XZDefines
 
 /// 转场控制器，接管了导航控制的代理。
 public final class XZNavigationControllerTransitionController: NSObject {
@@ -65,40 +66,17 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
     
     /// 3. 新的控制器将要显示。
     public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        // 需要在动画开始前配置导航条样式，因为转场动画开始时，会根据当前导航条的状态来确定控制器的布局。
         // 此方法会在 viewDidLoad 之后，但是在转场动画开始之前触发；转场如果取消，此方法不会调用。
+        // 需要在转场动画开始前更新导航条样式，因为在进入自定义转场动画时，控制器的布局已经确定。
         // 导航控制器第一次显示时，栈底控制器如果不是通过初始化方法传入的，可能会造成此方法会被调用，但是 didShow 不调用，所以需要转场事件的回调。
-        
-        // 转场过程中，设置当前的自定义导航条为 nil ，以避免将新导航条的状态同步过来了。
-        if (!animated) {
-            navigationController.navigationBar.customNavigationBar = nil
-        }
-        
-        if let navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
-            navigationController.navigationBar.tintColor          = navigationBar.tintColor
-            navigationController.navigationBar.isTranslucent      = navigationBar.isTranslucent
-            navigationController.navigationBar.prefersLargeTitles = navigationBar.prefersLargeTitles
-            navigationController.setNavigationBarHidden(navigationBar.isHidden, animated: animated)
-        } else {
-            // 如果没有自定义导航条，则默认导航条隐藏、透明，那么控制器强制设置导航条显示时，将展示一个透明的导航条。
-            navigationController.navigationBar.tintColor          = nil
-            navigationController.navigationBar.isTranslucent      = true
-            navigationController.navigationBar.prefersLargeTitles = false
-            navigationController.setNavigationBarHidden(true, animated: animated)
-        }
-        
+        // 此方法触发时，viewController 已经加入到导航栈中
         delegate?.navigationController?(navigationController, willShow: viewController, animated: animated)
     }
     
     /// 5. 导航控制器显示了指定的控制器。转场取消的时候，此方法不会调用。
     public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        // 带动画的转场已由转场控制器处理。
-        // 因为取消的转场，此方法不会调用，所以动画转场的收尾工作已在动画回调中处理。
-        if !animated {
-            // 非动画转场的处理。
-            navigationController.navigationBar.customNavigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
-        }
-        
+        // 设置 customNavigationBar 的值，其实在自定义转场动画中已处理。但是非动画转场，不会走自定义转场动画的逻辑，所以这里需要补上。
+        // 另外，如果转场取消，此方法不会调用，属性 customNavigationBar 的值，也是在自定义转场动画的逻辑中处理的，
         delegate?.navigationController?(navigationController, didShow: viewController, animated: animated)
     }
     
@@ -130,22 +108,9 @@ extension XZNavigationControllerTransitionController {
         case .cancelled:
             fallthrough
         case .ended:
-            interactiveNavigationGestureRecognizerDidComplete(gestureRecognizer)
+            interactiveNavigationGestureRecognizerDidEnd(gestureRecognizer)
         default:
             break
-        }
-    }
-    
-    /// 根据导航控制器当前的布局方向，和手势的速度来确定手势代表的导航行为。
-    private func currentGestrueNavigationOperation() -> UINavigationController.Operation {
-        let velocity = interactiveNavigationGestureRecognizer.velocity(in: nil)
-        switch navigationController.view.effectiveUserInterfaceLayoutDirection {
-        case .leftToRight:
-            return (velocity.x > 0 ? .pop : (velocity.x < 0 ? .push : .none))
-        case .rightToLeft:
-            return (velocity.x < 0 ? .pop : (velocity.x > 0 ? .push : .none))
-        default:
-            fatalError()
         }
     }
     
@@ -153,9 +118,7 @@ extension XZNavigationControllerTransitionController {
     private func interactiveNavigationGestureRecognizerDidBegin(_ panGestureRecognizer: UIPanGestureRecognizer) {
         guard interactiveAnimationController == nil else { return }
         
-        let operation = currentGestrueNavigationOperation()
-        
-        switch operation {
+        switch navigationOperation(for: panGestureRecognizer) {
         case .push:
             // 默认情况下，不可以导航到下一级。
             guard let viewController = navigationController.topViewController as? XZNavigationGestureDrivable else { return }
@@ -209,7 +172,7 @@ extension XZNavigationControllerTransitionController {
     }
     
     /// 手势结束了。
-    private func interactiveNavigationGestureRecognizerDidComplete(_ panGestureRecognizer: UIPanGestureRecognizer) {
+    private func interactiveNavigationGestureRecognizerDidEnd(_ panGestureRecognizer: UIPanGestureRecognizer) {
         guard let animationController = self.interactiveAnimationController else { return }
         self.interactiveAnimationController = nil
         guard let interactiveTransition = animationController.interactiveTransition else { return }
@@ -245,6 +208,21 @@ extension XZNavigationControllerTransitionController {
         default:
             fatalError()
         }
+        
+        
+    }
+    
+    /// 根据导航控制器当前的布局方向，和手势的速度来确定手势代表的导航行为。
+    private func navigationOperation(for navigationGestureRecognizer: UIPanGestureRecognizer) -> UINavigationController.Operation {
+        let velocity = navigationGestureRecognizer.velocity(in: nil)
+        switch navigationController.view.effectiveUserInterfaceLayoutDirection {
+        case .leftToRight:
+            return (velocity.x > 0 ? .pop : (velocity.x < 0 ? .push : .none))
+        case .rightToLeft:
+            return (velocity.x < 0 ? .pop : (velocity.x > 0 ? .push : .none))
+        default:
+            fatalError()
+        }
     }
 }
 
@@ -252,8 +230,19 @@ extension XZNavigationControllerTransitionController {
 extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegate {
     
     /// 此方法返回 true 手势不一定能够识别成功，所以此方法不能决定导航行为。
-    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        let operation   = currentGestrueNavigationOperation()
+    public func gestureRecognizerShouldBegin(_ navigationGestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let navigationGestureRecognizer = navigationGestureRecognizer as? UIPanGestureRecognizer else { return false }
+        let operation   = navigationOperation(for: navigationGestureRecognizer) 
+        
+        let location    = navigationGestureRecognizer.location(in: nil)
+        let translation = navigationGestureRecognizer.translation(in: nil)
+        let point       = CGPoint(x: location.x - translation.x, y: location.y - translation.y);
+        let bounds      = navigationController.view.bounds
+        
+        // 滑动横向分量不足时，不识别手势
+        if abs(translation.x) < abs(translation.y) * 10 {
+            return false
+        }
         
         switch operation {
         case .push:
@@ -262,10 +251,6 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
             
             // 边缘检测
             if let edgeInsets = viewController.navigationController(navigationController, edgeInsetsForGestureNavigation: .push) {
-                let location    = interactiveNavigationGestureRecognizer.location(in: nil)
-                let translation = interactiveNavigationGestureRecognizer.translation(in: nil)
-                let point       = CGPoint(x: location.x - translation.x, y: location.y - translation.y);
-                let bounds      = navigationController.view.bounds
                 switch navigationController.view.effectiveUserInterfaceLayoutDirection {
                 case .leftToRight:
                     return point.x >= bounds.maxX - edgeInsets.trailing
@@ -285,10 +270,6 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
             
             // pop 定制
             if let viewController = navigationController.topViewController as? XZNavigationGestureDrivable {
-                let location    = interactiveNavigationGestureRecognizer.location(in: nil)
-                let translation = interactiveNavigationGestureRecognizer.translation(in: nil)
-                let point       = CGPoint(x: location.x - translation.x, y: location.y - translation.y);
-                let bounds      = navigationController.view.bounds
                 // 边缘检测
                 if let edgeInsets = viewController.navigationController(navigationController, edgeInsetsForGestureNavigation: .pop) {
                     switch navigationController.view.effectiveUserInterfaceLayoutDirection {
@@ -304,17 +285,12 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
                 return true
             }
             
-            let location    = interactiveNavigationGestureRecognizer.location(in: nil)
-            let translation = interactiveNavigationGestureRecognizer.translation(in: nil)
-            let point       = CGPoint(x: location.x - translation.x, y: location.y - translation.y);
-            let bounds      = navigationController.view.bounds
-            
-            // 默认支持边缘 15.0 点内侧滑返回
+            // 默认支持边缘 20.0 点内侧滑返回
             switch navigationController.view.effectiveUserInterfaceLayoutDirection {
             case .leftToRight:
-                return point.x <= bounds.minX + 15.0
+                return point.x <= bounds.minX + 20.0
             case .rightToLeft:
-                return point.x >= bounds.maxX - 15.0
+                return point.x >= bounds.maxX - 20.0
             @unknown default:
                 fatalError()
             }
@@ -323,10 +299,9 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
         }
     }
     
-    /// 是否可以与其它手势同时被识别。明显位横向滑动的手势时，导航手势就可以被识别。
+    /// 是否可以与其它手势同时被识别。
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        let translation = interactiveNavigationGestureRecognizer.translation(in: nil)
-        return translation.y == 0 || abs(translation.x / translation.y) > 3
+        return false
     }
     
     /// 导航驱动手势，是否需要在其它手势失败时才能识别，默认 false 。
@@ -341,3 +316,60 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
     
 }
  
+
+// 转场方法调用顺序
+//
+// Push 成功时：
+//    navigationController(_:animationControllerFor:from:to:)
+//    navigationController(_:interactionControllerFor:)
+//    toVC: viewDidLoad()
+//    fromVC: viewWillDisappear(_:)
+//    toVC: viewWillAppear(_:)
+//    navigationController(_:willShow:animated:)
+//    animateTransition(using:)
+//    animatePushTransition(using:)
+//    fromVC: viewDidDisappear(_:)
+//    toVC: viewDidAppear(_:)
+//    navigationController(_:didShow:animated:)
+//    animationEnded(_:)
+//
+// Push 取消时：
+//    navigationController(_:animationControllerFor:from:to:)
+//    navigationController(_:interactionControllerFor:)
+//    toVC: viewDidLoad()
+//    fromVC: viewWillDisappear(_:)
+//    toVC: viewWillAppear(_:)
+//    navigationController(_:willShow:animated:)
+//    animateTransition(using:)
+//    animatePushTransition(using:)
+//    toVC: viewWillDisappear(_:)
+//    toVC: viewDidDisappear(_:)
+//    fromVC: viewWillAppear(_:)
+//    fromVC: viewDidAppear(_:)
+//    animationEnded(_:)
+//
+// Pop 成功时：
+//    navigationController(_:animationControllerFor:from:to:)
+//    navigationController(_:interactionControllerFor:)
+//    fromVC: viewWillDisappear(_:)
+//    toVC: viewWillAppear(_:)
+//    navigationController(_:willShow:animated:)
+//    animateTransition(using:)
+//    animatePopTransition(using:)
+//    fromVC: viewDidDisappear(_:)
+//    toVC: viewDidAppear(_:)
+//    navigationController(_:didShow:animated:)
+//    animationEnded(_:)
+// Pop 取消时：
+//    navigationController(_:animationControllerFor:from:to:)
+//    navigationController(_:interactionControllerFor:)
+//    fromVC: viewWillDisappear(_:)
+//    toVC: viewWillAppear(_:)
+//    navigationController(_:willShow:animated:)
+//    animateTransition(using:)
+//    animatePopTransition(using:)
+//    toVC: viewWillDisappear(_:)
+//    toVC: viewDidDisappear(_:)
+//    fromVC: viewWillAppear(_:)
+//    fromVC: viewDidAppear(_:)
+//    animationEnded(_:)

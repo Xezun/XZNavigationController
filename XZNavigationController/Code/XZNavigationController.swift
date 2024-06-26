@@ -7,7 +7,17 @@
 //
 
 import UIKit
+import XZDefines
 
+// 为了将更新导航条的操作放在 viewWillAppear 中：
+// 一、 方法交换，重写 UIViewController 基类的 viewWillAppear 方法，遇到一下问题：
+//      1. 某些页面，交换后的方法不执行（猜测可能是因为Swift消息派发机制，没有把方法按 objc 消息派发问题）
+//      2. 控制器重写的逻辑，在交换方法的逻辑之后运行，导致页面可能没有按照自定义导航条的配置来展示。
+//      3. 重写 UIViewController 基类，影响较大。
+// 二、重写 UINavigationController 的 addChildViewController 方法。
+//      1. 方法不调用
+// 三、监听 viewControllers 属性
+//      1. KVO 触发
 
 /// XZNavigationController 提供了 全屏手势 和 自定义导航条 的功能。
 /// - Note: 当栈内控制器支持自定义时，系统自带导航条将不可见（非隐藏）。
@@ -18,21 +28,23 @@ public protocol XZNavigationController: UINavigationController {
 
 extension XZNavigationController {
     
-    /// 开启自定义导航栏模式。
+    /// 开启自定义模式。
     /// - Note: 当前导航控制的 delegate 事件已被 transitionController 接管。可通过设置 transitionController 的 delegate 来获取事件。
     /// - Note: 因为会访问的控制器的 view 属性，请在 viewDidLoad 之后再设置此属性。
-    public var isNavigationBarCustomizable: Bool {
+    public var isCustomizable: Bool {
         get {
             return self.transitionController != nil
         }
         set {
             if let transitionController = self.transitionController {
                 if !newValue {
-                    self.delegate = nil
+                    self.delegate = transitionController.delegate
                     self.navigationBar.isCustomizable = false
-                     self.interactivePopGestureRecognizer?.isEnabled = true
+                    self.interactivePopGestureRecognizer?.isEnabled = true
                     transitionController.interactiveNavigationGestureRecognizer.isEnabled = false
                     self.transitionController = nil
+                    
+                    self.navigationBar.navigationBar = nil
                 }
             } else if newValue {
                 let transitionController = XZNavigationControllerTransitionController.init(for: self)
@@ -46,7 +58,63 @@ extension XZNavigationController {
                     popGestureRecognizer.isEnabled = false
                     popGestureRecognizer.require(toFail: transitionController.interactiveNavigationGestureRecognizer)
                 }
+                
+                let aClass = type(of: self)
+                if objc_getAssociatedObject(aClass, &_naviagtionController) == nil {
+                    objc_setAssociatedObject(aClass, &_naviagtionController, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+
+                    let source = XZNavigationControllerRuntime.self
+                    
+                    let selector11 = #selector(UINavigationController.pushViewController(_:animated:));
+                    let selector12 = #selector(XZNavigationControllerRuntime.__xz_navc_override_pushViewController(_:animated:));
+                    let selector13 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_pushViewController(_:animated:));
+                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector11, source: source, override: selector12, exchange: selector13)
+                    
+                    let selector21 = #selector(UINavigationController.setViewControllers(_:animated:));
+                    let selector22 = #selector(XZNavigationControllerRuntime.__xz_navc_override_setViewControllers(_:animated:));
+                    let selector23 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_setViewControllers(_:animated:));
+                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector21, source: source, override: selector22, exchange: selector23)
+                    
+                    let selector31 = #selector(UINavigationController.popViewController(animated:));
+                    let selector32 = #selector(XZNavigationControllerRuntime.__xz_navc_override_popViewController(animated:));
+                    let selector33 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_popViewController(animated:));
+                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector31, source: source, override: selector32, exchange: selector33)
+                    
+                    let selector41 = #selector(UINavigationController.popToViewController(_:animated:));
+                    let selector42 = #selector(XZNavigationControllerRuntime.__xz_navc_override_popToViewController(_:animated:));
+                    let selector43 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_popToViewController(_:animated:));
+                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector41, source: source, override: selector42, exchange: selector43)
+                    
+                    let selector51 = #selector(UINavigationController.popToRootViewController(animated:));
+                    let selector52 = #selector(XZNavigationControllerRuntime.__xz_navc_override_popToRootViewController(animated:));
+                    let selector53 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_popToRootViewController(animated:));
+                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector51, source: source, override: selector52, exchange: selector53)
+                }
+                
+                // 栈内控制启用自定义功能
+                for viewController in viewControllers {
+                    XZNavigationControllerRuntime.__xz_navc_navigationController(self, customizeViewController: viewController)
+                }
+                
+                // 因为非自定义模式，转场走的时原生的逻辑，因此即使在转场过程被调用，如下处理也是没有问题的。
+                if let navigationBar = (topViewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded {
+                    self.navigationBar.isHidden           = navigationBar.isHidden
+                    self.navigationBar.isTranslucent      = navigationBar.isTranslucent
+                    self.navigationBar.prefersLargeTitles = navigationBar.prefersLargeTitles
+                    self.navigationBar.navigationBar      = navigationBar
+                }
+                
             }
+        }
+    }
+    
+    @available(iOS, introduced: 13.0, deprecated: 13.0, renamed: "isCustomizable")
+    public var isNavigationBarCustomizable: Bool {
+        get {
+            return self.isCustomizable
+        }
+        set {
+            self.isCustomizable = newValue
         }
     }
     
@@ -61,22 +129,92 @@ extension XZNavigationController {
     
 }
 
-/// 自定义导航条可以继承 XZNavigationBar 也可以继承其它视图控件，实现 XZNavigationBarProtocol 协议即可。
-/// 自定义导航条所必须实现的协议。
-/// - Note: 因为 tintColor 会自动从父视图继承，所以自定义导航条没有设置 tintColor 的话，那么最终可能会影响自定义导航条的外观，因为自定义导航条的父视图，在转场过程中会发生变化。
-public protocol XZNavigationBarProtocol: UIView {
-    var isTranslucent: Bool { get set }
-    var prefersLargeTitles: Bool { get set }
+extension XZNavigationControllerRuntime {
+
+    /// 向控制器的 viewWillAppear/viewDidAppear 中注入代码。
+    @objc public static func __xz_navc_navigationController(_ navigationController: UINavigationController, customizeViewController viewController: UIViewController) {
+        guard navigationController is XZNavigationController else {
+            return
+        }
+        let aClass = type(of: viewController)
+        guard objc_getAssociatedObject(aClass, &_viewController) == nil else { return }
+        objc_setAssociatedObject(aClass, &_viewController, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+        guard viewController is XZNavigationBarCustomizable else { return }
+        
+        // 注入 viewWillAppear 用以更新导航条状态
+        addMethod(aClass, selector: #selector(UIViewController.viewWillAppear(_:)),
+                  source: XZNavigationControllerRuntime.self,
+                  override: #selector(XZNavigationControllerRuntime.__xz_navc_override_viewWillAppear(_:)),
+                  exchange: #selector(XZNavigationControllerRuntime.__xz_navc_exchange_viewWillAppear(_:)))
+        // 注入 viewDidAppear 用来将自定义导航条与原生导航条绑定
+        addMethod(aClass, selector: #selector(UIViewController.viewDidAppear(_:)),
+                  source: XZNavigationControllerRuntime.self,
+                  override: #selector(XZNavigationControllerRuntime.__xz_navc_override_viewDidAppear(_:)),
+                  exchange: #selector(XZNavigationControllerRuntime.__xz_navc_exchange_viewDidAppear(_:)))
+    }
+    
+    fileprivate static func addMethod(_ aClass: AnyClass, selector: Selector, source: AnyClass, override: Selector, exchange: Selector) {
+        if let method = xz_objc_class_getInstanceMethod(aClass, selector) {
+            // 方法已实现，添加待交换的方法
+            if let methodForExchange = class_getInstanceMethod(source, exchange) {
+                if class_addMethod(aClass, exchange, method_getImplementation(methodForExchange), method_getTypeEncoding(methodForExchange)) {
+                    if let method3 = class_getInstanceMethod(aClass, exchange) {
+                        method_exchangeImplementations(method, method3)
+                    }
+                }
+            }
+        } else if let methodForOverride = class_getInstanceMethod(source, override) {
+            class_addMethod(aClass, selector, method_getImplementation(methodForOverride), method_getTypeEncoding(methodForOverride))
+        }
+    }
+    
+    /// 转场已开始，转场动画即将开始：更新导航条样式。
+    @objc static public func __xz_navc_viewController(_ viewController: UIViewController, viewWillAppear animated: Bool) {
+        //print("\(type(of: viewController)).\(#function) \(animated)")
+        guard let navigationController = viewController.navigationController as? XZNavigationController else {
+            return
+        }
+        guard navigationController.isCustomizable == true else {
+            return
+        }
+        guard let viewController = viewController as? XZNavigationBarCustomizable else {
+            return
+        }
+        guard let customNavigationBar = viewController.navigationBarIfLoaded else {
+            return
+        }
+        
+        let navigationBar = navigationController.navigationBar
+        if navigationBar.isTranslucent != customNavigationBar.isTranslucent {
+            navigationBar.isTranslucent = customNavigationBar.isTranslucent
+        }
+        if navigationBar.prefersLargeTitles != customNavigationBar.prefersLargeTitles {
+            navigationBar.prefersLargeTitles = customNavigationBar.prefersLargeTitles
+        }
+        if navigationController.isNavigationBarHidden != customNavigationBar.isHidden {
+            navigationController.setNavigationBarHidden(customNavigationBar.isHidden, animated: animated)
+        }
+    }
+    
+    // 转场完成，自定义导航条与原生导航条绑定。任何对原生导航条的操作，都会保存到自定义导航条上，并用于下一次转场。
+    @objc static public func __xz_navc_viewController(_ viewController: UIViewController, viewDidAppear animated: Bool) {
+        //print("\(type(of: viewController)).\(#function) \(animated)")
+        guard let navigationController = viewController.navigationController as? XZNavigationController else {
+            return
+        }
+        guard navigationController.isCustomizable == true else {
+            return
+        }
+        navigationController.navigationBar.navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
+    }
+    
+    // 转场开始，自定义导航条与原生导航条解除绑定。转场过程中的导航条操作，最终会在 viewWillAppear 的注入逻辑覆盖。
+    @objc static public func __xz_navc_prepareForNavigationTransition(_ navigationController: UINavigationController) {
+        navigationController.navigationBar.navigationBar = nil
+    }
 }
 
-/// 导航条是否可以自定义。
-public protocol XZNavigationBarCustomizable: UIViewController {
-    
-    /// 控制器自定义导航条。
-    var navigationBarIfLoaded: XZNavigationBarProtocol? { get }
-    
-}
-
-
-
+private var _viewController = 0
+private var _naviagtionController = 0
 private var _transitionController = 0
+

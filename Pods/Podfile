@@ -1,6 +1,6 @@
 use_frameworks!
 
-platform :ios, '13.0'
+platform :ios, '11.0'
 #inhibit_all_warnings!
 
 workspace '../XZNavigationController.xcworkspace'
@@ -9,7 +9,8 @@ project '../Example/Example.xcodeproj'
 target 'Example' do
 
   pod 'XZNavigationController', :path => '../'
-
+  # pod 'XZExtensions'
+  
   # pod 'SDWebImage'
   # pod 'YYModel'
   # pod 'AFNetworking'

@@ -8,6 +8,12 @@
 import XZNavigationController
 
 public class ExampleNavigationBar: XZNavigationBar {
+    
+    public override var barTintColor: UIColor? {
+        didSet {
+            titleLabel.backgroundColor = barTintColor
+        }
+    }
 
     public var title: String? {
         get {
@@ -15,24 +21,64 @@ public class ExampleNavigationBar: XZNavigationBar {
         }
         set {
             if titleView == nil {
-                let titleLabel = UILabel.init(frame: CGRect(x: 0, y: 0, width: 0, height: 30))
-                titleLabel.font = UIFont.systemFont(ofSize: 17.0)
+                let width = UIScreen.main.bounds.width
+                
+                titleLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                titleLabel.frame = CGRect(x: 0, y: 0, width: width, height: 44)
+                titleLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .semibold)
                 titleLabel.textAlignment = .center
                 titleLabel.textColor = .black
-                titleLabel.text = newValue
+                
+                largeTitleLabel.frame = CGRect(x: 16.0, y: 3.0, width: width - 32.0, height: 41.0)
+                largeTitleLabel.autoresizingMask = [.flexibleTopMargin, .flexibleWidth]
+                largeTitleLabel.font = UIFont.boldSystemFont(ofSize: 34)
+                largeTitleLabel.textAlignment = .natural
+                largeTitleLabel.textColor = .black
+                
+                let largeTitleView = UIView.init(frame: CGRect(x: 0, y: 0, width: width, height: 52))
+                largeTitleView.clipsToBounds = true
+                largeTitleView.addSubview(largeTitleLabel)
+                
                 self.titleView = titleLabel
-            } else if let titleLabel = self.titleView as? UILabel {
-                titleLabel.text = newValue
+                self.largeTitleView = largeTitleView
             }
+            titleLabel.text = newValue
+            largeTitleLabel.text = newValue
         }
     }
-
+    
+    private let titleLabel      = UILabel.init()
+    private let largeTitleLabel = UILabel.init()
+    
+    public override var isHidden: Bool {
+        didSet {
+            print("ExampleNavigationBar(\(title ?? "")).setHidden(\(isHidden))")
+        }
+    }
+    
+    public override var isTranslucent: Bool {
+        didSet {
+            print("ExampleNavigationBar(\(title ?? "")).setTranslucent(\(isTranslucent))")
+        }
+    }
+    
+    public override var prefersLargeTitles: Bool {
+        didSet {
+            print("ExampleNavigationBar(\(title ?? "")).setPrefersLargeTitles(\(prefersLargeTitles))")
+        }
+    }
+    
+    public override var frame: CGRect {
+        didSet {
+            print("ExampleNavigationBar(\(title ?? "")).setFrame(\(frame))")
+        }
+    }
 }
 
 extension XZNavigationBarCustomizable {
     
     public var navigationBarIfLoaded: XZNavigationBarProtocol? {
-        return objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarProtocol
+        return self.navigationBar
     }
     
     public var navigationBar: ExampleNavigationBar {

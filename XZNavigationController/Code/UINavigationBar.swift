@@ -7,148 +7,159 @@
 //
 
 import UIKit
-
+import XZDefines
 
 extension UINavigationBar {
     
     /// 记录了当前正在显示的自定义的导航条。在控制器转场过程中，此属性为 nil 。
-    public internal(set) var customNavigationBar: XZNavigationBarProtocol? {
+    public internal(set) var navigationBar: XZNavigationBarProtocol? {
         get {
-            return objc_getAssociatedObject(self, &AssociationKey.customizedBar) as? (UIView & XZNavigationBarProtocol)
+            return objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarProtocol
         }
         set {
-            if let oldNavigationBar = self.customNavigationBar {
-                oldNavigationBar.removeFromSuperview() // 移除旧的
+            // 移除旧的
+            if let oldValue = self.navigationBar {
+                oldValue.navigationBar = nil
+                oldValue.removeFromSuperview()
             }
-            objc_setAssociatedObject(self, &AssociationKey.customizedBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            for subview in subviews {
-                subview.isHidden = true // 隐藏原生视图
-            }
-            if let newNavigationBar = newValue {
-                newNavigationBar.frame = bounds
-                newNavigationBar.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                addSubview(newNavigationBar) // 添加新的
+            
+            // 记录新值
+            objc_setAssociatedObject(self, &_navigationBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            
+            // 添加新的
+            if let newValue = newValue {
+                newValue.frame = bounds
+                newValue.navigationBar = self
+                // 使用 autoresizing 布局，自定义导航条的 frame 会在父视图变化时改变，
+                // 而自定义导航条父视图，在转场时会发生改变。
+                super.addSubview(newValue)
             }
         }
     }
     
-    /// 导航条是否可以自定义。
-    @objc(xz_isCustomizable) public internal(set) var isCustomizable: Bool {
+    /// 导航条是否已开启自定义。
+    public internal(set) var isCustomizable: Bool {
         get {
-            return false
+            return __xz_navc_isCustomizable()
         }
         set {
-            let oldValue = isCustomizable
-            if newValue == oldValue {
+            if newValue == isCustomizable {
                 return
             }
             
-            if oldValue {
-                object_setClass(self, self.superclass!)
-            } else {
-                // 系统导航条始终不隐藏、全透明。
-                // 系统导航条，如果 isTranslucent == false ，那么导航条背景色 alpha 会被设置为 1.0，但是大标题模式背景色却是白色的。
-                // 如果 isTranslucent == true ，设置透明色，则导航条可以透明。
-                self.backgroundColor = UIColor.clear
-                self.isHidden        = false
-                self.barTintColor    = UIColor(white: 1.0, alpha: 0)
-                self.shadowImage     = UIImage()
-                self.isTranslucent   = true
-                self.setBackgroundImage(UIImage(), for: .default)
-                
+            if newValue {
                 let OldClass = type(of: self)
                 
-                if let NewClass = objc_getAssociatedObject(OldClass, &AssociationKey.NewClass) as? UINavigationBar.Type {
-                    _ = object_setClass(self, NewClass)
-                } else if let NewClass = xz_objc_createClass(OldClass, { (NewClass) in
-                        xz_objc_class_copyMethodsFromClass(NewClass, XZCustomizableNavigationBar.self);
+                if let CustomizableClass = objc_getAssociatedObject(OldClass, &_CustomizableClass) as? UINavigationBar.Type {
+                    _ = object_setClass(self, CustomizableClass)
+                } else if let CustomizableClass = xz_objc_createClass(OldClass, { (CustomizableClass) in
+                        xz_objc_class_copyMethodsFromClass(CustomizableClass, XZNavigationControllerCustomizableNavigationBar.self);
                 }) as? UINavigationBar.Type {
-                    objc_setAssociatedObject(OldClass, &AssociationKey.NewClass, NewClass, .OBJC_ASSOCIATION_ASSIGN)
-                    _ = object_setClass(self, NewClass)
+                    objc_setAssociatedObject(OldClass, &_CustomizableClass, CustomizableClass, .OBJC_ASSOCIATION_ASSIGN)
+                    _ = object_setClass(self, CustomizableClass)
                 } else {
-                    // 不能自定义 nav bar
+                    fatalError("无法自定义\(OldClass)")
                 }
+            } else {
+                object_setClass(self, self.superclass!)
             }
         }
     }
     
 }
 
-private class XZCustomizableNavigationBar: UINavigationBar {
+extension XZNavigationControllerCustomizableNavigationBar {
     
-    // 重写自定义类的 isCustomizable 属性的 getter 方法，使其返回 true 。
-    override var isCustomizable: Bool {
+    open override var isHidden: Bool {
         get {
-            return true
+            return __xz_navc_isHidden()
         }
         set {
-            super.isCustomizable = newValue
-        }
-    }
-    
-    // 重写自定义类的 isHidden 属性，使其 isHidden 属性不再控制导航条的显示或隐藏。
-    override var isHidden: Bool {
-        get {
-            if let isHidden = objc_getAssociatedObject(self, &AssociationKey.isHidden) as? Bool {
-                return isHidden
+            if let navigationBar = navigationBar {
+                navigationBar.isHidden = newValue
+            } else {
+                setHidden(newValue)
             }
-            return false // 与导航条当前状态相同。
-        }
-        set {
-            objc_setAssociatedObject(self, &AssociationKey.isHidden, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-            customNavigationBar?.isHidden = newValue
         }
     }
     
-    // 重写自定义类的 isTranslucent 属性，使其 isTranslucent 属性不再控制导航条的透明。
-    override var isTranslucent: Bool {
+    open override var isTranslucent: Bool {
         get {
-            if let isTranslucent = objc_getAssociatedObject(self, &AssociationKey.isTranslucent) as? Bool {
-                return isTranslucent
-            }
-            return true // 与导航条当前状态相同。
+            return __xz_navc_isTranslucent()
         }
         set {
-            objc_setAssociatedObject(self, &AssociationKey.isTranslucent, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-            customNavigationBar?.isTranslucent = newValue
+            if let navigationBar = navigationBar {
+                navigationBar.isTranslucent = newValue
+            } else {
+                setTranslucent(newValue)
+            }
         }
     }
     
-    // 重写 prefersLargeTitles setter
     @available(iOS 11.0, *)
-    override var prefersLargeTitles: Bool {
+    open override var prefersLargeTitles: Bool {
         get {
-            return super.prefersLargeTitles
+            return __xz_navc_prefersLargeTitles()
         }
         set {
-            super.prefersLargeTitles = newValue;
-            customNavigationBar?.prefersLargeTitles = newValue
+            if let navigationBar = navigationBar {
+                navigationBar.prefersLargeTitles = newValue
+            } else {
+                setPrefersLargeTitles(newValue)
+            }
         }
     }
     
-    // 同步 tintColor ，避免动画过程中，因为自定义导航条不在原生导航条上，由 tintColor 引起的外观不一致问题。
-    override func tintColorDidChange() {
-        super.tintColorDidChange()
-        customNavigationBar?.tintColor = tintColor
+    open override func layoutSubviews() {
+        __xz_navc_layoutSubviews()
+
+        if let customNavigationBar = navigationBar {
+            customNavigationBar.frame = bounds
+        }
     }
-    
-    // 不可设置导航条背景。
-    override func setBackgroundImage(_ backgroundImage: UIImage?, for barPosition: UIBarPosition, barMetrics: UIBarMetrics) {
-        #if DEBUG
-        print("因为导航条已自定义，设置原生导航条样式将不再起作用。")
-        #endif
+
+    // 当原生导航条添加子视图时，保证自定义导航条始终显示在最上面。
+
+    open override func addSubview(_ view: UIView) {
+        __xz_navc_addSubview(view)
+
+        if let navigationBar = navigationBar, navigationBar != view {
+            __xz_navc_bringSubview(toFront: navigationBar)
+        }
+    }
+
+    open override func bringSubviewToFront(_ view: UIView) {
+        __xz_navc_bringSubview(toFront: view)
+
+        if let navigationBar = navigationBar, navigationBar != view {
+            __xz_navc_bringSubview(toFront: navigationBar)
+        }
+    }
+
+    open override func insertSubview(_ view: UIView, aboveSubview siblingSubview: UIView) {
+        __xz_navc_insertSubview(view, aboveSubview: siblingSubview)
+        
+        if siblingSubview == navigationBar {
+            __xz_navc_bringSubview(toFront: siblingSubview)
+        }
+    }
+
+    open override func insertSubview(_ view: UIView, at index: Int) {
+        __xz_navc_insertSubview(view, at: index)
+
+        if let navigationBar = navigationBar {
+            __xz_navc_bringSubview(toFront: navigationBar)
+        }
+    }
+
+    open override func insertSubview(_ view: UIView, belowSubview siblingSubview: UIView) {
+        __xz_navc_insertSubview(view, belowSubview: siblingSubview)
+        if navigationBar == view {
+            __xz_navc_bringSubview(toFront: view)
+        }
     }
     
 }
 
-
-
-private struct AssociationKey {
-    static var isCustomizable = "isCustomizable"
-    static var isTranslucent  = "isTranslucent"
-    static var isHidden       = "isHidden"
-    static var NewClass       = "NewClass"
-    static var customizedBar  = "customizedBar"
-}
-
-
+private var _navigationBar = 0
+private var _CustomizableClass = 0;
