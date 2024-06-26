@@ -10,11 +10,23 @@ import XZNavigationController
 
 class ExampleLastViewController: UITableViewController {
 
+    @IBOutlet weak var isHiddenSwitch: UISwitch!
+    @IBOutlet weak var isTranslucentSwitch: UISwitch!
+    @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         navigationBar.title        = "尾页"
         navigationBar.barTintColor = .systemBrown
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        isHiddenSwitch.isOn = navigationBar.isHidden
+        isTranslucentSwitch.isOn = navigationBar.isTranslucent
+        prefersLargeTitlesSwitch.isOn = navigationBar.prefersLargeTitles
     }
     
     @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
@@ -68,6 +80,13 @@ class ExampleLastViewController: UITableViewController {
 
 extension ExampleLastViewController: XZNavigationBarCustomizable {
 
+}
+
+extension ExampleLastViewController: XZNavigationGestureDrivable {
+    
+    func navigationController(_ navigationController: UINavigationController, viewControllerForGestureNavigation operation: UINavigationController.Operation) -> UIViewController? {
+        return navigationController.viewControllers.first
+    }
 }
 
 

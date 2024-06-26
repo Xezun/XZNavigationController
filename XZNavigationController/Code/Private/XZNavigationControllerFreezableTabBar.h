@@ -14,6 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)alloc NS_UNAVAILABLE;
 + (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+
 - (CGRect)__xz_navc_bounds;
 - (void)__xz_navc_setBounds:(CGRect)bounds;
 - (CGRect)__xz_navc_frame;

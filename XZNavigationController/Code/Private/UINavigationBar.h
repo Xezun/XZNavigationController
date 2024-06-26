@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Parameter prefersLargeTitles: 能否展示大标题。
 - (void)__xz_navc_setPrefersLargeTitles:(BOOL)prefersLargeTitles NS_SWIFT_NAME(setPrefersLargeTitles(_:));
 /// 原生导航条返回 NO 不支持定义。
+/// - Note: 当导航条开启自定义后，此属性会返回 YES 值。
 - (BOOL)__xz_navc_isCustomizable;
 @end
 

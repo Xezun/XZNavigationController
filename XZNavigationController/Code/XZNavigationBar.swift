@@ -8,9 +8,30 @@
 
 import UIKit
 
-/// 自定义导航条可以继承 XZNavigationBar 也可以继承其它视图控件，实现 XZNavigationBarProtocol 协议即可。
 /// 自定义导航条所必须实现的协议。
-/// - Note: 因为 tintColor 会自动从父视图继承，所以自定义导航条没有设置 tintColor 的话，那么最终可能会影响自定义导航条的外观，因为自定义导航条的父视图，在转场过程中会发生变化。
+/// - Note: 自定义导航条可以继承 XZNavigationBar 也可以继承其它视图控件，实现 XZNavigationBarProtocol 协议即可。
+///
+/// - Note: 关于系统导航条
+/// 1. 如果 isTranslucent == false ，那么导航条背景色 alpha 会被设置为 1.0，但是大标题模式背景色却是白色的。
+/// 2. 如果 isTranslucent == true ，设置透明色，则导航条可以透明。
+///
+/// - Note: 如何设置原生导航条透明
+/// ```swift
+/// navigationBar.backgroundColor = UIColor.clear
+/// navigationBar.isHidden        = false
+/// navigationBar.barTintColor    = UIColor(white: 1.0, alpha: 0)
+/// navigationBar.shadowImage     = UIImage()
+/// navigationBar.isTranslucent   = true
+/// navigationBar.setBackgroundImage(UIImage(), for: .default)
+/// ```
+/// - Note: 自定义导航条，可以通过 `navigationBar` 属性获取原生导航条，可使用如下方法同步状态。
+/// ```swift
+/// navigationBar?.setHidden(isHidden)
+/// navigationBar?.setTranslucent(isTranslucent)
+/// navigationBar?.setPrefersLargeTitles(prefersLargeTitles)
+/// ```
+///
+/// - Note: 由于转场需要，自定义导航条并不总是在原生导航条之上，所以自定义导航条的 tintColor 可能需要单独设置。
 public protocol XZNavigationBarProtocol: UIView {
     var isTranslucent: Bool { get set }
     var prefersLargeTitles: Bool { get set }
@@ -51,7 +72,7 @@ public protocol XZNavigationBarCustomizable: UIViewController {
     var navigationBarIfLoaded: XZNavigationBarProtocol? { get }
 }
 
-/// 自定义导航条。tintColor 有默认值，不从父类继承。
+/// 自定义导航条可选基类。
 @objc open class XZNavigationBar: UIView, XZNavigationBarProtocol {
     
     open override var isHidden: Bool {
@@ -91,8 +112,6 @@ public protocol XZNavigationBarCustomizable: UIViewController {
         
         super.init(frame: CGRect(x: 0, y: 0, width: frame.width, height: 44));
         
-        // tintColor 有默认值，不会从父类继承。
-        self.tintColor = UIColor(red: 0, green: 0.478431, blue: 1.0, alpha: 1.0)
         self.addSubview(backgroundImageView)
         self.addSubview(shadowImageView)
     }

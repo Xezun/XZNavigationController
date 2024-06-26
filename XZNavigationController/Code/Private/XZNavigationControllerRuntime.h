@@ -46,6 +46,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)alloc NS_UNAVAILABLE;
 + (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController NS_UNAVAILABLE;
+- (instancetype)initWithNavigationBarClass:(nullable Class)navigationBarClass toolbarClass:(nullable Class)toolbarClass NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+
 - (void)__xz_navc_override_viewWillAppear:(BOOL)animated;
 - (void)__xz_navc_exchange_viewWillAppear:(BOOL)animated;
 
