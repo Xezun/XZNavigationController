@@ -5,7 +5,7 @@
 //  Created by 徐臻 on 2024/6/20.
 //
 
-#import <UIKit/UIKit.h>
+#import <XZNavigationController/XZNavigationControllerDefines.h>
 
 // 在 Swift 环境中，
 // ```swift
@@ -42,7 +42,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// 为运行时提供方法源，不可使用。
-@interface XZNavigationControllerRuntime: UINavigationController
+XZ_NAVC_PRIVATE_CLASS @interface XZNavigationControllerRuntime: UINavigationController
 + (instancetype)alloc NS_UNAVAILABLE;
 + (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
