@@ -9,13 +9,16 @@
 import UIKit
 
 /// 自定义导航条所必须实现的协议。
-/// - Note: 自定义导航条可以继承 XZNavigationBar 也可以继承其它视图控件，实现 XZNavigationBarProtocol 协议即可。
 ///
-/// - Note: 关于系统导航条
+/// 自定义导航条可以继承 XZNavigationBar 也可以继承其它视图控件，实现 XZNavigationBarProtocol 协议即可。
+///
+/// **关于系统导航条**
+///
 /// 1. 如果 isTranslucent == false ，那么导航条背景色 alpha 会被设置为 1.0，但是大标题模式背景色却是白色的。
 /// 2. 如果 isTranslucent == true ，设置透明色，则导航条可以透明。
 ///
-/// - Note: 如何设置原生导航条透明
+/// **如何设置原生导航条透明**
+///
 /// ```swift
 /// navigationBar.backgroundColor = UIColor.clear
 /// navigationBar.isHidden        = false
@@ -24,27 +27,39 @@ import UIKit
 /// navigationBar.isTranslucent   = true
 /// navigationBar.setBackgroundImage(UIImage(), for: .default)
 /// ```
-/// - Note: 自定义导航条，可以通过 `navigationBar` 属性获取原生导航条，可使用如下方法同步状态。
+///
+/// 自定义导航条，可以通过 `navigationBar` 属性获取原生导航条。
+///
+/// 当原生导航条的状态发生改变时，会将状态同步给自定义导航条。
+/// 因此，当自定义导航条属性发生改变时，不能直接操作原生导航条，而应该使用下面的方法，将状态同步给原生导航条。
+///
 /// ```swift
 /// navigationBar?.setHidden(isHidden)
 /// navigationBar?.setTranslucent(isTranslucent)
 /// navigationBar?.setPrefersLargeTitles(prefersLargeTitles)
 /// ```
 ///
-/// - Note: 由于转场需要，自定义导航条并不总是在原生导航条之上，所以自定义导航条的 tintColor 可能需要单独设置。
+/// - Attention: 由于转场需要，自定义导航条并不总是在原生导航条之上，所以自定义导航条的 tintColor 可能需要单独设置。
 public protocol XZNavigationBarProtocol: UIView {
+    /// 导航条是否半透明。
     var isTranslucent: Bool { get set }
+    /// 导航条是否显示大标题模式。
     var prefersLargeTitles: Bool { get set }
 }
 
 extension XZNavigationBarProtocol {
     
     /// 原生导航条。
-    /// - Note: 更新导航条状态，请使用如下方法，直接设置原生导航条属性，会造成循环调用。
+    ///
+    /// 请使用如下方法，将自定义导航条的状态同步给原生导航条。
+    ///
+    /// 如果在属性的 willSet/set/didSet 方法中，直接设置原生导航条的属性，会造成循环调用。
+    ///
     /// 1. `setHidden(_:)`
     /// 2. `setTranslucent(_:)`
     /// 3. `setPrefersLargeTitles(_:)`
-    /// - Note: 此属性为 nil 时，自定义导航条未展示，或者处于转场的过程中。
+    ///
+    /// 此属性为 nil 时，自定义导航条未展示，或者处于转场的过程中。
     public internal(set) var navigationBar: UINavigationBar? {
         get {
             return (objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarWeakWrapper)?.value
@@ -60,10 +75,6 @@ extension XZNavigationBarProtocol {
     }
     
 }
-
-
-
-
 
 /// 导航条是否可以自定义。
 public protocol XZNavigationBarCustomizable: UIViewController {
