@@ -8,6 +8,7 @@
 
 import UIKit
 import XZDefines
+import ObjectiveC
 
 // 为了将更新导航条的操作放在 viewWillAppear 中：
 // 一、 方法交换，重写 UIViewController 基类的 viewWillAppear 方法，遇到一下问题：
