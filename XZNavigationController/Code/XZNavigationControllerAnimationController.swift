@@ -291,7 +291,8 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
         var tabBar: UITabBar?
         var tabBarFrame2 = CGRect.zero
         if direction < 0, let tabBarController = navigationController.tabBarController {
-            let viewControllers = navigationController.viewControllers
+            // 已知在 popTo 的过程中，viewControllers 可能包含 fromVC 所以这里需要过滤。
+            let viewControllers = navigationController.viewControllers.filter({ $0 != fromVC })
             if fromVC.hidesBottomBarWhenPushed {
                 if !viewControllers.contains(where: { $0.hidesBottomBarWhenPushed }) {
                     tabBar = tabBarController.tabBar
