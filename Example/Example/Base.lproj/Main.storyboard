@@ -307,12 +307,12 @@
                         <barButtonItem key="backBarButtonItem" title="返回" id="Rti-R0-OtH"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="isHiddenSwitch" destination="55e-ps-FgA" id="3mT-nE-eAW"/>
-                        <outlet property="isTranslucentSwitch" destination="HXU-uy-Brn" id="08S-c2-H5X"/>
+                        <outlet property="hiddenSwitch" destination="55e-ps-FgA" id="3mT-nE-eAW"/>
                         <outlet property="nextHiddenSwitch" destination="7qB-Vu-BbV" id="8Kk-Ca-2wF"/>
                         <outlet property="nextPrefersLargeTitlesSwitch" destination="MqT-PT-3k2" id="zJ1-5V-qaW"/>
                         <outlet property="nextTranslucentSwitch" destination="jVs-fs-R1h" id="5Wr-E1-meZ"/>
                         <outlet property="prefersLargeTitlesSwitch" destination="X7C-Xf-gDl" id="thR-sB-DjL"/>
+                        <outlet property="translucentSwitch" destination="HXU-uy-Brn" id="08S-c2-H5X"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="B0E-yX-h9c" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -349,11 +349,11 @@
                         <viewLayoutGuide key="safeArea" id="4AH-6F-1FX"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="User" image="icon-tab-user" id="OpK-U6-rA4"/>
+                    <navigationItem key="navigationItem" title="User" id="sTb-dZ-eB1"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dRx-Uc-5Io" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1056" y="777"/>
+            <point key="canvasLocation" x="1057.2519083969464" y="850.70422535211276"/>
         </scene>
         <!--原生页-->
         <scene sceneID="2vE-cb-xG6">
@@ -535,15 +535,15 @@
                         <barButtonItem key="backBarButtonItem" title="返回" id="w4T-jb-hWO"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="isHiddenSwitch" destination="BQJ-Tz-yX3" id="JeL-jH-NPz"/>
-                        <outlet property="isTranslucentSwitch" destination="ngi-Xb-7Kh" id="0sJ-gH-HsP"/>
+                        <outlet property="hiddenSwitch" destination="BQJ-Tz-yX3" id="JeL-jH-NPz"/>
                         <outlet property="prefersLargeTitlesSwitch" destination="cvx-yj-8Fn" id="1Ng-xs-NL0"/>
+                        <outlet property="translucentSwitch" destination="ngi-Xb-7Kh" id="0sJ-gH-HsP"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zci-JQ-CKD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="vn8-fL-CY8" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2042" y="965"/>
+            <point key="canvasLocation" x="2968.7022900763359" y="964.78873239436621"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="DbS-7f-Np8">
@@ -557,7 +557,7 @@
                     </tabBar>
                     <connections>
                         <segue destination="30Y-TP-Ebm" kind="relationship" relationship="viewControllers" id="SKz-6S-QIo"/>
-                        <segue destination="ai1-kB-CCW" kind="relationship" relationship="viewControllers" id="BUW-Wy-bfs"/>
+                        <segue destination="Qek-lh-0OM" kind="relationship" relationship="viewControllers" id="BUW-Wy-bfs"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="n2w-S2-A0d" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -849,12 +849,12 @@
                         <barButtonItem key="backBarButtonItem" title="返回" id="noq-u7-cdF"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="isHiddenSwitch" destination="kZt-Bv-dgh" id="Edq-gn-p7s"/>
-                        <outlet property="isTranslucentSwitch" destination="SuU-vY-uSC" id="65D-Kh-VnN"/>
+                        <outlet property="hiddenSwitch" destination="kZt-Bv-dgh" id="Edq-gn-p7s"/>
                         <outlet property="nextHiddenSwitch" destination="kC4-bb-wox" id="PNi-at-cZ2"/>
                         <outlet property="nextPrefersLargeTitlesSwitch" destination="WeI-Xi-cIT" id="QJz-md-lg3"/>
                         <outlet property="nextTranslucentSwitch" destination="1oy-jK-aGC" id="p3R-Nc-QjJ"/>
                         <outlet property="prefersLargeTitlesSwitch" destination="vom-5G-G6h" id="LMs-2w-KbK"/>
+                        <outlet property="translucentSwitch" destination="SuU-vY-uSC" id="65D-Kh-VnN"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="B6L-Jw-hmt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1165,9 +1165,9 @@
                         <barButtonItem key="backBarButtonItem" title="返回" id="Iii-WJ-6s5"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="isHiddenSwitch" destination="ult-z6-Ceb" id="Xun-Re-cf7"/>
-                        <outlet property="isTranslucentSwitch" destination="bKj-0T-iI0" id="tHC-ma-Sez"/>
+                        <outlet property="hiddenSwitch" destination="ult-z6-Ceb" id="Xun-Re-cf7"/>
                         <outlet property="prefersLargeTitlesSwitch" destination="2rb-9w-0Wc" id="3sT-T7-FY0"/>
+                        <outlet property="translucentSwitch" destination="bKj-0T-iI0" id="tHC-ma-Sez"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X3A-aX-dfy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1355,15 +1355,34 @@
                         <barButtonItem key="backBarButtonItem" title="返回" id="Tn4-FF-jhL"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="isHiddenSwitch" destination="JTS-w1-EIQ" id="dpj-JB-h7X"/>
-                        <outlet property="isTranslucentSwitch" destination="9bH-3w-rFT" id="Txu-5D-3Ms"/>
+                        <outlet property="hiddenSwitch" destination="JTS-w1-EIQ" id="dpj-JB-h7X"/>
                         <outlet property="prefersLargeTitlesSwitch" destination="gMd-JI-UYV" id="xhT-wc-Bgc"/>
+                        <outlet property="translucentSwitch" destination="9bH-3w-rFT" id="Txu-5D-3Ms"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Imk-dE-DDT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="lNn-Fc-ZDB" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="3068" y="977"/>
+            <point key="canvasLocation" x="3994.6564885496182" y="976.76056338028172"/>
+        </scene>
+        <!--User-->
+        <scene sceneID="WjD-XE-QIQ">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Qek-lh-0OM" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="User" image="icon-tab-user" id="OpK-U6-rA4"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="HKD-i8-5vE">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="ai1-kB-CCW" kind="relationship" relationship="rootViewController" id="ayK-io-l3L"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hWF-V8-TDU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="130.53435114503816" y="850.70422535211276"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>

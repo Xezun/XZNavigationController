@@ -8,6 +8,7 @@
 
 import UIKit
 import XZDefines
+import ObjectiveC
 
 // 为了将更新导航条的操作放在 viewWillAppear 中：
 // 一、 方法交换，重写 UIViewController 基类的 viewWillAppear 方法，遇到一下问题：
@@ -18,10 +19,34 @@ import XZDefines
 //      1. 方法不调用
 // 三、监听 viewControllers 属性
 //      1. KVO 触发
+// 以上问题多是因为 Swift 优化了 OC 运行时代码，因此采用了使用 OC 来实现。
+//
+// 【已知问题一】
+// 如下操作会导致自定义导航条丢失。
+// ```swift
+// if let navigationController = navigationController {
+//    let viewControllers = navigationController.viewControllers
+//    navigationController.setViewControllers([], animated: false)
+//    navigationController.setViewControllers(viewControllers, animated: false)
+// }
+// ```
+// 因为 set 操作时，XZNavigationController 认为是转场开始而移除了自定义导航条，
+// 但是 UINavigationController 在处理这种情形时，认为没有转场发生，所以最终也没有 viewDidAppear 执行，
+// 自定义导航条没有机会展示。
+// 这说明，在 UINavigationController 中，方法 setViewControllers 实际是有延迟的。
+// 如果确实有这种逻辑需求，可以延迟第二次操作，来避免这个问题。
+//
+// 【已知问题二】
+// 在 UITabBarController 中时，tabBar 只在首页显示，如果手势跨层返回首页，那么 tabBar 没有动画转场动画，
+// 即没有从场外进场的过程，而是直接显示在底部，覆盖在转场的控制器之上。不过，如果转场取消一次，再次手势返回的话，
+// tabBar 却又有转场动画。
+// 目前，对于 left-to-right 布局下，没有控制 tabBar 的动画效果，虽然可以开启来解决这个问题，但是觉得没有必要。
+//
 
 /// XZNavigationController 提供了 全屏手势 和 自定义导航条 的功能。
-/// - Note: 当栈内控制器支持自定义时，系统自带导航条将不可见（非隐藏）。
-/// - Note: 当控制器专场时，自动根据控制器自定义导航条状态，设置系统导航条状态。
+/// 1. 当栈内控制器支持自定义时，原生导航条将被覆盖。
+/// 2. 当控制器专场时，自动根据控制器自定义导航条状态，设置系统导航条状态。
+/// 3. 默认边缘手势返回是开启的，全屏手势需控制器声明遵循协议，关闭则需实现协议方法。
 public protocol XZNavigationController: UINavigationController {
 
 }
