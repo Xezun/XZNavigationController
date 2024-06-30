@@ -5,12 +5,12 @@
 //  Created by 徐臻 on 2024/6/24.
 //
 
-#import <UIKit/UIKit.h>
+#import <XZNavigationController/XZNavigationControllerDefines.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /// 为运行时提供方法源，不可使用。
-@interface XZNavigationControllerFreezableTabBar : UITabBar
+XZ_NAVC_PRIVATE_CLASS @interface XZNavigationControllerFreezableTabBar : UITabBar
 + (instancetype)alloc NS_UNAVAILABLE;
 + (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

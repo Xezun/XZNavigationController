@@ -132,6 +132,7 @@ extension XZNavigationController {
 extension XZNavigationControllerRuntime {
 
     /// 向控制器的 viewWillAppear/viewDidAppear 中注入代码。
+    /// - Attention: This method is private, do not use it directly.
     @objc public static func __xz_navc_navigationController(_ navigationController: UINavigationController, customizeViewController viewController: UIViewController) {
         guard navigationController is XZNavigationController else {
             return
@@ -169,6 +170,7 @@ extension XZNavigationControllerRuntime {
     }
     
     /// 转场已开始，转场动画即将开始：更新导航条样式。
+    /// - Attention: This method is private, do not use it directly.
     @objc static public func __xz_navc_viewController(_ viewController: UIViewController, viewWillAppear animated: Bool) {
         //print("\(type(of: viewController)).\(#function) \(animated)")
         guard let navigationController = viewController.navigationController as? XZNavigationController else {
@@ -196,7 +198,8 @@ extension XZNavigationControllerRuntime {
         }
     }
     
-    // 转场完成，自定义导航条与原生导航条绑定。任何对原生导航条的操作，都会保存到自定义导航条上，并用于下一次转场。
+    /// 转场完成，自定义导航条与原生导航条绑定。任何对原生导航条的操作，都会保存到自定义导航条上，并用于下一次转场。
+    /// - Attention: This method is private, do not use it directly.
     @objc static public func __xz_navc_viewController(_ viewController: UIViewController, viewDidAppear animated: Bool) {
         //print("\(type(of: viewController)).\(#function) \(animated)")
         guard let navigationController = viewController.navigationController as? XZNavigationController else {
@@ -208,7 +211,8 @@ extension XZNavigationControllerRuntime {
         navigationController.navigationBar.navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
     }
     
-    // 转场开始，自定义导航条与原生导航条解除绑定。转场过程中的导航条操作，最终会在 viewWillAppear 的注入逻辑覆盖。
+    /// 转场开始，自定义导航条与原生导航条解除绑定。转场过程中的导航条操作，最终会在 viewWillAppear 的注入逻辑覆盖。
+    /// - Attention: This method is private, do not use it directly.
     @objc static public func __xz_navc_prepareForNavigationTransition(_ navigationController: UINavigationController) {
         navigationController.navigationBar.navigationBar = nil
     }
