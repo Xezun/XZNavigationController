@@ -22,7 +22,7 @@ extension UITabBar {
     }
     
     /// 是否冻结。此属性为 true 时，更改属性 *frame* 不会生效。
-    var isFrozen: Bool {
+    public var isFrozen: Bool {
         get {
             return (objc_getAssociatedObject(self, &_isFrozen) as? Bool) == true
         }
