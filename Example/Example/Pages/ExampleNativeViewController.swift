@@ -9,8 +9,8 @@ import UIKit
 
 class ExampleNativeViewController: UITableViewController {
     
-    @IBOutlet weak var isHiddenSwitch: UISwitch!
-    @IBOutlet weak var isTranslucentSwitch: UISwitch!
+    @IBOutlet weak var hiddenSwitch: UISwitch!
+    @IBOutlet weak var translucentSwitch: UISwitch!
     @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
 
     override func viewDidLoad() {
@@ -21,8 +21,8 @@ class ExampleNativeViewController: UITableViewController {
         super.viewDidAppear(animated)
         
         if let navigationBar = navigationController?.navigationBar {
-            isHiddenSwitch.isOn = navigationBar.isHidden
-            isTranslucentSwitch.isOn = navigationBar.isTranslucent
+            hiddenSwitch.isOn = navigationBar.isHidden
+            translucentSwitch.isOn = navigationBar.isTranslucent
             prefersLargeTitlesSwitch.isOn = navigationBar.prefersLargeTitles
         }
     }

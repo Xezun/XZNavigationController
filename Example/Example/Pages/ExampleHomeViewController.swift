@@ -10,8 +10,8 @@ import XZNavigationController
 
 class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomizable, XZNavigationGestureDrivable {
     
-    @IBOutlet weak var isHiddenSwitch: UISwitch!
-    @IBOutlet weak var isTranslucentSwitch: UISwitch!
+    @IBOutlet weak var hiddenSwitch: UISwitch!
+    @IBOutlet weak var translucentSwitch: UISwitch!
     @IBOutlet weak var prefersLargeTitlesSwitch: UISwitch!
     
     override func viewDidLoad() {
@@ -25,8 +25,8 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        isHiddenSwitch.isOn = navigationBar.isHidden
-        isTranslucentSwitch.isOn = navigationBar.isTranslucent
+        hiddenSwitch.isOn = navigationBar.isHidden
+        translucentSwitch.isOn = navigationBar.isTranslucent
         prefersLargeTitlesSwitch.isOn = navigationBar.prefersLargeTitles
     }
 
