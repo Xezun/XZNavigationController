@@ -24,9 +24,11 @@ class ExampleLastViewController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        hiddenSwitch.isOn = navigationBar.isHidden
-        translucentSwitch.isOn = navigationBar.isTranslucent
-        prefersLargeTitlesSwitch.isOn = navigationBar.prefersLargeTitles
+        if let navigationController = navigationController {
+            hiddenSwitch.isOn = navigationController.isNavigationBarHidden
+            translucentSwitch.isOn = navigationController.navigationBar.isTranslucent
+            prefersLargeTitlesSwitch.isOn = navigationController.navigationBar.prefersLargeTitles
+        }
     }
     
     @IBAction func unwindToBack(_ unwindSegue: UIStoryboardSegue) {
@@ -85,7 +87,10 @@ extension ExampleLastViewController: XZNavigationBarCustomizable {
 extension ExampleLastViewController: XZNavigationGestureDrivable {
     
     func navigationController(_ navigationController: UINavigationController, viewControllerForGestureNavigation operation: UINavigationController.Operation) -> UIViewController? {
-        return navigationController.viewControllers.first
+        if operation == .pop {
+            return navigationController.viewControllers.first
+        }
+        return nil
     }
 }
 

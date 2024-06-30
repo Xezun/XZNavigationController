@@ -22,10 +22,10 @@ class ExampleGestureViewController: UITableViewController, XZNavigationGestureDr
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if let navigationBar = navigationController?.navigationBar {
-            hiddenSwitch.isOn = navigationBar.isHidden
-            translucentSwitch.isOn = navigationBar.isTranslucent
-            prefersLargeTitlesSwitch.isOn = navigationBar.prefersLargeTitles
+        if let navigationController = navigationController {
+            hiddenSwitch.isOn = navigationController.isNavigationBarHidden
+            translucentSwitch.isOn = navigationController.navigationBar.isTranslucent
+            prefersLargeTitlesSwitch.isOn = navigationController.navigationBar.prefersLargeTitles
         }
     }
     

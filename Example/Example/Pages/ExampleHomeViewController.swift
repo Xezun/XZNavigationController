@@ -8,6 +8,14 @@
 import UIKit
 import XZNavigationController
 
+// 自定义功能的导航栈中，普通控制器与在普通的导航栈中没有任何区别的，但是对于声明遵循 XZNavigationBarCustomizable 自定义导航条协议的控制器：。
+// 1、导航栈自动根据自定义导航条，配置原生导航条状态。
+// 2、自定义导航条，将会覆盖在原生导航条之上。
+// 3、在转场完成之前，即 viewDidAppear 之前，直接对原生导航条的操作（hidden/translucent/largeTitles），会被自定义导航条配置的状态覆盖。
+// 4、在转场之后，不论是直接操作原生导航条，还是操作自定义导航条，其作用和效果都是一样的。
+//
+// 声明遵循 XZNavigationGestureDrivable 将自动获得全屏手势导航的能力，当然默认只有返回，前进需要实现协议中的方法，且通过协议中的方法，
+// 还可以控制手势返回的行为。
 class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomizable, XZNavigationGestureDrivable {
     
     @IBOutlet weak var hiddenSwitch: UISwitch!
@@ -25,9 +33,11 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        hiddenSwitch.isOn = navigationBar.isHidden
-        translucentSwitch.isOn = navigationBar.isTranslucent
-        prefersLargeTitlesSwitch.isOn = navigationBar.prefersLargeTitles
+        if let navigationController = navigationController {
+            hiddenSwitch.isOn = navigationController.isNavigationBarHidden
+            translucentSwitch.isOn = navigationController.navigationBar.isTranslucent
+            prefersLargeTitlesSwitch.isOn = navigationController.navigationBar.prefersLargeTitles
+        }        
     }
 
     @IBAction func isCustomizableValueChanged(_ sender: UISwitch) {
@@ -40,6 +50,7 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
         
     }
     
+    // 自定义手势前进的页面。
     func navigationController(_ navigationController: UINavigationController, viewControllerForGestureNavigation operation: UINavigationController.Operation) -> UIViewController? {
         if operation == .push {
             let sb = UIStoryboard.init(name: "Main", bundle: nil)
