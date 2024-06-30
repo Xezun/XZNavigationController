@@ -31,6 +31,26 @@ pod 'XZNavigationController'
 
 ## 功能特性
 
+`XZNavigationController`是对原生`UINavigationController`的增强辅助协议，它增强的原生`UINavigationController`的功能。
+
+1. 使`UINavigationController`支持自定义导航条
+
+当开启自定义功能后，通过`XZNavigationBarCustomizable`协议，导航栈内的控制器可以设置定义的导航条。
+
+自定义导航条会展示在原生导航条之上，而不是取代它，所以原生导航条的功能和特性，都还是保留的。
+
+拥有自定义导航条的控制，可以摆脱在`viewWillAppear`中对导航条状态的维护了，因为`XZNavigationController`在展示控制器时，会自动根据控制器的自定义导航条的状态，设置原生导航条的状态。
+
+2. 使`UINavigationController`支持全屏手势导航
+
+原生仅支持手势返回，且限制颇多，所以`XZNavigationController`重写了手势，不仅支持全屏手势返回，还支持手势进入下一页。
+
+3. 支持更多转场效果（TODO）
+
+由于完全是自定义的转场，`XZNavigationController`有能力实现，支持更多转场效果，或者提供更简便的自定义转场实现方式。
+
+## 如何使用
+
 ### 一、面向协议
 
 `XZNavigationController` 是一个 `protocol` 协议，仅需要遵循它，可以获得开启自定义导航条、全屏手势的功能。
