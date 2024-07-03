@@ -1,5 +1,5 @@
 //
-//  XZNavigationBar.swift
+//  XZNavigationBarCustomizable.swift
 //  XZKit
 //
 //  Created by Xezun on 2018/1/4.
