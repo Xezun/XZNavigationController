@@ -5,11 +5,7 @@
 //  Created by Xezun on 2017/2/17.
 //  Copyright © 2017年 XEZUN INC. All rights reserved.
 //
-
-import UIKit
-import XZDefines
-import ObjectiveC
-
+// 【开发备忘】
 // 为了将更新导航条的操作放在 viewWillAppear 中：
 // 一、 方法交换，重写 UIViewController 基类的 viewWillAppear 方法，遇到一下问题：
 //      1. 某些页面，交换后的方法不执行（猜测可能是因为Swift消息派发机制，没有把方法按 objc 消息派发问题）
@@ -42,11 +38,23 @@ import ObjectiveC
 // tabBar 却又有转场动画。
 // 目前，对于 left-to-right 布局下，没有控制 tabBar 的动画效果，虽然可以开启来解决这个问题，但是觉得没有必要。
 //
+// 【已知问题三】
+// 在使用 `-popToViewController:animated:` 进行手势跨层 pop 时，那么被 popTo 跨过的页面
+// 会被导航栈移除，且手势取消了操作，导航栈也不会恢复。这 BUG 是原生的，虽然可以尝试修复，但觉得没有必要。
+// 因为已经使用 `popTo` 跨层了，那说明，被跨的层，在业务逻辑中，大概率属于不可返回的页面，没有恢复的必要。
+//
 
-/// XZNavigationController 提供了 全屏手势 和 自定义导航条 的功能。
-/// 1. 当栈内控制器支持自定义时，原生导航条将被覆盖。
-/// 2. 当控制器专场时，自动根据控制器自定义导航条状态，设置系统导航条状态。
-/// 3. 默认边缘手势返回是开启的，全屏手势需控制器声明遵循协议，关闭则需实现协议方法。
+import UIKit
+import XZDefines
+import ObjectiveC
+
+/// 为导航控制器 UINavigationController 提供 自定义全屏手势 功能和 自定义导航条 功能的协议。
+///
+/// 当导航控制器开启自定义功能后：
+/// 1. 栈内控制器可通过协议 `XZNavigationBarCustomizable` 自定义导航条。
+/// 2. 边缘返回手势默认开启，但可通过协议 `XZNavigationGestureDrivable` 控制手势导航行为，或开启全屏手势。
+/// 3. 导航控制器的 `delegate` 将被设置为协议拓展的 `transitionController` 属性，如果被修改，自定义功能可能不会生效。
+/// 4. 接收导航控制器原事件，请通过 `transitionController.delegate` 设置代理。
 public protocol XZNavigationController: UINavigationController {
 
 }
