@@ -5,9 +5,9 @@
 [![License](https://img.shields.io/cocoapods/l/XZNavigationController.svg?style=flat)](https://cocoapods.org/pods/XZNavigationController)
 [![Platform](https://img.shields.io/cocoapods/p/XZNavigationController.svg?style=flat)](https://cocoapods.org/pods/XZNavigationController)
 
-XZNavigationController 是一款面向协议的、使原生的 UINavigationController 能够支持自定义导航条、全屏手势导航功能的 iOS 开源组件。
+XZNavigationController 是一款使原生的 UINavigationController 支持自定义导航条、全屏手势导航功能组件。
 
-XZNavigationController is a protocol oriented iOS open source component that enables native UINavigationController to support custom navigation bars and full screen gesture navigation functions.
+XZNavigationController is a protocol oriented component that enables native UINavigationController to support custom navigation bars and full screen gesture navigation functions.
 
 ## 示例项目 Example
 
