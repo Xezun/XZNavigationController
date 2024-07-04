@@ -39,13 +39,14 @@ public protocol XZNavigationBarCustomizable: UIViewController {
 ///
 /// 自定义导航条，可以通过 `navigationBar` 属性获取原生导航条。
 ///
-/// 当原生导航条的状态发生改变时，会将状态同步给自定义导航条。
-/// 因此，当自定义导航条属性发生改变时，不能直接操作原生导航条，而应该使用下面的方法，将状态同步给原生导航条。
+/// 当原生导航条的状态发生改变时，会自动将状态同步给自定义导航条。
+/// 因此，当自定义导航条属性发生改变时，需要向原生导航条同步状态时，应调用以下方法以避免**循环调用**。
 ///
 /// ```swift
-/// navigationBar?.setHidden(isHidden)
-/// navigationBar?.setTranslucent(isTranslucent)
-/// navigationBar?.setPrefersLargeTitles(prefersLargeTitles)
+/// // self is the custom navigation bar
+/// self.isHiddenDidChange()
+/// self.prefersLargeTitlesDidChange()
+/// self.isTranslucentDidChange()
 /// ```
 ///
 /// - Attention: 由于转场需要，自定义导航条并不总是在原生导航条之上，所以自定义导航条的 tintColor 可能需要单独设置。
@@ -59,14 +60,6 @@ public protocol XZNavigationBarProtocol: UIView {
 extension XZNavigationBarProtocol {
     
     /// 原生导航条。
-    ///
-    /// 请使用如下方法，将自定义导航条的状态同步给原生导航条。
-    ///
-    /// 如果在属性的 willSet/set/didSet 方法中，直接设置原生导航条的属性，会造成循环调用。
-    ///
-    /// 1. `setHidden(_:)`
-    /// 2. `setTranslucent(_:)`
-    /// 3. `setPrefersLargeTitles(_:)`
     ///
     /// 此属性为 nil 时，表示自定义导航条未展示，或者处于转场的过程中。
     public internal(set) var navigationBar: UINavigationBar? {
@@ -83,6 +76,23 @@ extension XZNavigationBarProtocol {
         }
     }
     
+    /// 当前导航条 isHidden 属性发生改变时，通过此方法将状态同步给原生导航条。
+    /// - Attention: 在 `isHidden` 属性的 willSet/set/didSet 方法中，直接设置原生导航条的属性，会导致循环调用。
+    public func isHiddenDidChange() {
+        self.navigationBar?.setHidden(self.isHidden)
+    }
+    
+    /// 当前导航条 prefersLargeTitles 属性发生改变时，通过此方法将状态同步给原生导航条。
+    /// - Attention: 在 `prefersLargeTitles` 属性的 willSet/set/didSet 方法中，直接设置原生导航条的属性，会导致循环调用。
+    public func prefersLargeTitlesDidChange() {
+        self.navigationBar?.setPrefersLargeTitles(self.prefersLargeTitles)
+    }
+    
+    /// 当前导航条 isTranslucent 属性发生改变时，通过此方法将状态同步给原生导航条。
+    /// - Attention: 在 `isTranslucent` 属性的 willSet/set/didSet 方法中，直接设置原生导航条的属性，会导致循环调用。
+    public func isTranslucentDidChange() {
+        self.navigationBar?.setTranslucent(self.isTranslucent)
+    }
 }
 
 /// 自定义导航条可选基类。
@@ -90,21 +100,21 @@ extension XZNavigationBarProtocol {
     
     open override var isHidden: Bool {
         didSet {
-            navigationBar?.setHidden(isHidden)
+            self.isHiddenDidChange()
         }
     }
     
     /// 控制背景透明，默认 true 。
     open var isTranslucent = true {
         didSet {
-            navigationBar?.setTranslucent(isTranslucent)
+            self.isTranslucentDidChange()
         }
     }
     
     /// 默认 false 。
     open var prefersLargeTitles = false {
         didSet {
-            navigationBar?.setPrefersLargeTitles(prefersLargeTitles)
+            self.prefersLargeTitlesDidChange()
         }
     }
     

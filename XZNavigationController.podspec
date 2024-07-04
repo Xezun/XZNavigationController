@@ -10,8 +10,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XZNavigationController'
-  s.version          = '1.2.9'
-  s.summary          = 'iOS 支持全屏手势导航、自定义导航栏的协议框架'
+  s.version          = '1.2.10'
+  s.summary          = '一个支持全屏手势导航、自定义导航栏的组件'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -20,8 +20,8 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-  拓展了原生 UINavigationController 以支持自定义导航条、全屏手势导航的面向协议的组件
-                       DESC
+  本组件拓展了原生 UINavigationController 的功能，使其支持自定义导航条、全屏手势导航，使用简单、接入成本为零。
+  DESC
 
   s.homepage         = 'https://github.com/Xezun/XZNavigationController'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
