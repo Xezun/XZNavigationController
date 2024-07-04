@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import XZDefines
 
 /// 转场控制器，接管了导航控制的代理。
 public final class XZNavigationControllerTransitionController: NSObject {
