@@ -5,11 +5,7 @@
 //  Created by Xezun on 2017/2/17.
 //  Copyright © 2017年 XEZUN INC. All rights reserved.
 //
-
-import UIKit
-import XZDefines
-import ObjectiveC
-
+// 【开发备忘】
 // 为了将更新导航条的操作放在 viewWillAppear 中：
 // 一、 方法交换，重写 UIViewController 基类的 viewWillAppear 方法，遇到一下问题：
 //      1. 某些页面，交换后的方法不执行（猜测可能是因为Swift消息派发机制，没有把方法按 objc 消息派发问题）
@@ -47,6 +43,10 @@ import ObjectiveC
 // 会被导航栈移除，且手势取消了操作，导航栈也不会恢复。这 BUG 是原生的，虽然可以尝试修复，但觉得没有必要。
 // 因为已经使用 `popTo` 跨层了，那说明，被跨的层，在业务逻辑中，大概率属于不可返回的页面，没有恢复的必要。
 //
+
+import UIKit
+import XZDefines
+import ObjectiveC
 
 /// 为导航控制器 UINavigationController 提供 自定义全屏手势 功能和 自定义导航条 功能的协议。
 ///

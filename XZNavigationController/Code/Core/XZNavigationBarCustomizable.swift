@@ -9,6 +9,14 @@
 import UIKit
 import ObjectiveC
 
+/// 本协议适用于控制器，遵循协议表明控制器开启了自定义导航条功能。
+public protocol XZNavigationBarCustomizable: UIViewController {
+    /// 控制器自定义导航条。
+    ///
+    /// - Attention: 框架获取自定义导航条的获取时机会比 `viewDidLoad` 更早，因此，请避免在其中访问控制器的 `view` 属性，以免控制器生命周期提前。
+    var navigationBarIfLoaded: XZNavigationBarProtocol? { get }
+}
+
 /// 自定义导航条所必须实现的协议。
 ///
 /// 自定义导航条可以继承 XZNavigationBar 也可以继承其它视图控件，实现 XZNavigationBarProtocol 协议即可。
@@ -60,7 +68,7 @@ extension XZNavigationBarProtocol {
     /// 2. `setTranslucent(_:)`
     /// 3. `setPrefersLargeTitles(_:)`
     ///
-    /// 此属性为 nil 时，自定义导航条未展示，或者处于转场的过程中。
+    /// 此属性为 nil 时，表示自定义导航条未展示，或者处于转场的过程中。
     public internal(set) var navigationBar: UINavigationBar? {
         get {
             return (objc_getAssociatedObject(self, &_navigationBar) as? XZNavigationBarWeakWrapper)?.value
@@ -75,13 +83,6 @@ extension XZNavigationBarProtocol {
         }
     }
     
-}
-
-/// 导航条是否可以自定义。
-public protocol XZNavigationBarCustomizable: UIViewController {
-    /// 控制器自定义导航条。
-    /// - Note: 导航条的获取时机会被 viewDidLoad 更早，因此，在其中访问到 view 属性，可能会造成控制器生命周期提前。
-    var navigationBarIfLoaded: XZNavigationBarProtocol? { get }
 }
 
 /// 自定义导航条可选基类。
