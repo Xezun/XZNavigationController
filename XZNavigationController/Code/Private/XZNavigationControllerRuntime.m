@@ -164,4 +164,38 @@
     return viewControllers;
 }
 
+
+#pragma mark - UINavigationControllerDelegate
+
+typedef id<UIViewControllerAnimatedTransitioning> (*XZNAVCDelegateMethod1)(id delegate, SEL, UINavigationController *, UINavigationControllerOperation, UIViewController *, UIViewController *);
+typedef id<UIViewControllerAnimatedTransitioning> (*XZNAVCDelegateMethod1Super)(struct objc_super *, SEL, UINavigationController *, UINavigationControllerOperation, UIViewController *, UIViewController *);
+typedef id<UIViewControllerInteractiveTransitioning> (*XZNAVCDelegateMethod2)(id delegate, SEL, UINavigationController *, id<UIViewControllerAnimatedTransitioning>);
+typedef id<UIViewControllerInteractiveTransitioning> (*XZNAVCDelegateMethod2Super)(struct objc_super *, SEL, UINavigationController *, id<UIViewControllerAnimatedTransitioning>);
+
++ (nullable id<UIViewControllerAnimatedTransitioning>)msgSendSuper:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC {
+    struct objc_super _super = {
+        .receiver = delegate,
+        .super_class = class_getSuperclass(object_getClass(delegate))
+    };
+    SEL const selector = @selector(navigationController:animationControllerForOperation:fromViewController:toViewController:);
+    return ((XZNAVCDelegateMethod1Super)objc_msgSendSuper)(&_super, selector, navigationController, operation, fromVC, toVC);;
+}
+
++ (nullable id<UIViewControllerAnimatedTransitioning>)msgSendExchange:(SEL)selector delegate:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC {
+    return ((XZNAVCDelegateMethod1)objc_msgSend)(delegate, selector, navigationController, operation, fromVC, toVC);
+}
+
++ (nullable id<UIViewControllerInteractiveTransitioning>)msgSendSuper:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController {
+    struct objc_super _super = {
+        .receiver = delegate,
+        .super_class = class_getSuperclass(object_getClass(delegate))
+    };
+    SEL const selector = @selector(navigationController:interactionControllerForAnimationController:);
+    return ((XZNAVCDelegateMethod2Super)objc_msgSendSuper)(&_super, selector, navigationController, animationController);
+}
+
++ (nullable id<UIViewControllerInteractiveTransitioning>)msgSendExchange:(SEL)selector delegate:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController {
+    return ((XZNAVCDelegateMethod2)objc_msgSend)(delegate, selector, navigationController, animationController);
+}
+
 @end

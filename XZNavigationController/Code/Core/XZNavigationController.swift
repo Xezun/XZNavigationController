@@ -71,11 +71,10 @@ extension XZNavigationController {
         set {
             if let transitionController = self.transitionController {
                 if !newValue {
-                    self.delegate = transitionController.delegate
+                    self.transitionController = nil
                     self.navigationBar.isCustomizable = false
                     self.interactivePopGestureRecognizer?.isEnabled = true
                     transitionController.interactiveNavigationGestureRecognizer.isEnabled = false
-                    self.transitionController = nil
                     
                     self.navigationBar.navigationBar = nil
                 }
@@ -85,7 +84,6 @@ extension XZNavigationController {
                 
                 // 关于原生手势
                 // 即使重写属性 interactivePopGestureRecognizer 也不能保证原生的返回手势不会被创建，所以我们创建了新的手势，并设置了优先级。
-                self.delegate = transitionController
                 self.navigationBar.isCustomizable = true
                 if let popGestureRecognizer = self.interactivePopGestureRecognizer {
                     popGestureRecognizer.isEnabled = false
@@ -251,6 +249,7 @@ extension XZNavigationControllerRuntime {
     @objc static public func __xz_navc_prepareForNavigationTransition(_ navigationController: UINavigationController) {
         navigationController.navigationBar.navigationBar = nil
     }
+    
 }
 
 private var _viewController = 0

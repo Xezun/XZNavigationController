@@ -42,7 +42,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// 为运行时提供方法源，不可使用。
-XZ_NAVC_PRIVATE_CLASS @interface XZNavigationControllerRuntime: UINavigationController
+XZ_NAVC_PRIVATE_CLASS @interface XZNavigationControllerRuntime: UINavigationController <UINavigationControllerDelegate>
 + (instancetype)alloc NS_UNAVAILABLE;
 + (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
@@ -73,6 +73,14 @@ XZ_NAVC_PRIVATE_CLASS @interface XZNavigationControllerRuntime: UINavigationCont
 
 - (NSArray<__kindof UIViewController *> *)__xz_navc_override_popToRootViewControllerAnimated:(BOOL)animated;
 - (NSArray<__kindof UIViewController *> *)__xz_navc_exchange_popToRootViewControllerAnimated:(BOOL)animated;
+
+#pragma mark - UINavigationControllerDelegate
+
++ (nullable id<UIViewControllerAnimatedTransitioning>)msgSendSuper:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC;
++ (nullable id<UIViewControllerAnimatedTransitioning>)msgSendExchange:(SEL)selector delegate:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC;
+
++ (nullable id<UIViewControllerInteractiveTransitioning>)msgSendSuper:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController;
++ (nullable id<UIViewControllerInteractiveTransitioning>)msgSendExchange:(SEL)selector delegate:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController;
 @end
 
 NS_ASSUME_NONNULL_END
