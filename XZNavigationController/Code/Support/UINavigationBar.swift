@@ -54,7 +54,7 @@ extension UINavigationBar {
                 if let CustomizableClass = objc_getAssociatedObject(OldClass, &_CustomizableClass) as? UINavigationBar.Type {
                     _ = object_setClass(self, CustomizableClass)
                 } else if let CustomizableClass = xz_objc_createClass(OldClass, { (CustomizableClass) in
-                        xz_objc_class_copyMethodsFromClass(CustomizableClass, XZNavigationControllerCustomizableNavigationBar.self);
+                    xz_objc_class_copyMethods(CustomizableClass, XZNavigationControllerCustomizableNavigationBar.self);
                 }) as? UINavigationBar.Type {
                     objc_setAssociatedObject(OldClass, &_CustomizableClass, CustomizableClass, .OBJC_ASSOCIATION_ASSIGN)
                     _ = object_setClass(self, CustomizableClass)

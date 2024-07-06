@@ -38,7 +38,7 @@ extension UITabBar {
             if let FreezableTabBarClass = objc_getAssociatedObject(TabBarClass, &_FreezableTabBarClass) as? AnyClass {
                 _ = object_setClass(self, FreezableTabBarClass)
             } else if let FreezableTabBarClass = xz_objc_createClass(TabBarClass, { (FreezableTabBarClass) in
-                    xz_objc_class_copyMethodsFromClass(FreezableTabBarClass, XZNavigationControllerFreezableTabBar.self)
+                xz_objc_class_copyMethods(FreezableTabBarClass, XZNavigationControllerFreezableTabBar.self)
             }) as? UITabBar.Type {
                 _ = object_setClass(self, FreezableTabBarClass)
                 objc_setAssociatedObject(TabBarClass, &_FreezableTabBarClass, FreezableTabBarClass, .OBJC_ASSOCIATION_ASSIGN)

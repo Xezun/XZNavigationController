@@ -101,27 +101,37 @@ extension XZNavigationController {
                     let selector11 = #selector(UINavigationController.pushViewController(_:animated:));
                     let selector12 = #selector(XZNavigationControllerRuntime.__xz_navc_override_pushViewController(_:animated:));
                     let selector13 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_pushViewController(_:animated:));
-                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector11, source: source, override: selector12, exchange: selector13)
+                    if !xz_objc_class_addMethod(aClass, selector11, source, nil, selector12, selector13) {
+                        print("无法处理 \(aClass) 的 \(selector11) 方法，XZNavigationController 可能不会正常工作");
+                    }
                     
                     let selector21 = #selector(UINavigationController.setViewControllers(_:animated:));
                     let selector22 = #selector(XZNavigationControllerRuntime.__xz_navc_override_setViewControllers(_:animated:));
                     let selector23 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_setViewControllers(_:animated:));
-                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector21, source: source, override: selector22, exchange: selector23)
+                    if !xz_objc_class_addMethod(aClass, selector21, source, nil, selector22, selector23) {
+                        print("无法处理 \(aClass) 的 \(selector21) 方法，XZNavigationController 可能不会正常工作");
+                    }
                     
                     let selector31 = #selector(UINavigationController.popViewController(animated:));
                     let selector32 = #selector(XZNavigationControllerRuntime.__xz_navc_override_popViewController(animated:));
                     let selector33 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_popViewController(animated:));
-                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector31, source: source, override: selector32, exchange: selector33)
+                    if !xz_objc_class_addMethod(aClass, selector31, source, nil, selector32, selector33) {
+                        print("无法处理 \(aClass) 的 \(selector31) 方法，XZNavigationController 可能不会正常工作");
+                    }
                     
                     let selector41 = #selector(UINavigationController.popToViewController(_:animated:));
                     let selector42 = #selector(XZNavigationControllerRuntime.__xz_navc_override_popToViewController(_:animated:));
                     let selector43 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_popToViewController(_:animated:));
-                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector41, source: source, override: selector42, exchange: selector43)
+                    if !xz_objc_class_addMethod(aClass, selector41, source, nil, selector42, selector43) {
+                        print("无法处理 \(aClass) 的 \(selector41) 方法，XZNavigationController 可能不会正常工作");
+                    }
                     
                     let selector51 = #selector(UINavigationController.popToRootViewController(animated:));
                     let selector52 = #selector(XZNavigationControllerRuntime.__xz_navc_override_popToRootViewController(animated:));
                     let selector53 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_popToRootViewController(animated:));
-                    XZNavigationControllerRuntime.addMethod(aClass, selector: selector51, source: source, override: selector52, exchange: selector53)
+                    if !xz_objc_class_addMethod(aClass, selector51, source, nil, selector52, selector53) {
+                        print("无法处理 \(aClass) 的 \(selector51) 方法，XZNavigationController 可能不会正常工作");
+                    }
                 }
                 
                 // 栈内控制启用自定义功能
@@ -176,29 +186,21 @@ extension XZNavigationControllerRuntime {
         guard viewController is XZNavigationBarCustomizable else { return }
         
         // 注入 viewWillAppear 用以更新导航条状态
-        addMethod(aClass, selector: #selector(UIViewController.viewWillAppear(_:)),
-                  source: XZNavigationControllerRuntime.self,
-                  override: #selector(XZNavigationControllerRuntime.__xz_navc_override_viewWillAppear(_:)),
-                  exchange: #selector(XZNavigationControllerRuntime.__xz_navc_exchange_viewWillAppear(_:)))
+        if !xz_objc_class_addMethod(aClass, #selector(UIViewController.viewWillAppear(_:)),
+                                    XZNavigationControllerRuntime.self,
+                                    nil,
+                                    #selector(XZNavigationControllerRuntime.__xz_navc_override_viewWillAppear(_:)),
+                                    #selector(XZNavigationControllerRuntime.__xz_navc_exchange_viewWillAppear(_:))) {
+            print("由于无法处理 \(aClass) 的 viewWillAppear 方法，XZNavigationController 可能无法正常工作。");
+        }
+        
         // 注入 viewDidAppear 用来将自定义导航条与原生导航条绑定
-        addMethod(aClass, selector: #selector(UIViewController.viewDidAppear(_:)),
-                  source: XZNavigationControllerRuntime.self,
-                  override: #selector(XZNavigationControllerRuntime.__xz_navc_override_viewDidAppear(_:)),
-                  exchange: #selector(XZNavigationControllerRuntime.__xz_navc_exchange_viewDidAppear(_:)))
-    }
-    
-    fileprivate static func addMethod(_ aClass: AnyClass, selector: Selector, source: AnyClass, override: Selector, exchange: Selector) {
-        if let method = xz_objc_class_getInstanceMethod(aClass, selector) {
-            // 方法已实现，添加待交换的方法
-            if let methodForExchange = class_getInstanceMethod(source, exchange) {
-                if class_addMethod(aClass, exchange, method_getImplementation(methodForExchange), method_getTypeEncoding(methodForExchange)) {
-                    if let method3 = class_getInstanceMethod(aClass, exchange) {
-                        method_exchangeImplementations(method, method3)
-                    }
-                }
-            }
-        } else if let methodForOverride = class_getInstanceMethod(source, override) {
-            class_addMethod(aClass, selector, method_getImplementation(methodForOverride), method_getTypeEncoding(methodForOverride))
+        if !xz_objc_class_addMethod(aClass, #selector(UIViewController.viewDidAppear(_:)),
+                                    XZNavigationControllerRuntime.self,
+                                    nil,
+                                    #selector(XZNavigationControllerRuntime.__xz_navc_override_viewDidAppear(_:)),
+                                    #selector(XZNavigationControllerRuntime.__xz_navc_exchange_viewDidAppear(_:))) {
+            print("由于无法处理 \(aClass) 的 viewDidAppear 方法，XZNavigationController 可能无法正常工作。");
         }
     }
     
