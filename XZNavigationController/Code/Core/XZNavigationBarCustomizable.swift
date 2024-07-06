@@ -245,6 +245,8 @@ extension XZNavigationBarProtocol {
             let safeAreaInsets = window.safeAreaInsets
             let y = -safeAreaInsets.top;
             backgroundImageView.frame = CGRect.init(x: bounds.minX, y: y, width: bounds.width, height: bounds.height + safeAreaInsets.top)
+        } else {
+            backgroundImageView.frame = bounds
         }
     }
 
