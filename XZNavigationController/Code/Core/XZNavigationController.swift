@@ -93,48 +93,139 @@ extension XZNavigationController {
                 let aClass = type(of: self)
                 if objc_getAssociatedObject(aClass, &_naviagtionController) == nil {
                     objc_setAssociatedObject(aClass, &_naviagtionController, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-
-                    let source = XZNavigationControllerRuntime.self
-                    
-                    let selector11 = #selector(UINavigationController.pushViewController(_:animated:));
-                    let selector12 = #selector(XZNavigationControllerRuntime.__xz_navc_override_pushViewController(_:animated:));
-                    let selector13 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_pushViewController(_:animated:));
-                    if !xz_objc_class_addMethod(aClass, selector11, source, nil, selector12, selector13) {
-                        print("无法处理 \(aClass) 的 \(selector11) 方法，XZNavigationController 可能不会正常工作");
+                        
+                    do {
+                        typealias MethodType = @convention(block) (UINavigationController, UIViewController, Bool) -> Void
+                        // 导航控制器，同一控制器不能重复 push 不论栈顶还是栈中，否则崩溃，所以这里不需要判断。
+                        // 在 push 方法调用的过程中，目标控制器没有任何生命周期函数被调用，所以可以在 super.push 之后再执行转场准备工作。
+                        let selector = #selector(UINavigationController.pushViewController(_:animated:));
+                        let override: MethodType = { `self`, viewController, animated in
+                            xz_navc_navigationController(self, customizeViewController: viewController)
+                            xz_navc_msgSendSuper(self, pushViewController: viewController, animated: animated)
+                            xz_navc_navigationController(self, prepareForTransitioning: animated)
+                        }
+                        let exchange = { (selector: Selector) in
+                            let exchange: MethodType = { `self`, viewController, animated in
+                                xz_navc_navigationController(self, customizeViewController: viewController)
+                                xz_navc_msgSend(self, exchange: selector, pushViewController: viewController, animated: animated)
+                                xz_navc_navigationController(self, prepareForTransitioning: animated)
+                            }
+                            return exchange
+                        }
+                        
+                        xz_objc_class_addMethodWithBlock(aClass, selector, nil, nil, override, exchange)
                     }
                     
-                    let selector21 = #selector(UINavigationController.setViewControllers(_:animated:));
-                    let selector22 = #selector(XZNavigationControllerRuntime.__xz_navc_override_setViewControllers(_:animated:));
-                    let selector23 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_setViewControllers(_:animated:));
-                    if !xz_objc_class_addMethod(aClass, selector21, source, nil, selector22, selector23) {
-                        print("无法处理 \(aClass) 的 \(selector21) 方法，XZNavigationController 可能不会正常工作");
+                    do {
+                        typealias MethodType = @convention(block) (UINavigationController, [UIViewController], Bool) -> Void
+                        
+                        let selector = #selector(UINavigationController.setViewControllers(_:animated:));
+                        let override: MethodType = { `self`, viewControllers, animated in
+                            for viewController in viewControllers {
+                                xz_navc_navigationController(self, customizeViewController: viewController)
+                            }
+                            let topViewController = self.topViewController
+                            xz_navc_msgSendSuper(self, setViewControllers: viewControllers, animated: animated)
+                            if topViewController != viewControllers.last { // 说明发生了转场
+                                xz_navc_navigationController(self, prepareForTransitioning: animated)
+                            }
+                        }
+                        let exchange = { (selector: Selector) in
+                            let exchange: MethodType = { `self`, viewControllers, animated in
+                                for viewController in viewControllers {
+                                    xz_navc_navigationController(self, customizeViewController: viewController)
+                                }
+                                let topViewController = self.topViewController
+                                xz_navc_msgSend(self, exchange: selector, setViewControllers: viewControllers, animated: animated)
+                                if topViewController != viewControllers.last {
+                                    xz_navc_navigationController(self, prepareForTransitioning: animated)
+                                }
+                            }
+                            return exchange
+                        }
+                        
+                        xz_objc_class_addMethodWithBlock(aClass, selector, nil, nil, override, exchange)
                     }
                     
-                    let selector31 = #selector(UINavigationController.popViewController(animated:));
-                    let selector32 = #selector(XZNavigationControllerRuntime.__xz_navc_override_popViewController(animated:));
-                    let selector33 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_popViewController(animated:));
-                    if !xz_objc_class_addMethod(aClass, selector31, source, nil, selector32, selector33) {
-                        print("无法处理 \(aClass) 的 \(selector31) 方法，XZNavigationController 可能不会正常工作");
+                    do {
+                        typealias MethodType = @convention(block) (UINavigationController, Bool) -> UIViewController?
+                        
+                        let selector = #selector(UINavigationController.popViewController(animated:));
+                        let override: MethodType = { `self`, animated in
+                            let viewController = xz_navc_msgSendSuper(self, popViewControllerAnimated: animated);
+                            if viewController != nil {
+                                xz_navc_navigationController(self, prepareForTransitioning: animated)
+                            }
+                            return viewController
+                        }
+                        let exchange = { (selector: Selector) in
+                            let exchange: MethodType = { `self`, animated in
+                                let viewController = xz_navc_msgSend(self, exchange: selector, popViewControllerAnimated: animated)
+                                if viewController != nil {
+                                    xz_navc_navigationController(self, prepareForTransitioning: animated)
+                                }
+                                return viewController
+                            }
+                            return exchange
+                        }
+                        
+                        xz_objc_class_addMethodWithBlock(aClass, selector, nil, nil, override, exchange)
                     }
                     
-                    let selector41 = #selector(UINavigationController.popToViewController(_:animated:));
-                    let selector42 = #selector(XZNavigationControllerRuntime.__xz_navc_override_popToViewController(_:animated:));
-                    let selector43 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_popToViewController(_:animated:));
-                    if !xz_objc_class_addMethod(aClass, selector41, source, nil, selector42, selector43) {
-                        print("无法处理 \(aClass) 的 \(selector41) 方法，XZNavigationController 可能不会正常工作");
+                    do {
+                        typealias MethodType = @convention(block) (UINavigationController, UIViewController, Bool) -> [UIViewController]?
+                        
+                        let selector = #selector(UINavigationController.popToViewController(_:animated:));
+                        let override: MethodType = { `self`, viewController, animated in
+                            let viewControllers = xz_navc_msgSendSuper(self, popToViewController: viewController, animated: animated)
+                            if let viewControllers = viewControllers, viewControllers.count > 0 {
+                                xz_navc_navigationController(self, prepareForTransitioning: animated)
+                            }
+                            return viewControllers
+                        }
+                        let exchange = { (selector: Selector) in
+                            let exchange: MethodType = { `self`, viewController, animated in
+                                let viewControllers = xz_navc_msgSend(self, exchange: selector, popToViewController: viewController, animated: animated)
+                                if let viewControllers = viewControllers, viewControllers.count > 0 {
+                                    xz_navc_navigationController(self, prepareForTransitioning: animated)
+                                }
+                                return viewControllers
+                            }
+                            return exchange
+                        }
+                        
+                        xz_objc_class_addMethodWithBlock(aClass, selector, nil, nil, override, exchange)
                     }
                     
-                    let selector51 = #selector(UINavigationController.popToRootViewController(animated:));
-                    let selector52 = #selector(XZNavigationControllerRuntime.__xz_navc_override_popToRootViewController(animated:));
-                    let selector53 = #selector(XZNavigationControllerRuntime.__xz_navc_exchange_popToRootViewController(animated:));
-                    if !xz_objc_class_addMethod(aClass, selector51, source, nil, selector52, selector53) {
-                        print("无法处理 \(aClass) 的 \(selector51) 方法，XZNavigationController 可能不会正常工作");
+                    do {
+                        typealias MethodType = @convention(block) (UINavigationController, Bool) -> [UIViewController]?
+                        
+                        let selector = #selector(UINavigationController.popToRootViewController(animated:));
+                        let override: MethodType = { `self`, animated in
+                            let viewControllers = xz_navc_msgSendSuper(self, popToRootViewControllerAnimated: animated)
+                            if let viewControllers = viewControllers, viewControllers.count > 0 {
+                                xz_navc_navigationController(self, prepareForTransitioning: animated)
+                            }
+                            return viewControllers
+                        }
+                        let exchange = { (selector: Selector) in
+                            let exchange: MethodType = { `self`, animated in
+                                let viewControllers = xz_navc_msgSend(self, exchange: selector, popToRootViewControllerAnimated: animated)
+                                if let viewControllers = viewControllers, viewControllers.count > 0 {
+                                    xz_navc_navigationController(self, prepareForTransitioning: animated)
+                                }
+                                return viewControllers
+                            }
+                            return exchange
+                        }
+                        
+                        xz_objc_class_addMethodWithBlock(aClass, selector, nil, nil, override, exchange)
                     }
                 }
                 
                 // 栈内控制启用自定义功能
                 for viewController in viewControllers {
-                    XZNavigationControllerRuntime.__xz_navc_navigationController(self, customizeViewController: viewController)
+                    xz_navc_navigationController(self, customizeViewController: viewController)
                 }
                 
                 // 因为非自定义模式，转场走的时原生的逻辑，因此即使在转场过程被调用，如下处理也是没有问题的。
@@ -149,16 +240,6 @@ extension XZNavigationController {
         }
     }
     
-    @available(iOS, introduced: 13.0, deprecated: 13.0, renamed: "isCustomizable")
-    public var isNavigationBarCustomizable: Bool {
-        get {
-            return self.isCustomizable
-        }
-        set {
-            self.isCustomizable = newValue
-        }
-    }
-    
     public private(set) var transitionController: XZNavigationControllerTransitionController? {
         get {
             return objc_getAssociatedObject(self, &_transitionController) as? XZNavigationControllerTransitionController
@@ -170,86 +251,100 @@ extension XZNavigationController {
     
 }
 
-extension XZNavigationControllerRuntime {
+// 以下方法，不写成 category 的原因，是因为这些方法并不属于一般特性，仅适合在当前环境下使用。
 
-    /// 向控制器的 viewWillAppear/viewDidAppear 中注入代码。
-    /// - Attention: This method is private, do not use it directly.
-    @objc public static func __xz_navc_navigationController(_ navigationController: UINavigationController, customizeViewController viewController: UIViewController) {
-        guard navigationController is XZNavigationController else {
-            return
-        }
-        let aClass = type(of: viewController)
-        guard objc_getAssociatedObject(aClass, &_viewController) == nil else { return }
-        objc_setAssociatedObject(aClass, &_viewController, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-        guard viewController is XZNavigationBarCustomizable else { return }
+/// 向控制器的 viewWillAppear/viewDidAppear 中注入代码。
+fileprivate func xz_navc_navigationController(_ navigationController: UINavigationController, customizeViewController viewController: UIViewController) {
+    guard navigationController is XZNavigationController else {
+        return
+    }
+    let aClass = type(of: viewController)
+    guard objc_getAssociatedObject(aClass, &_viewController) == nil else { return }
+    objc_setAssociatedObject(aClass, &_viewController, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+    guard viewController is XZNavigationBarCustomizable else { return }
+    
+    // 注入 viewWillAppear 用以更新导航条状态
+    do {
+        typealias MethodType = @convention(block) (UIViewController, Bool) -> Void
         
-        // 注入 viewWillAppear 用以更新导航条状态
-        if !xz_objc_class_addMethod(aClass, #selector(UIViewController.viewWillAppear(_:)),
-                                    XZNavigationControllerRuntime.self,
-                                    nil,
-                                    #selector(XZNavigationControllerRuntime.__xz_navc_override_viewWillAppear(_:)),
-                                    #selector(XZNavigationControllerRuntime.__xz_navc_exchange_viewWillAppear(_:))) {
-            print("由于无法处理 \(aClass) 的 viewWillAppear 方法，XZNavigationController 可能无法正常工作。");
+        let selector = #selector(UIViewController.viewWillAppear(_:))
+        let override: MethodType = { `self`, animated in
+            xz_navc_msgSendSuper(self, viewWillAppear: animated)
+            xz_navc_viewController(self, viewWillAppear: animated)
         }
+        let exchange = { (selector: Selector) in
+            let exchange: MethodType = { `self`, animated in
+                xz_navc_msgSend(self, exchange: selector, viewWillAppear: animated)
+                xz_navc_viewController(self, viewWillAppear: animated)
+            }
+            return exchange
+        }
+        xz_objc_class_addMethodWithBlock(aClass, selector, nil, nil, override, exchange)
+    }
+    
+    do {
+        typealias MethodType = @convention(block) (UIViewController, Bool) -> Void
         
-        // 注入 viewDidAppear 用来将自定义导航条与原生导航条绑定
-        if !xz_objc_class_addMethod(aClass, #selector(UIViewController.viewDidAppear(_:)),
-                                    XZNavigationControllerRuntime.self,
-                                    nil,
-                                    #selector(XZNavigationControllerRuntime.__xz_navc_override_viewDidAppear(_:)),
-                                    #selector(XZNavigationControllerRuntime.__xz_navc_exchange_viewDidAppear(_:))) {
-            print("由于无法处理 \(aClass) 的 viewDidAppear 方法，XZNavigationController 可能无法正常工作。");
+        let selector = #selector(UIViewController.viewDidAppear(_:))
+        let override: MethodType = { `self`, animated in
+            xz_navc_msgSendSuper(self, viewDidAppear: animated)
+            xz_navc_viewController(self, viewDidAppear: animated)
         }
+        let exchange = { (selector: Selector) in
+            let exchange: MethodType = { `self`, animated in
+                xz_navc_msgSend(self, exchange: selector, viewDidAppear: animated)
+                xz_navc_viewController(self, viewDidAppear: animated)
+            }
+            return exchange
+        }
+        xz_objc_class_addMethodWithBlock(aClass, selector, nil, nil, override, exchange)
+    }
+}
+
+/// 转场开始，自定义导航条与原生导航条解除绑定。转场过程中的导航条操作，最终会在 viewWillAppear 的注入逻辑覆盖。
+fileprivate func xz_navc_navigationController(_ navigationController: UINavigationController, prepareForTransitioning animated: Bool) {
+    navigationController.navigationBar.navigationBar = nil
+}
+
+
+/// 转场已开始，转场动画即将开始：更新导航条样式。
+/// - Attention: This method is private, do not use it directly.
+fileprivate func xz_navc_viewController(_ viewController: UIViewController, viewWillAppear animated: Bool) {
+    //print("\(type(of: viewController)).\(#function) \(animated)")
+    guard let navigationController = viewController.navigationController as? XZNavigationController else {
+        return
+    }
+    guard navigationController.isCustomizable == true else {
+        return
+    }
+    guard let viewController = viewController as? XZNavigationBarCustomizable else {
+        return
+    }
+    guard let customNavigationBar = viewController.navigationBarIfLoaded else {
+        return
     }
     
-    /// 转场已开始，转场动画即将开始：更新导航条样式。
-    /// - Attention: This method is private, do not use it directly.
-    @objc static public func __xz_navc_viewController(_ viewController: UIViewController, viewWillAppear animated: Bool) {
-        //print("\(type(of: viewController)).\(#function) \(animated)")
-        guard let navigationController = viewController.navigationController as? XZNavigationController else {
-            return
-        }
-        guard navigationController.isCustomizable == true else {
-            return
-        }
-        guard let viewController = viewController as? XZNavigationBarCustomizable else {
-            return
-        }
-        guard let customNavigationBar = viewController.navigationBarIfLoaded else {
-            return
-        }
-        
-        let navigationBar = navigationController.navigationBar
-        if navigationBar.isTranslucent != customNavigationBar.isTranslucent {
-            navigationBar.isTranslucent = customNavigationBar.isTranslucent
-        }
-        if navigationBar.prefersLargeTitles != customNavigationBar.prefersLargeTitles {
-            navigationBar.prefersLargeTitles = customNavigationBar.prefersLargeTitles
-        }
-        if navigationController.isNavigationBarHidden != customNavigationBar.isHidden {
-            navigationController.setNavigationBarHidden(customNavigationBar.isHidden, animated: animated)
-        }
+    let navigationBar = navigationController.navigationBar
+    if navigationBar.isTranslucent != customNavigationBar.isTranslucent {
+        navigationBar.isTranslucent = customNavigationBar.isTranslucent
     }
-    
-    /// 转场完成，自定义导航条与原生导航条绑定。任何对原生导航条的操作，都会保存到自定义导航条上，并用于下一次转场。
-    /// - Attention: This method is private, do not use it directly.
-    @objc static public func __xz_navc_viewController(_ viewController: UIViewController, viewDidAppear animated: Bool) {
-        //print("\(type(of: viewController)).\(#function) \(animated)")
-        guard let navigationController = viewController.navigationController as? XZNavigationController else {
-            return
-        }
-        guard navigationController.isCustomizable == true else {
-            return
-        }
-        navigationController.navigationBar.navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
+    if navigationBar.prefersLargeTitles != customNavigationBar.prefersLargeTitles {
+        navigationBar.prefersLargeTitles = customNavigationBar.prefersLargeTitles
     }
-    
-    /// 转场开始，自定义导航条与原生导航条解除绑定。转场过程中的导航条操作，最终会在 viewWillAppear 的注入逻辑覆盖。
-    /// - Attention: This method is private, do not use it directly.
-    @objc static public func __xz_navc_prepareForNavigationTransition(_ navigationController: UINavigationController) {
-        navigationController.navigationBar.navigationBar = nil
+    if navigationController.isNavigationBarHidden != customNavigationBar.isHidden {
+        navigationController.setNavigationBarHidden(customNavigationBar.isHidden, animated: animated)
     }
-    
+}
+
+/// 转场完成，自定义导航条与原生导航条绑定。任何对原生导航条的操作，都会保存到自定义导航条上，并用于下一次转场。
+fileprivate func xz_navc_viewController(_ viewController: UIViewController, viewDidAppear animated: Bool) {
+    guard let navigationController = viewController.navigationController as? XZNavigationController else {
+        return
+    }
+    guard navigationController.isCustomizable == true else {
+        return
+    }
+    navigationController.navigationBar.navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
 }
 
 private var _viewController = 0

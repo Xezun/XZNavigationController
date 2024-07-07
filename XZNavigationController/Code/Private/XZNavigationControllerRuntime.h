@@ -7,6 +7,113 @@
 
 #import <XZNavigationController/XZNavigationControllerDefines.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
+#pragma mark - UINavigationController
+
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_pushViewController(UINavigationController *receiver, UIViewController *viewController, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:pushViewController:animated:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendExchange_pushViewController(UINavigationController *receiver, SEL selector, UIViewController *viewController, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:pushViewController:animated:)) XZ_NAVC_PRIVATE_METHOD;
+
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_setViewControllers(UINavigationController *receiver, NSArray<__kindof UIViewController *> *viewControllers, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:setViewControllers:animated:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendExchange_setViewControllers(UINavigationController *receiver, SEL selector, NSArray<__kindof UIViewController *> *viewControllers, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:setViewControllers:animated:)) XZ_NAVC_PRIVATE_METHOD;
+
+FOUNDATION_EXPORT UIViewController * _Nullable xz_navc_msgSendSuper_popViewController(UINavigationController *receiver, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:popViewControllerAnimated:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT UIViewController * _Nullable xz_navc_msgSendExchange_popViewController(UINavigationController *receiver, SEL selector, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:popViewControllerAnimated:)) XZ_NAVC_PRIVATE_METHOD;
+
+FOUNDATION_EXPORT NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendSuper_popToViewController(UINavigationController *receiver, UIViewController *viewController, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:popToViewController:animated:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendExchange_popToViewController(UINavigationController *receiver, SEL selector, UIViewController *viewController, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:popToViewController:animated:)) XZ_NAVC_PRIVATE_METHOD;
+
+FOUNDATION_EXPORT NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendSuper_popToRootViewController(UINavigationController *receiver, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:popToRootViewControllerAnimated:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendExchange_popToRootViewController(UINavigationController *receiver, SEL selector, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:popToRootViewControllerAnimated:)) XZ_NAVC_PRIVATE_METHOD;
+
+
+#pragma mark - UIViewController
+
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_viewWillAppear(UIViewController *receiver, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:viewWillAppear:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendExchange_viewWillAppear(UIViewController *receiver, SEL selector, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:viewWillAppear:)) XZ_NAVC_PRIVATE_METHOD;
+
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_viewDidAppear(UIViewController *receiver, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:viewDidAppear:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendExchange_viewDidAppear(UIViewController *receiver, SEL selector, BOOL animated)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:viewDidAppear:)) XZ_NAVC_PRIVATE_METHOD;
+
+
+#pragma mark - UINavigationControllerDelegate
+
+FOUNDATION_EXPORT id<UIViewControllerAnimatedTransitioning> _Nullable xz_navc_msgSendSuper_animationControllerForOperation(id<UINavigationControllerDelegate> receiver, UINavigationController *navigationController, UINavigationControllerOperation operation, UIViewController *fromVC, UIViewController *toVC)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:navigationController:animationControllerForOperation:fromViewController:toViewController:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT id<UIViewControllerAnimatedTransitioning> _Nullable xz_navc_msgSendExchange_animationControllerForOperation(id<UINavigationControllerDelegate> receiver, SEL selector, UINavigationController *navigationController, UINavigationControllerOperation operation, UIViewController *fromVC, UIViewController *toVC)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:navigationController:animationControllerForOperation:fromViewController:toViewController:)) XZ_NAVC_PRIVATE_METHOD;
+
+FOUNDATION_EXPORT id<UIViewControllerInteractiveTransitioning> _Nullable xz_navc_msgSendSuper_interactionControllerForAnimationController(id<UINavigationControllerDelegate> receiver, UINavigationController *navigationController, id<UIViewControllerAnimatedTransitioning> animationController)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:navigationController:interactionControllerForAnimationController:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT id<UIViewControllerInteractiveTransitioning> _Nullable xz_navc_msgSendExchange_interactionControllerForAnimationController(id<UINavigationControllerDelegate> receiver, SEL selector, UINavigationController *navigationController, id<UIViewControllerAnimatedTransitioning> animationController)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:navigationController:interactionControllerForAnimationController:)) XZ_NAVC_PRIVATE_METHOD;
+
+
+#pragma mark - UITabBar
+
+FOUNDATION_EXPORT CGRect xz_navc_msgSendSuper_bounds(UIView *receiver)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(bounds:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_setBounds(UIView *receiver, CGRect bounds)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:setBounds:)) XZ_NAVC_PRIVATE_METHOD;
+
+
+FOUNDATION_EXPORT CGRect xz_navc_msgSendSuper_frame(UIView *receiver)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(frame:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_setFrame(UIView *receiver, CGRect frame)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:setFrame:)) XZ_NAVC_PRIVATE_METHOD;
+
+
+FOUNDATION_EXPORT BOOL xz_navc_msgSendSuper_isHidden(UIView *receiver)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(isHidden:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_setHidden(UIView *receiver, BOOL isHidden)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:setHidden:)) XZ_NAVC_PRIVATE_METHOD;
+
+
+#pragma mark - UINavigationBar
+
+FOUNDATION_EXPORT BOOL xz_navc_msgSendSuper_isTranslucent(UIView *receiver)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(isTranslucent:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_setTranslucent(UIView *receiver, BOOL isTranslucent)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:setTranslucent:)) XZ_NAVC_PRIVATE_METHOD;
+
+FOUNDATION_EXPORT BOOL xz_navc_msgSendSuper_prefersLargeTitles(UIView *receiver)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(prefersLargeTitles:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_setPrefersLargeTitles(UIView *receiver, BOOL prefersLargeTitles)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:setPrefersLargeTitles:)) XZ_NAVC_PRIVATE_METHOD;
+
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_layoutSubviews(UIView *receiver)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(layoutSubviews:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_addSubview(UIView *receiver, UIView *view)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:addSubview:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_bringSubviewToFront(UIView *receiver, UIView *view)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:bringSubviewToFront:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_sendSubviewToBack(UIView *receiver, UIView *view)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:sendSubviewToBack:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_insertSubviewAtIndex(UIView *receiver, UIView *view, NSInteger index)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:insertSubview:atIndex:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_insertSubviewAboveSubview(UIView *receiver, UIView *view, UIView *siblingSubview)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:insertSubview:aboveSubview:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_insertSubviewBelowSubview(UIView *receiver, UIView *view, UIView *siblingSubview)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:insertSubview:belowSubview:)) XZ_NAVC_PRIVATE_METHOD;
+
+
+NS_ASSUME_NONNULL_END
+
+
 // 在 Swift 环境中，
 // ```swift
 // @objc func foobar() {
@@ -37,50 +144,3 @@
 // }
 // ```
 // 所以需要在 OC 环境下，将调用 super 的操作定义，供 SWift 环境使用。
-
-
-NS_ASSUME_NONNULL_BEGIN
-
-/// 为运行时提供方法源，不可使用。
-XZ_NAVC_PRIVATE_CLASS @interface XZNavigationControllerRuntime: UINavigationController <UINavigationControllerDelegate>
-+ (instancetype)alloc NS_UNAVAILABLE;
-+ (instancetype)allocWithZone:(struct _NSZone *)zone NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
-- (instancetype)initWithRootViewController:(UIViewController *)rootViewController NS_UNAVAILABLE;
-- (instancetype)initWithNavigationBarClass:(nullable Class)navigationBarClass toolbarClass:(nullable Class)toolbarClass NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
-
-- (void)__xz_navc_override_viewWillAppear:(BOOL)animated;
-- (void)__xz_navc_exchange_viewWillAppear:(BOOL)animated;
-
-- (void)__xz_navc_override_viewDidAppear:(BOOL)animated;
-- (void)__xz_navc_exchange_viewDidAppear:(BOOL)animated;
-
-- (void)__xz_navc_override_pushViewController:(UIViewController *)viewController animated:(BOOL)animated NS_SWIFT_NAME(__xz_navc_override_pushViewController(_:animated:));
-- (void)__xz_navc_exchange_pushViewController:(UIViewController *)viewController animated:(BOOL)animated NS_SWIFT_NAME(__xz_navc_exchange_pushViewController(_:animated:));
-
-- (void)__xz_navc_override_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated;
-- (void)__xz_navc_exchange_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated;
-
-- (UIViewController *)__xz_navc_override_popViewControllerAnimated:(BOOL)animated;
-- (UIViewController *)__xz_navc_exchange_popViewControllerAnimated:(BOOL)animated;
-
-- (NSArray<__kindof UIViewController *> *)__xz_navc_override_popToViewController:(UIViewController *)vc animated:(BOOL)animated NS_SWIFT_NAME(__xz_navc_override_popToViewController(_:animated:));
-- (NSArray<__kindof UIViewController *> *)__xz_navc_exchange_popToViewController:(UIViewController *)vc animated:(BOOL)animated NS_SWIFT_NAME(__xz_navc_exchange_popToViewController(_:animated:));
-
-- (NSArray<__kindof UIViewController *> *)__xz_navc_override_popToRootViewControllerAnimated:(BOOL)animated;
-- (NSArray<__kindof UIViewController *> *)__xz_navc_exchange_popToRootViewControllerAnimated:(BOOL)animated;
-
-#pragma mark - UINavigationControllerDelegate
-
-+ (nullable id<UIViewControllerAnimatedTransitioning>)msgSendSuper:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC;
-+ (nullable id<UIViewControllerAnimatedTransitioning>)msgSendExchange:(SEL)selector delegate:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC;
-
-+ (nullable id<UIViewControllerInteractiveTransitioning>)msgSendSuper:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController;
-+ (nullable id<UIViewControllerInteractiveTransitioning>)msgSendExchange:(SEL)selector delegate:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController;
-@end
-
-NS_ASSUME_NONNULL_END

@@ -7,195 +7,269 @@
 
 #import "XZNavigationControllerRuntime.h"
 // 由于 Swift.h 中有它俩的类目，需引入
-#import "XZNavigationControllerFreezableTabBar.h"
-#import "XZNavigationControllerCustomizableNavigationBar.h"
 #import <XZNavigationController/XZNavigationController-Swift.h>
 
-@implementation XZNavigationControllerRuntime
+#pragma mark - UINavigationController
 
-- (void)__xz_navc_override_viewWillAppear:(BOOL)animated {
+void xz_navc_msgSendSuper_pushViewController(UINavigationController *receiver, UIViewController *viewController, BOOL animated) {
     struct objc_super _super = {
-        .receiver = self,
-        .super_class = class_getSuperclass(object_getClass(self))
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, id, BOOL))objc_msgSendSuper)(&_super, @selector(pushViewController:animated:), viewController, animated);
+}
+
+void xz_navc_msgSendExchange_pushViewController(UINavigationController *receiver, SEL selector, UIViewController *viewController, BOOL animated) {
+    ((void (*)(UINavigationController *, SEL, id, BOOL))objc_msgSend)(receiver, selector, viewController, animated);
+}
+
+void xz_navc_msgSendSuper_setViewControllers(UINavigationController *receiver, NSArray<__kindof UIViewController *> *viewControllers, BOOL animated) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, id, BOOL))objc_msgSendSuper)(&_super, @selector(setViewControllers:animated:), viewControllers, animated);
+}
+
+void xz_navc_msgSendExchange_setViewControllers(UINavigationController *receiver, SEL selector, NSArray<__kindof UIViewController *> *viewControllers, BOOL animated) {
+    ((void (*)(UINavigationController *, SEL, id, BOOL))objc_msgSend)(receiver, selector, viewControllers, animated);
+}
+
+
+UIViewController * _Nullable xz_navc_msgSendSuper_popViewController(UINavigationController *receiver, BOOL animated) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    return ((id (*)(struct objc_super *, SEL, BOOL))objc_msgSendSuper)(&_super, @selector(popViewControllerAnimated:), animated);
+}
+
+UIViewController * _Nullable xz_navc_msgSendExchange_popViewController(UINavigationController *receiver, SEL selector, BOOL animated) {
+    return ((id (*)(UINavigationController *, SEL, BOOL))objc_msgSend)(receiver, selector, animated);
+}
+
+NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendSuper_popToViewController(UINavigationController *receiver, UIViewController *viewController, BOOL animated) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    return ((id (*)(struct objc_super *, SEL, id, BOOL))objc_msgSendSuper)(&_super, @selector(popToViewController:animated:), viewController, animated);
+}
+
+NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendExchange_popToViewController(UINavigationController *receiver, SEL selector, UIViewController *viewController, BOOL animated) {
+    return ((id (*)(id, SEL, id, BOOL))objc_msgSend)(receiver, selector, viewController, animated);
+}
+
+NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendSuper_popToRootViewController(UINavigationController *receiver, BOOL animated) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    return ((id (*)(struct objc_super *, SEL, BOOL))objc_msgSendSuper)(&_super, @selector(popToRootViewControllerAnimated:), animated);
+}
+
+NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendExchange_popToRootViewController(UINavigationController *receiver, SEL selector, BOOL animated) {
+    return ((id (*)(id, SEL, BOOL))objc_msgSendSuper)(receiver, selector, animated);
+}
+
+#pragma mark - UIViewController
+
+void xz_navc_msgSendSuper_viewWillAppear(UIViewController *receiver, BOOL animated) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
     };
     ((void (*)(struct objc_super *, SEL, BOOL))objc_msgSendSuper)(&_super, @selector(viewWillAppear:), animated);
-    // 进入或退出转场动画的前，更新导航条状态
-    [XZNavigationControllerRuntime __xz_navc_viewController:self viewWillAppear:animated];
 }
 
-- (void)__xz_navc_exchange_viewWillAppear:(BOOL)animated {
-    [self __xz_navc_exchange_viewWillAppear:animated];
-    [XZNavigationControllerRuntime __xz_navc_viewController:self viewWillAppear:animated];
+void xz_navc_msgSendExchange_viewWillAppear(UIViewController *receiver, SEL selector, BOOL animated) {
+    ((void (*)(UIViewController *, SEL, BOOL))objc_msgSend)(receiver, selector, animated);
 }
 
-- (void)__xz_navc_override_viewDidAppear:(BOOL)animated {
-    [XZNavigationControllerRuntime __xz_navc_viewController:self viewDidAppear:animated];
+void xz_navc_msgSendSuper_viewDidAppear(UIViewController *receiver, BOOL animated) {
     struct objc_super _super = {
-        .receiver = self,
-        .super_class = class_getSuperclass(object_getClass(self))
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
     };
     ((void (*)(struct objc_super *, SEL, BOOL))objc_msgSendSuper)(&_super, @selector(viewDidAppear:), animated);
 }
 
-- (void)__xz_navc_exchange_viewDidAppear:(BOOL)animated {
-    // 当页面 viewDidAppear 调用时，自定义导航条已与原生导航条绑定。
-    [XZNavigationControllerRuntime __xz_navc_viewController:self viewDidAppear:animated];
-    [self __xz_navc_exchange_viewDidAppear:animated];
+void xz_navc_msgSendExchange_viewDidAppear(UIViewController *receiver, SEL selector, BOOL animated) {
+    ((void (*)(UIViewController *, SEL, BOOL))objc_msgSend)(receiver, selector, animated);
 }
-
-
-
-- (void)__xz_navc_override_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [XZNavigationControllerRuntime __xz_navc_navigationController:self customizeViewController:viewController];
-    
-    struct objc_super _super = {
-        .receiver = self,
-        .super_class = class_getSuperclass(object_getClass(self))
-    };
-    ((void (*)(struct objc_super *, SEL, id, BOOL))objc_msgSendSuper)(&_super, @selector(pushViewController:animated:), viewController, animated);
-    // 导航控制器，同一控制器不能重复 push 不论栈顶还是栈中，否则崩溃，所以这里不需要判断。
-    // 在 push 方法调用的过程中，目标控制器没有任何生命周期函数被调用，所以可以在 super.push 之后再执行转场准备工作。
-    [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-}
-
-- (void)__xz_navc_exchange_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [XZNavigationControllerRuntime __xz_navc_navigationController:self customizeViewController:viewController];
-    [self __xz_navc_exchange_pushViewController:viewController animated:animated];
-    [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-}
-
-
-
-- (void)__xz_navc_override_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated {
-    for (UIViewController *viewController in viewControllers) {
-        [XZNavigationControllerRuntime __xz_navc_navigationController:self customizeViewController:viewController];
-    }
-    
-    UIViewController * const topViewController = self.topViewController;
-    
-    struct objc_super _super = {
-        .receiver = self,
-        .super_class = class_getSuperclass(object_getClass(self))
-    };
-    ((void (*)(struct objc_super *, SEL, id, BOOL))objc_msgSendSuper)(&_super, @selector(setViewControllers:animated:), viewControllers, animated);
-    
-    if (topViewController != viewControllers.lastObject) {
-        [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-    }
-}
-
-- (void)__xz_navc_exchange_setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated {
-    for (UIViewController *viewController in viewControllers) {
-        [XZNavigationControllerRuntime __xz_navc_navigationController:self customizeViewController:viewController];
-    }
-    
-    UIViewController * const topViewController = self.topViewController;
-    
-    [self __xz_navc_exchange_setViewControllers:viewControllers animated:animated];
-    
-    if (topViewController != viewControllers.lastObject) {
-        [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-    }
-}
-
-
-
-- (UIViewController *)__xz_navc_override_popViewControllerAnimated:(BOOL)animated {
-    struct objc_super _super = {
-        .receiver = self,
-        .super_class = class_getSuperclass(object_getClass(self))
-    };
-    UIViewController *viewController = ((id (*)(struct objc_super *, SEL, BOOL))objc_msgSendSuper)(&_super, @selector(popViewControllerAnimated:), animated);
-    if (viewController != nil) {
-        [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-    }
-    return viewController;
-}
-
-- (UIViewController *)__xz_navc_exchange_popViewControllerAnimated:(BOOL)animated {
-    UIViewController *viewController = [self __xz_navc_exchange_popViewControllerAnimated:animated];
-    if (viewController != nil) {
-        [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-    }
-    return viewController;
-}
-
-
-
-- (NSArray<__kindof UIViewController *> *)__xz_navc_override_popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    struct objc_super _super = {
-        .receiver = self,
-        .super_class = class_getSuperclass(object_getClass(self))
-    };
-    NSArray *viewControllers = ((id (*)(struct objc_super *, SEL, id, BOOL))objc_msgSendSuper)(&_super, @selector(popToViewController:animated:), viewController, animated);
-    if (viewControllers.count > 0) {
-        [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-    }
-    return viewControllers;
-}
-
-- (NSArray<__kindof UIViewController *> *)__xz_navc_exchange_popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    NSArray *viewControllers = [self __xz_navc_exchange_popToViewController:viewController animated:animated];
-    if (viewControllers.count > 0) {
-        [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-    }
-    return viewControllers;
-}
-
-
-
-- (NSArray<__kindof UIViewController *> *)__xz_navc_override_popToRootViewControllerAnimated:(BOOL)animated {
-    struct objc_super _super = {
-        .receiver = self,
-        .super_class = class_getSuperclass(object_getClass(self))
-    };
-    NSArray *viewControllers = ((id (*)(struct objc_super *, SEL, BOOL))objc_msgSendSuper)(&_super, @selector(popToRootViewControllerAnimated:), animated);
-    if (viewControllers.count > 0) {
-        [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-    }
-    return viewControllers;
-}
-
-- (NSArray<__kindof UIViewController *> *)__xz_navc_exchange_popToRootViewControllerAnimated:(BOOL)animated {
-    NSArray *viewControllers = [self __xz_navc_exchange_popToRootViewControllerAnimated:animated];
-    if (viewControllers.count > 0) {
-        [XZNavigationControllerRuntime __xz_navc_prepareForNavigationTransition:self];
-    }
-    return viewControllers;
-}
-
 
 #pragma mark - UINavigationControllerDelegate
 
-typedef id<UIViewControllerAnimatedTransitioning> (*XZNAVCDelegateMethod1)(id delegate, SEL, UINavigationController *, UINavigationControllerOperation, UIViewController *, UIViewController *);
-typedef id<UIViewControllerAnimatedTransitioning> (*XZNAVCDelegateMethod1Super)(struct objc_super *, SEL, UINavigationController *, UINavigationControllerOperation, UIViewController *, UIViewController *);
-typedef id<UIViewControllerInteractiveTransitioning> (*XZNAVCDelegateMethod2)(id delegate, SEL, UINavigationController *, id<UIViewControllerAnimatedTransitioning>);
-typedef id<UIViewControllerInteractiveTransitioning> (*XZNAVCDelegateMethod2Super)(struct objc_super *, SEL, UINavigationController *, id<UIViewControllerAnimatedTransitioning>);
+typedef id<UIViewControllerAnimatedTransitioning> (*Method1Type)(id, SEL, UINavigationController *, UINavigationControllerOperation, UIViewController *, UIViewController *);
+typedef id<UIViewControllerAnimatedTransitioning> (*Method1SuperType)(struct objc_super *, SEL, UINavigationController *, UINavigationControllerOperation, UIViewController *, UIViewController *);
+typedef id<UIViewControllerInteractiveTransitioning> (*Method2Type)(id, SEL, UINavigationController *, id<UIViewControllerAnimatedTransitioning>);
+typedef id<UIViewControllerInteractiveTransitioning> (*Method2SuperType)(struct objc_super *, SEL, UINavigationController *, id<UIViewControllerAnimatedTransitioning>);
 
-+ (nullable id<UIViewControllerAnimatedTransitioning>)msgSendSuper:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC {
+id<UIViewControllerAnimatedTransitioning> _Nullable xz_navc_msgSendSuper_animationControllerForOperation(id<UINavigationControllerDelegate> receiver, UINavigationController *navigationController, UINavigationControllerOperation operation, UIViewController *fromVC, UIViewController *toVC) {
     struct objc_super _super = {
-        .receiver = delegate,
-        .super_class = class_getSuperclass(object_getClass(delegate))
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
     };
     SEL const selector = @selector(navigationController:animationControllerForOperation:fromViewController:toViewController:);
-    return ((XZNAVCDelegateMethod1Super)objc_msgSendSuper)(&_super, selector, navigationController, operation, fromVC, toVC);;
+    return ((Method1SuperType)objc_msgSendSuper)(&_super, selector, navigationController, operation, fromVC, toVC);;
 }
 
-+ (nullable id<UIViewControllerAnimatedTransitioning>)msgSendExchange:(SEL)selector delegate:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC {
-    return ((XZNAVCDelegateMethod1)objc_msgSend)(delegate, selector, navigationController, operation, fromVC, toVC);
+id<UIViewControllerAnimatedTransitioning> _Nullable xz_navc_msgSendExchange_animationControllerForOperation(id<UINavigationControllerDelegate> receiver, SEL selector, UINavigationController *navigationController, UINavigationControllerOperation operation, UIViewController *fromVC, UIViewController *toVC) {
+    return ((Method1Type)objc_msgSend)(receiver, selector, navigationController, operation, fromVC, toVC);
 }
 
-+ (nullable id<UIViewControllerInteractiveTransitioning>)msgSendSuper:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController {
+id<UIViewControllerInteractiveTransitioning> _Nullable xz_navc_msgSendSuper_interactionControllerForAnimationController(id<UINavigationControllerDelegate> receiver, UINavigationController *navigationController, id<UIViewControllerAnimatedTransitioning> animationController) {
     struct objc_super _super = {
-        .receiver = delegate,
-        .super_class = class_getSuperclass(object_getClass(delegate))
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
     };
     SEL const selector = @selector(navigationController:interactionControllerForAnimationController:);
-    return ((XZNAVCDelegateMethod2Super)objc_msgSendSuper)(&_super, selector, navigationController, animationController);
+    return ((Method2SuperType)objc_msgSendSuper)(&_super, selector, navigationController, animationController);
 }
 
-+ (nullable id<UIViewControllerInteractiveTransitioning>)msgSendExchange:(SEL)selector delegate:(id<UINavigationControllerDelegate>)delegate navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController {
-    return ((XZNAVCDelegateMethod2)objc_msgSend)(delegate, selector, navigationController, animationController);
+id<UIViewControllerInteractiveTransitioning> _Nullable xz_navc_msgSendExchange_interactionControllerForAnimationController(id<UINavigationControllerDelegate> receiver, SEL selector, UINavigationController *navigationController, id<UIViewControllerAnimatedTransitioning> animationController) {
+    return ((Method2Type)objc_msgSend)(receiver, selector, navigationController, animationController);
 }
 
-@end
+
+#pragma mark - UITabBar
+
+CGRect xz_navc_msgSendSuper_bounds(UIView *receiver) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    return ((CGRect (*)(struct objc_super *, SEL))objc_msgSendSuper)(&_super, @selector(bounds));
+}
+
+void xz_navc_msgSendSuper_setBounds(UIView *receiver, CGRect bounds) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, CGRect))objc_msgSendSuper)(&_super, @selector(setBounds:), bounds);
+}
+
+CGRect xz_navc_msgSendSuper_frame(UIView *receiver) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    return ((CGRect (*)(struct objc_super *, SEL))objc_msgSendSuper)(&_super, @selector(frame));
+}
+
+void xz_navc_msgSendSuper_setFrame(UIView *receiver, CGRect frame) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, CGRect))objc_msgSendSuper)(&_super, @selector(setFrame:), frame);
+}
+
+BOOL xz_navc_msgSendSuper_isHidden(UIView *receiver) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    return ((BOOL (*)(struct objc_super *, SEL))objc_msgSendSuper)(&_super, @selector(isHidden));
+}
+
+void xz_navc_msgSendSuper_setHidden(UIView *receiver, BOOL isHidden) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, BOOL))objc_msgSendSuper)(&_super, @selector(setHidden:), isHidden);
+}
+
+#pragma mark - UINavigationBar
+
+
+BOOL xz_navc_msgSendSuper_isTranslucent(UIView *receiver) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    return ((BOOL (*)(struct objc_super *, SEL))objc_msgSendSuper)(&_super, @selector(isTranslucent));
+}
+
+void xz_navc_msgSendSuper_setTranslucent(UIView *receiver, BOOL isTranslucent) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, BOOL))objc_msgSendSuper)(&_super, @selector(setTranslucent:), isTranslucent);
+
+}
+
+BOOL xz_navc_msgSendSuper_prefersLargeTitles(UIView *receiver) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    return ((BOOL (*)(struct objc_super *, SEL))objc_msgSendSuper)(&_super, @selector(prefersLargeTitles));
+}
+
+void xz_navc_msgSendSuper_setPrefersLargeTitles(UIView *receiver, BOOL prefersLargeTitles) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, BOOL))objc_msgSendSuper)(&_super, @selector(setPrefersLargeTitles:), prefersLargeTitles);
+}
+
+void xz_navc_msgSendSuper_layoutSubviews(UIView *receiver) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL))objc_msgSendSuper)(&_super, @selector(layoutSubviews));
+}
+
+void xz_navc_msgSendSuper_addSubview(UIView *receiver, UIView *view) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, id))objc_msgSendSuper)(&_super, @selector(addSubview:), view);
+}
+
+void xz_navc_msgSendSuper_bringSubviewToFront(UIView *receiver, UIView *view) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, id))objc_msgSendSuper)(&_super, @selector(bringSubviewToFront:), view);
+}
+
+void xz_navc_msgSendSuper_sendSubviewToBack(UIView *receiver, UIView *view) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, id))objc_msgSendSuper)(&_super, @selector(sendSubviewToBack:), view);
+}
+
+void xz_navc_msgSendSuper_insertSubviewAtIndex(UIView *receiver, UIView *view, NSInteger index) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, id, NSInteger))objc_msgSendSuper)(&_super, @selector(insertSubview:atIndex:), view, index);
+}
+
+void xz_navc_msgSendSuper_insertSubviewAboveSubview(UIView *receiver, UIView *view, UIView *siblingSubview) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, id, id))objc_msgSendSuper)(&_super, @selector(insertSubview:aboveSubview:), view, siblingSubview);
+}
+
+void xz_navc_msgSendSuper_insertSubviewBelowSubview(UIView *receiver, UIView *view, UIView *siblingSubview) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, id, id))objc_msgSendSuper)(&_super, @selector(insertSubview:belowSubview:), view, siblingSubview);
+}

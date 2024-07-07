@@ -26,11 +26,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
         self.navigationController.view.addGestureRecognizer(interactiveNavigationGestureRecognizer)
         self.interactiveNavigationGestureRecognizer.addTarget(self, action: #selector(interactiveNavigationGestureRecognizerAction(_:)))
         
-        if let delegate = navigationController.delegate {
-            customizeNavigationControllerDelegate(delegate)
-        } else {
-            navigationController.delegate = self
-        }
+        customizeNavigationControllerDelegate(navigationController.delegate)
         navigationController.addObserver(self, forKeyPath: "delegate", options: .new, context: &_context)
     }
     
@@ -53,12 +49,12 @@ public final class XZNavigationControllerTransitionController: NSObject {
     
     /// 处理导航控制器的代理，使其支持 XZNavigationController 自定义。
     private func customizeNavigationControllerDelegate(_ delegate: UINavigationControllerDelegate?) {
-        if delegate === self {
+        guard let delegate = delegate else {
+            navigationController.delegate = self
             return
         }
         
-        guard let delegate = delegate else {
-            navigationController.delegate = self
+        if delegate.isEqual(self) {
             return
         }
         
@@ -76,7 +72,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
                 return transitionController.navigationController(navigationController, animationControllerFor: operation, from: fromVC, to: toVC)
             }
             let override: MethodType = { `self`, navigationController, operation, fromVC, toVC in
-                if let controller = XZNavigationControllerRuntime.msgSendSuper(self, navigationController: navigationController, animationControllerFor: operation, from: fromVC, to: toVC) {
+                if let controller = xz_navc_msgSendSuper(self, navigationController: navigationController, animationControllerForOperation: operation, fromViewController: fromVC, toViewController: toVC) {
                     return controller;
                 }
                 guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
@@ -84,7 +80,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
             }
             let exchange = { (_ selector: Selector) in
                 let exchange: MethodType = { `self`, navigationController, operation, fromVC, toVC in
-                    if let controller = XZNavigationControllerRuntime.msgSendExchange(selector, delegate: self, navigationController: navigationController, animationControllerFor: operation, from: fromVC, to: toVC) {
+                    if let controller = xz_navc_msgSend(self, exchange: selector, navigationController: navigationController, animationControllerForOperation: operation, fromViewController: fromVC, toViewController: toVC) {
                         return controller
                     }
                     guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
@@ -104,7 +100,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
                 return transitionController.navigationController(navigationController, interactionControllerFor: animationController)
             }
             let override: MethodType = { `self`, navigationController, animationController in
-                if let controller = XZNavigationControllerRuntime.msgSendSuper(self, navigationController: navigationController, interactionControllerForAnimationController: animationController) {
+                if let controller = xz_navc_msgSendSuper(self, navigationController: navigationController, interactionControllerForAnimationController: animationController) {
                     return controller;
                 }
                 guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
@@ -112,7 +108,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
             }
             let exchange = { (_ selector: Selector) in
                 let exchange: MethodType = { `self`, navigationController, animationController in
-                    if let controller = XZNavigationControllerRuntime.msgSendExchange(selector, delegate: self, navigationController: navigationController, interactionControllerForAnimationController: animationController) {
+                    if let controller = xz_navc_msgSend(self, exchange: selector, navigationController: navigationController, interactionControllerForAnimationController: animationController) {
                         return controller
                     }
                     guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
