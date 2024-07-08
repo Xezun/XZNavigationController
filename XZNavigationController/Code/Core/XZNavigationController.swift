@@ -53,8 +53,7 @@ import ObjectiveC
 /// 当导航控制器开启自定义功能后：
 /// 1. 栈内控制器可通过协议 `XZNavigationBarCustomizable` 自定义导航条。
 /// 2. 边缘返回手势默认开启，但可通过协议 `XZNavigationGestureDrivable` 控制手势导航行为，或开启全屏手势。
-/// 3. 导航控制器的 `delegate` 将被设置为协议拓展的 `transitionController` 属性，如果被修改，自定义功能可能不会生效。
-/// 4. 接收导航控制器原事件，请通过 `transitionController.delegate` 设置代理。
+/// 3. 导航控制器原生的自定义转场效果功能，虽然与原生开起来一样，但是如果开发者需自定义转场效果的话，需考虑自定义导航条的转场效果。
 public protocol XZNavigationController: UINavigationController {
 
 }
@@ -62,7 +61,6 @@ public protocol XZNavigationController: UINavigationController {
 extension XZNavigationController {
     
     /// 开启自定义模式。
-    /// - Note: 当前导航控制的 delegate 事件已被 transitionController 接管。可通过设置 transitionController 的 delegate 来获取事件。
     /// - Note: 因为会访问的控制器的 view 属性，请在 viewDidLoad 之后再设置此属性。
     public var isCustomizable: Bool {
         get {
@@ -240,6 +238,7 @@ extension XZNavigationController {
         }
     }
     
+    /// 自定义的转场效果：处理全屏手势和自定义导航条的转场。
     public private(set) var transitionController: XZNavigationControllerTransitionController? {
         get {
             return objc_getAssociatedObject(self, &_transitionController) as? XZNavigationControllerTransitionController
@@ -347,7 +346,10 @@ fileprivate func xz_navc_viewController(_ viewController: UIViewController, view
     navigationController.navigationBar.navigationBar = (viewController as? XZNavigationBarCustomizable)?.navigationBarIfLoaded
 }
 
+/// 记录控制器是否进行了自定义化
 private var _viewController = 0
+/// 记录导航控制器是否进行了自定义化
 private var _naviagtionController = 0
+/// 保存自定义转场控制。
 private var _transitionController = 0
 

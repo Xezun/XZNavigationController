@@ -22,7 +22,8 @@ public class XZNavigationControllerAnimationController: NSObject {
     public var isInteractive: Bool {
         return interactiveTransition != nil
     }
-    /// 导航条在转场前是否隐藏。
+    
+    /// 在动画的过程中，只能拿到原生导航条当前的状态，此属性记录了原生导航条在转场前是否隐藏，以便控制转场效果。
     let isNavigationBarHidden: Bool
     
     public init?(for navigationController: XZNavigationController, operation: UINavigationController.Operation, isInteractive: Bool) {
@@ -131,15 +132,22 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
             navBar.setNeedsLayout()
         }
         
-        // 处理原生导航条：当不需要展示原生导航条时，将原生导航条移动到屏幕外，而不是 sendToBack 移动到后面
-        // Note: 使用 sendSubviewToBack 方法，虽然可以使导航条不可见，但是会产生一个问题。有一种情形，
+        // 处理原生导航条：
+        // 由于原生导航条，不参与转场过程，且其层级不在 containerView 中，无法控制层级关系，所以当不需要展示原生导航条时，
+        // 将原生导航条移动到屏幕外，从而避免原生导航条覆盖了自定义导航条（转场后，自定义导航条被移动到原生导航条上）。
+        //
+        // 【备忘】尝试过将原生导航条 sendSubviewToBack 虽然转场过程中没有问题，但是下面的情形中，会发生问题：
         // 页面 A 导航条显示，页面 B 导航条隐藏，在 A => B 的手势转场中，如果取消了转场，那么在这个取消的转场
-        // 完成之后，系统会将导航条隐藏（即使已经恢复到顶层）。
-        // 导航条向上偏移 200+ 以避免导航条上的内容会展示出来。
+        // 完成之后，原生会将导航条隐藏，即使在动画结束后，我们已经原生导航条重新恢复到顶层。
+        //
+        // 所以最终采用将导航条向上偏移 200 点或导航条的高度，以避免转场的过程中，原生导航条覆盖自定义导航条的问题。
+        // 原生导航条的位置，在转场结束时，恢复到原始位置。
         var navBarFrame2: CGRect?
         if fromNavBarFrame2 != nil && toNavBarFrame2 != nil {
             navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
         } else if fromNavBarFrame2 != nil {
+            // 自定义导航条：显示 => 隐藏
+            // 因为原生导航条在最顶层，随 from 退场，也会覆盖在 from 的自定义导航条之上，所以需要上移隐藏
             if navigationController.isNavigationBarHidden {
                 navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
             } else {
@@ -147,7 +155,9 @@ extension XZNavigationControllerAnimationController: UIViewControllerAnimatedTra
                 navBarFrame2 = navBarRect
             }
         } else if toNavBarFrame2 != nil {
-            if self.isNavigationBarHidden { // 导航条当前的状态，是 toNavBar 的状态，这里要判断转场前的状态。
+            // 自定义导航条：隐藏 => 显示
+            // 因为原生导航条在最顶层，随 to 入场，也会覆盖在 to 的自定义导航条之上，所以需要上移隐藏
+            if self.isNavigationBarHidden {
                 navigationBar.frame = navBarRect.offsetBy(dx: 0, dy: -max(navBarRect.maxY, 200))
             } else {
                 navBarFrame2 = navBarRect.offsetBy(dx: direction * -navBarRect.width, dy: 0)
