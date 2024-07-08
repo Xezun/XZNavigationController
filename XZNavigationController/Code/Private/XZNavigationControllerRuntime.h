@@ -11,6 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - UINavigationController
 
+FOUNDATION_EXPORT void xz_navc_msgSendSuper_setDelegate(id receiver, id _Nullable delegate)
+NS_SWIFT_NAME(xz_navc_msgSendSuper(_:setDelegate:)) XZ_NAVC_PRIVATE_METHOD;
+FOUNDATION_EXPORT void xz_navc_msgSendExchange_setDelegate(id receiver, SEL selector, id _Nullable delegate)
+NS_SWIFT_NAME(xz_navc_msgSend(_:exchange:setDelegate:)) XZ_NAVC_PRIVATE_METHOD;
+
 FOUNDATION_EXPORT void xz_navc_msgSendSuper_pushViewController(UINavigationController *receiver, UIViewController *viewController, BOOL animated)
 NS_SWIFT_NAME(xz_navc_msgSendSuper(_:pushViewController:animated:)) XZ_NAVC_PRIVATE_METHOD;
 FOUNDATION_EXPORT void xz_navc_msgSendExchange_pushViewController(UINavigationController *receiver, SEL selector, UIViewController *viewController, BOOL animated)

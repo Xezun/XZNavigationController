@@ -11,6 +11,20 @@
 
 #pragma mark - UINavigationController
 
+void xz_navc_msgSendSuper_setDelegate(id receiver, id _Nullable delegate) {
+    struct objc_super _super = {
+        .receiver = receiver,
+        .super_class = class_getSuperclass(object_getClass(receiver))
+    };
+    ((void (*)(struct objc_super *, SEL, id))objc_msgSendSuper)(&_super, @selector(setDelegate:), delegate);
+}
+
+void xz_navc_msgSendExchange_setDelegate(id receiver, SEL selector, id _Nullable delegate) {
+    ((void (*)(id, SEL, id))objc_msgSend)(receiver, selector, delegate);
+}
+
+
+
 void xz_navc_msgSendSuper_pushViewController(UINavigationController *receiver, UIViewController *viewController, BOOL animated) {
     struct objc_super _super = {
         .receiver = receiver,

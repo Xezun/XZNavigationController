@@ -119,8 +119,15 @@ private class XZNavigationControllerCustomizableNavigationBar: UINavigationBar {
     open override func layoutSubviews() {
         xz_navc_msgSendSuper(layoutSubviews: self)
 
-        if let customNavigationBar = navigationBar {
-            customNavigationBar.frame = bounds
+        if let navigationBar = navigationBar {
+            let bounds = self.bounds
+            
+            navigationBar.frame = bounds
+            // 横屏时，状态栏不显示
+            // 从横屏恢复竖屏，原生导航条初始位置，可能还没有适配 safeArea 边距，
+            // 而后续原生导航条再调整位置，可能不会触发自定义导航条的 layoutSubviews 方法，
+            // 因为自定义导航条相对原生导航条，没有任何改变。
+            navigationBar.setNeedsLayout()
         }
     }
 

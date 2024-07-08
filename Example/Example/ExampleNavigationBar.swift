@@ -55,8 +55,7 @@ public class ExampleNavigationBar: XZNavigationBar {
             if titleView == nil {
                 let width = UIScreen.main.bounds.width
                 
-                titleLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                titleLabel.frame = CGRect(x: 0, y: 0, width: width, height: 44)
+                titleLabel.frame = CGRect(x: 0, y: 0, width: width, height: 32)
                 titleLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .semibold)
                 titleLabel.textAlignment = .center
                 titleLabel.textColor = .black
@@ -79,8 +78,8 @@ public class ExampleNavigationBar: XZNavigationBar {
         }
     }
     
-    private let titleLabel      = UILabel.init()
-    private let largeTitleLabel = UILabel.init()
+    private let titleLabel      = ExampleNavigationBarTitleLabel.init()
+    private let largeTitleLabel = ExampleNavigationBarLargeTitleLabel.init()
     
     // 以下代码是为了方便调试。
     
@@ -110,3 +109,11 @@ public class ExampleNavigationBar: XZNavigationBar {
 }
 
 private var _navigationBar = 0
+
+class ExampleNavigationBarTitleLabel: UILabel {
+    
+}
+
+class ExampleNavigationBarLargeTitleLabel: UILabel {
+    
+}

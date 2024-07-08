@@ -111,11 +111,16 @@ import UIKit
         // 它们的大小完全由开发者控制，以避免强制调整而造成的不符合预期的情况。
         // 比如，当 title 比较宽的时候，如果自动缩短了 back/info 的长度，那么当 title 变短的时候，back/info 却不能变长，
         // 所以将它们的大小完全交给开发者处理。
+        //【一般情形】
         // 普通高度：44
         // 横屏高度：32
-        // 大标题高度：44 + 52
+        // 大标题高度：44 + 52 = 96
+        // 【导航控制器以堆叠样式被 present 呈现时】
+        // 普通高度：56
+        // 大标题高度：56 + 52 = 108
+        // 理论上，这种情形，应该使用 safeArea 而不是直接增加 navBar 高度，。
         
-        let navHeight = min(bounds.size.height, 44.0)
+        let navHeight = prefersLargeTitles ? min(44.0, bounds.height) : bounds.height;
         
         if let titleView = self.titleView {
             titleView.isHidden = bounds.height > 64.0
@@ -153,12 +158,12 @@ import UIKit
             height: shadowImageView.image?.size.height ?? 1.0 / UIScreen.main.scale
         )
 
-        if let window = self.window {
-            let safeAreaInsets = window.safeAreaInsets
-            let y = -safeAreaInsets.top;
-            backgroundImageView.frame = CGRect.init(x: bounds.minX, y: y, width: bounds.width, height: bounds.height + safeAreaInsets.top)
+        if let navigationBar = self.navigationBar {
+            let minY = navigationBar.frame.minY;
+            backgroundImageView.frame = CGRect.init(x: bounds.minX, y: -minY, width: bounds.width, height: bounds.height + minY)
         } else {
-            backgroundImageView.frame = bounds
+            let minY = self.frame.minY;
+            backgroundImageView.frame = CGRect.init(x: bounds.minY, y: -minY, width: bounds.width, height: bounds.height + minY)
         }
     }
 
