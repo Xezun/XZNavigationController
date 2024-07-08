@@ -58,10 +58,11 @@ public final class XZNavigationControllerTransitionController: NSObject {
             return
         }
         
-        if objc_getAssociatedObject(delegate, &_context) != nil {
+        let aClass = type(of: delegate);
+        if objc_getAssociatedObject(aClass, &_isCustomized) != nil {
             return
         }
-        objc_setAssociatedObject(self, &_context, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+        objc_setAssociatedObject(aClass, &_isCustomized, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
         
         do {
             typealias MethodType = @convention(block) (UINavigationControllerDelegate, UINavigationController, UINavigationController.Operation, UIViewController, UIViewController) -> UIViewControllerAnimatedTransitioning?
@@ -88,7 +89,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
                 }
                 return exchange
             }
-            xz_objc_class_addMethodWithBlock(type(of: delegate), selector, encoding, creation, override, exchange);
+            xz_objc_class_addMethodWithBlock(aClass, selector, encoding, creation, override, exchange);
         }
         
         do {
@@ -116,7 +117,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
                 }
                 return exchange
             }
-            xz_objc_class_addMethodWithBlock(type(of: delegate), selector, encoding, creation, override, exchange);
+            xz_objc_class_addMethodWithBlock(aClass, selector, encoding, creation, override, exchange);
         }
         
         // 重新设置代理，否则代理方法不会被调用，可能原生内部使用了缓存。
@@ -374,8 +375,11 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
     }
     
 }
- 
+
+/// 导航控制器 delegate 的 KVO 标记。
 private var _context = 0
+/// 记录导航控制器的 delegate 是否已经进行了自定义化。
+private var _isCustomized = 0
 
 // 转场方法调用顺序
 //
