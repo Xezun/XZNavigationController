@@ -18,34 +18,52 @@ public final class XZNavigationControllerTransitionController: NSObject {
     public unowned let navigationController: XZNavigationController
     
     public init(for navigationController: XZNavigationController) {
+        let panGestureRecognizer = UIPanGestureRecognizer.init()
         self.navigationController = navigationController
-        self.interactiveNavigationGestureRecognizer = UIPanGestureRecognizer.init()
+        self.interactiveNavigationGestureRecognizer = panGestureRecognizer
         super.init()
-        self.interactiveNavigationGestureRecognizer.maximumNumberOfTouches = 1
-        self.interactiveNavigationGestureRecognizer.delegate = self
-        self.navigationController.view.addGestureRecognizer(interactiveNavigationGestureRecognizer)
-        self.interactiveNavigationGestureRecognizer.addTarget(self, action: #selector(interactiveNavigationGestureRecognizerAction(_:)))
         
+        panGestureRecognizer.maximumNumberOfTouches = 1
+        panGestureRecognizer.delegate = self
+        
+        navigationController.view.addGestureRecognizer(panGestureRecognizer)
+        panGestureRecognizer.addTarget(self, action: #selector(interactiveNavigationGestureRecognizerAction(_:)))
+        
+        // 处理代理。
         customizeNavigationControllerDelegate(navigationController.delegate)
-        navigationController.addObserver(self, forKeyPath: "delegate", options: .new, context: &_context)
-    }
-    
-    deinit {
-        navigationController.removeObserver(self, forKeyPath: "delegate", context: &_context)
+        
+        // 监听 delegate 属性，没有使用 KVO 是因为：
+        // 1、在 iOS 14 以下，被观察的对象销毁时，如果没有移除 KVO 会发生崩溃。
+        // 2、运行时绑定的对象，生命周期可能会比宿主更长，导致在 -deinit 中移除 KVO 时，已经找不到宿主；
+        // 特别的，当使用 unowned 引用宿主时，还会出现 bad_access 崩溃。
+        let aClass = type(of: navigationController)
+        if objc_getAssociatedObject(aClass, &_isObserved) == nil {
+            objc_setAssociatedObject(aClass, &_isObserved, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            
+            typealias MethodType = @convention(block) (UINavigationController, UINavigationControllerDelegate?) -> Void
+            let selector = #selector(setter: UINavigationController.delegate)
+            let override: MethodType = { `self`, delegate in
+                xz_navc_msgSendSuper(self, setDelegate: delegate)
+                if let transitionController = (self as? XZNavigationController)?.transitionController {
+                    transitionController.customizeNavigationControllerDelegate(delegate)
+                }
+            }
+            let exchange = { (_ selector: Selector) in
+                let exchange: MethodType = { `self`, delegate in
+                    xz_navc_msgSend(self, exchange: selector, setDelegate: delegate)
+                    if let transitionController = (self as? XZNavigationController)?.transitionController {
+                        transitionController.customizeNavigationControllerDelegate(delegate)
+                    }
+                }
+                return exchange
+            }
+            xz_objc_class_addMethodWithBlock(aClass, selector, nil, nil, override, exchange)
+        }
+        
     }
     
     /// 交互式的转场控制器，只有在手势触发的转场过程中，此属性才有值。
     public private(set) var interactiveAnimationController: XZNavigationControllerAnimationController?
-    
-    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard context == &_context else {
-            return super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-        }
-        guard keyPath == "delegate" else {
-            return
-        }
-        self.customizeNavigationControllerDelegate(change?[.newKey] as? UINavigationControllerDelegate)
-    }
     
     /// 处理导航控制器的代理，使其支持 XZNavigationController 自定义。
     private func customizeNavigationControllerDelegate(_ delegate: UINavigationControllerDelegate?) {
@@ -380,7 +398,7 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
 private var _context = 0
 /// 记录导航控制器的 delegate 是否已经进行了自定义化。
 private var _isCustomized = 0
-
+private var _isObserved = 0
 // 转场方法调用顺序
 //
 // Push 成功时：
