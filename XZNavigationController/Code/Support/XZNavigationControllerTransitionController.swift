@@ -72,7 +72,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
                 return transitionController.navigationController(navigationController, animationControllerFor: operation, from: fromVC, to: toVC)
             }
             let override: MethodType = { `self`, navigationController, operation, fromVC, toVC in
-                if let controller = xz_navc_msgSendSuper(self, navigationController: navigationController, animationControllerForOperation: operation, fromViewController: fromVC, toViewController: toVC) {
+                if let controller = xz_navc_msgSendSuper(self, navigationController: navigationController, animationControllerFor: operation, from: fromVC, to: toVC) {
                     return controller;
                 }
                 guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
@@ -80,7 +80,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
             }
             let exchange = { (_ selector: Selector) in
                 let exchange: MethodType = { `self`, navigationController, operation, fromVC, toVC in
-                    if let controller = xz_navc_msgSend(self, exchange: selector, navigationController: navigationController, animationControllerForOperation: operation, fromViewController: fromVC, toViewController: toVC) {
+                    if let controller = xz_navc_msgSend(self, exchange: selector, navigationController: navigationController, animationControllerFor: operation, from: fromVC, to: toVC) {
                         return controller
                     }
                     guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
@@ -100,7 +100,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
                 return transitionController.navigationController(navigationController, interactionControllerFor: animationController)
             }
             let override: MethodType = { `self`, navigationController, animationController in
-                if let controller = xz_navc_msgSendSuper(self, navigationController: navigationController, interactionControllerForAnimationController: animationController) {
+                if let controller = xz_navc_msgSendSuper(self, navigationController: navigationController, interactionControllerFor: animationController) {
                     return controller;
                 }
                 guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
@@ -108,7 +108,7 @@ public final class XZNavigationControllerTransitionController: NSObject {
             }
             let exchange = { (_ selector: Selector) in
                 let exchange: MethodType = { `self`, navigationController, animationController in
-                    if let controller = xz_navc_msgSend(self, exchange: selector, navigationController: navigationController, interactionControllerForAnimationController: animationController) {
+                    if let controller = xz_navc_msgSend(self, exchange: selector, navigationController: navigationController, interactionControllerFor: animationController) {
                         return controller
                     }
                     guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
