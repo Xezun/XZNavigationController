@@ -69,7 +69,7 @@ NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendSuper_popToRootV
 }
 
 NSArray<__kindof UIViewController *> * _Nullable xz_navc_msgSendExchange_popToRootViewController(UINavigationController *receiver, SEL selector, BOOL animated) {
-    return ((id (*)(id, SEL, BOOL))objc_msgSendSuper)(receiver, selector, animated);
+    return ((id (*)(id, SEL, BOOL))objc_msgSend)(receiver, selector, animated);
 }
 
 #pragma mark - UIViewController
