@@ -41,7 +41,7 @@ extension UINavigationBar {
     /// 导航条是否已开启自定义。
     public internal(set) var isCustomizable: Bool {
         get {
-            return __xz_navc_isCustomizable()
+            return objc_getAssociatedObject(self, &_isCustomizable) != nil
         }
         set {
             if newValue == isCustomizable {
@@ -49,50 +49,55 @@ extension UINavigationBar {
             }
             
             if newValue {
+                objc_setAssociatedObject(self, &_isCustomizable, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+                
                 let OldClass = type(of: self)
                 
-                if let CustomizableClass = objc_getAssociatedObject(OldClass, &_CustomizableClass) as? UINavigationBar.Type {
+                if let CustomizableClass = objc_getAssociatedObject(OldClass, &_customizableClass) as? UINavigationBar.Type {
                     _ = object_setClass(self, CustomizableClass)
                 } else if let CustomizableClass = xz_objc_createClass(OldClass, { (CustomizableClass) in
-                        xz_objc_class_copyMethodsFromClass(CustomizableClass, XZNavigationControllerCustomizableNavigationBar.self);
+                    xz_objc_class_copyMethods(XZNavigationControllerCustomizableNavigationBar.self, CustomizableClass);
                 }) as? UINavigationBar.Type {
-                    objc_setAssociatedObject(OldClass, &_CustomizableClass, CustomizableClass, .OBJC_ASSOCIATION_ASSIGN)
+                    objc_setAssociatedObject(OldClass, &_customizableClass, CustomizableClass, .OBJC_ASSOCIATION_ASSIGN)
                     _ = object_setClass(self, CustomizableClass)
                 } else {
                     fatalError("无法自定义\(OldClass)")
                 }
             } else {
+                objc_setAssociatedObject(self, &_isCustomizable, nil, .OBJC_ASSOCIATION_COPY_NONATOMIC)
                 object_setClass(self, self.superclass!)
             }
         }
     }
     
+    
+    
 }
 
-extension XZNavigationControllerCustomizableNavigationBar {
+private class XZNavigationControllerCustomizableNavigationBar: UINavigationBar {
     
     open override var isHidden: Bool {
         get {
-            return __xz_navc_isHidden()
+            return xz_navc_msgSendSuper(isHidden: self)
         }
         set {
             if let navigationBar = navigationBar {
                 navigationBar.isHidden = newValue
             } else {
-                setHidden(newValue)
+                xz_navc_msgSendSuper(self, setHidden:newValue)
             }
         }
     }
     
     open override var isTranslucent: Bool {
         get {
-            return __xz_navc_isTranslucent()
+            return xz_navc_msgSendSuper(isTranslucent: self)
         }
         set {
             if let navigationBar = navigationBar {
                 navigationBar.isTranslucent = newValue
             } else {
-                setTranslucent(newValue)
+                xz_navc_msgSendSuper(self, setTranslucent: newValue)
             }
         }
     }
@@ -100,19 +105,19 @@ extension XZNavigationControllerCustomizableNavigationBar {
     @available(iOS 11.0, *)
     open override var prefersLargeTitles: Bool {
         get {
-            return __xz_navc_prefersLargeTitles()
+            return xz_navc_msgSendSuper(prefersLargeTitles: self)
         }
         set {
             if let navigationBar = navigationBar {
                 navigationBar.prefersLargeTitles = newValue
             } else {
-                setPrefersLargeTitles(newValue)
+                xz_navc_msgSendSuper(self, setPrefersLargeTitles: newValue)
             }
         }
     }
     
     open override func layoutSubviews() {
-        __xz_navc_layoutSubviews()
+        xz_navc_msgSendSuper(layoutSubviews: self)
 
         if let customNavigationBar = navigationBar {
             customNavigationBar.frame = bounds
@@ -122,45 +127,48 @@ extension XZNavigationControllerCustomizableNavigationBar {
     // 当原生导航条添加子视图时，保证自定义导航条始终显示在最上面。
 
     open override func addSubview(_ view: UIView) {
-        __xz_navc_addSubview(view)
+        xz_navc_msgSendSuper(self, addSubview: view)
 
         if let navigationBar = navigationBar, navigationBar != view {
-            __xz_navc_bringSubview(toFront: navigationBar)
+            xz_navc_msgSendSuper(self, bringSubviewToFront: navigationBar)
         }
     }
 
     open override func bringSubviewToFront(_ view: UIView) {
-        __xz_navc_bringSubview(toFront: view)
+        xz_navc_msgSendSuper(self, bringSubviewToFront: view)
+        
 
         if let navigationBar = navigationBar, navigationBar != view {
-            __xz_navc_bringSubview(toFront: navigationBar)
+            xz_navc_msgSendSuper(self, bringSubviewToFront: navigationBar)
         }
     }
 
     open override func insertSubview(_ view: UIView, aboveSubview siblingSubview: UIView) {
-        __xz_navc_insertSubview(view, aboveSubview: siblingSubview)
+        xz_navc_msgSendSuper(self, insertSubview: view, aboveSubview: siblingSubview)
         
         if siblingSubview == navigationBar {
-            __xz_navc_bringSubview(toFront: siblingSubview)
+            xz_navc_msgSendSuper(self, bringSubviewToFront: siblingSubview)
         }
     }
 
     open override func insertSubview(_ view: UIView, at index: Int) {
-        __xz_navc_insertSubview(view, at: index)
+        xz_navc_msgSendSuper(self, insertSubview: view, atIndex: index)
 
         if let navigationBar = navigationBar {
-            __xz_navc_bringSubview(toFront: navigationBar)
+            xz_navc_msgSendSuper(self, bringSubviewToFront: navigationBar)
         }
     }
 
     open override func insertSubview(_ view: UIView, belowSubview siblingSubview: UIView) {
-        __xz_navc_insertSubview(view, belowSubview: siblingSubview)
+        xz_navc_msgSendSuper(self, insertSubview: view, belowSubview: siblingSubview)
+        
         if navigationBar == view {
-            __xz_navc_bringSubview(toFront: view)
+            xz_navc_msgSendSuper(self, bringSubviewToFront: view)
         }
     }
     
 }
 
 private var _navigationBar = 0
-private var _CustomizableClass = 0;
+private var _customizableClass = 0;
+private var _isCustomizable = 0;

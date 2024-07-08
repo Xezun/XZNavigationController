@@ -6,12 +6,12 @@
 //
 
 import Foundation
+import ObjectiveC
+import XZDefines
 
 /// 转场控制器，接管了导航控制的代理。
 public final class XZNavigationControllerTransitionController: NSObject {
     
-    /// 导航控制器的代理，如果设置了此属性，那么转场动画将优先使用代理定义的转场。
-    public weak var delegate: UINavigationControllerDelegate?
     /// 导航手势对象。
     public let interactiveNavigationGestureRecognizer: UIPanGestureRecognizer
     /// 导航控制器。
@@ -25,10 +25,105 @@ public final class XZNavigationControllerTransitionController: NSObject {
         self.interactiveNavigationGestureRecognizer.delegate = self
         self.navigationController.view.addGestureRecognizer(interactiveNavigationGestureRecognizer)
         self.interactiveNavigationGestureRecognizer.addTarget(self, action: #selector(interactiveNavigationGestureRecognizerAction(_:)))
+        
+        customizeNavigationControllerDelegate(navigationController.delegate)
+        navigationController.addObserver(self, forKeyPath: "delegate", options: .new, context: &_context)
+    }
+    
+    deinit {
+        navigationController.removeObserver(self, forKeyPath: "delegate", context: &_context)
     }
     
     /// 交互式的转场控制器，只有在手势触发的转场过程中，此属性才有值。
     public private(set) var interactiveAnimationController: XZNavigationControllerAnimationController?
+    
+    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard context == &_context else {
+            return super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
+        guard keyPath == "delegate" else {
+            return
+        }
+        self.customizeNavigationControllerDelegate(change?[.newKey] as? UINavigationControllerDelegate)
+    }
+    
+    /// 处理导航控制器的代理，使其支持 XZNavigationController 自定义。
+    private func customizeNavigationControllerDelegate(_ delegate: UINavigationControllerDelegate?) {
+        guard let delegate = delegate else {
+            navigationController.delegate = self
+            return
+        }
+        
+        if delegate.isEqual(self) {
+            return
+        }
+        
+        let aClass = type(of: delegate);
+        if objc_getAssociatedObject(aClass, &_isCustomized) != nil {
+            return
+        }
+        objc_setAssociatedObject(aClass, &_isCustomized, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+        
+        do {
+            typealias MethodType = @convention(block) (UINavigationControllerDelegate, UINavigationController, UINavigationController.Operation, UIViewController, UIViewController) -> UIViewControllerAnimatedTransitioning?
+            let selector = #selector(UINavigationControllerDelegate.navigationController(_:animationControllerFor:from:to:))
+            let encoding = xz_objc_class_getMethodTypeEncoding(type(of: self), selector)
+            let creation: MethodType = { `self`, navigationController, operation, fromVC, toVC in
+                guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
+                return transitionController.navigationController(navigationController, animationControllerFor: operation, from: fromVC, to: toVC)
+            }
+            let override: MethodType = { `self`, navigationController, operation, fromVC, toVC in
+                if let controller = xz_navc_msgSendSuper(self, navigationController: navigationController, animationControllerFor: operation, from: fromVC, to: toVC) {
+                    return controller;
+                }
+                guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
+                return transitionController.navigationController(navigationController, animationControllerFor: operation, from: fromVC, to: toVC)
+            }
+            let exchange = { (_ selector: Selector) in
+                let exchange: MethodType = { `self`, navigationController, operation, fromVC, toVC in
+                    if let controller = xz_navc_msgSend(self, exchange: selector, navigationController: navigationController, animationControllerFor: operation, from: fromVC, to: toVC) {
+                        return controller
+                    }
+                    guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
+                    return transitionController.navigationController(navigationController, animationControllerFor: operation, from: fromVC, to: toVC)
+                }
+                return exchange
+            }
+            xz_objc_class_addMethodWithBlock(aClass, selector, encoding, creation, override, exchange);
+        }
+        
+        do {
+            typealias MethodType = @convention(block) (UINavigationControllerDelegate, UINavigationController, UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning?
+            let selector = #selector(UINavigationControllerDelegate.navigationController(_:interactionControllerFor:))
+            let encoding = xz_objc_class_getMethodTypeEncoding(type(of: self), selector)
+            let creation: MethodType = { `self`, navigationController, animationController in
+                guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
+                return transitionController.navigationController(navigationController, interactionControllerFor: animationController)
+            }
+            let override: MethodType = { `self`, navigationController, animationController in
+                if let controller = xz_navc_msgSendSuper(self, navigationController: navigationController, interactionControllerFor: animationController) {
+                    return controller;
+                }
+                guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
+                return transitionController.navigationController(navigationController, interactionControllerFor: animationController)
+            }
+            let exchange = { (_ selector: Selector) in
+                let exchange: MethodType = { `self`, navigationController, animationController in
+                    if let controller = xz_navc_msgSend(self, exchange: selector, navigationController: navigationController, interactionControllerFor: animationController) {
+                        return controller
+                    }
+                    guard let transitionController = (navigationController as? XZNavigationController)?.transitionController else { return nil }
+                    return transitionController.navigationController(navigationController, interactionControllerFor: animationController)
+                }
+                return exchange
+            }
+            xz_objc_class_addMethodWithBlock(aClass, selector, encoding, creation, override, exchange);
+        }
+        
+        // 重新设置代理，否则代理方法不会被调用，可能原生内部使用了缓存。
+        navigationController.delegate = nil;
+        navigationController.delegate = delegate;
+    }
 }
 
 extension XZNavigationControllerTransitionController: UINavigationControllerDelegate {
@@ -43,10 +138,6 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
     
     /// 1. 获取转场动画控制器。
     public func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        // 优先使用自定义转场
-        if let animationController = delegate?.navigationController?(navigationController, animationControllerFor: operation, from: fromVC, to: toVC) {
-            return animationController
-        }
         // 交互性转场。
         if let animationController = self.interactiveAnimationController {
             return animationController
@@ -57,39 +148,9 @@ extension XZNavigationControllerTransitionController: UINavigationControllerDele
     
     /// 2. 动画控制器的交互控制器。
     public func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        if let interactionController = delegate?.navigationController?(navigationController, interactionControllerFor: animationController) {
-            return interactionController
-        }
         return (animationController as? XZNavigationControllerAnimationController)?.interactiveTransition
     }
     
-    /// 3. 新的控制器将要显示。
-    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        // 此方法会在 viewDidLoad 之后，但是在转场动画开始之前触发；转场如果取消，此方法不会调用。
-        // 需要在转场动画开始前更新导航条样式，因为在进入自定义转场动画时，控制器的布局已经确定。
-        // 导航控制器第一次显示时，栈底控制器如果不是通过初始化方法传入的，可能会造成此方法会被调用，但是 didShow 不调用，所以需要转场事件的回调。
-        // 此方法触发时，viewController 已经加入到导航栈中
-        delegate?.navigationController?(navigationController, willShow: viewController, animated: animated)
-    }
-    
-    /// 5. 导航控制器显示了指定的控制器。转场取消的时候，此方法不会调用。
-    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        // 设置 customNavigationBar 的值，其实在自定义转场动画中已处理。但是非动画转场，不会走自定义转场动画的逻辑，所以这里需要补上。
-        // 另外，如果转场取消，此方法不会调用，属性 customNavigationBar 的值，也是在自定义转场动画的逻辑中处理的，
-        delegate?.navigationController?(navigationController, didShow: viewController, animated: animated)
-    }
-    
-    /// 转发未实现的代理方法，此方法直接返回 delegate 。
-    public override func forwardingTarget(for aSelector: Selector!) -> Any? {
-        return delegate
-    }
-    
-    public override func responds(to aSelector: Selector!) -> Bool {
-        if super.responds(to: aSelector) {
-            return true
-        }
-        return delegate?.responds(to: aSelector) == true
-    }
 }
 
 
@@ -314,7 +375,11 @@ extension XZNavigationControllerTransitionController: UIGestureRecognizerDelegat
     }
     
 }
- 
+
+/// 导航控制器 delegate 的 KVO 标记。
+private var _context = 0
+/// 记录导航控制器的 delegate 是否已经进行了自定义化。
+private var _isCustomized = 0
 
 // 转场方法调用顺序
 //

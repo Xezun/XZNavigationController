@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/cocoapods/l/XZNavigationController.svg?style=flat)](https://cocoapods.org/pods/XZNavigationController)
 [![Platform](https://img.shields.io/cocoapods/p/XZNavigationController.svg?style=flat)](https://cocoapods.org/pods/XZNavigationController)
 
-XZNavigationController 是一款使原生的 UINavigationController 支持自定义导航条、全屏手势导航功能组件。
+XZNavigationController 是一款使原生的 UINavigationController 支持自定义导航条、全屏手势导航功能的组件。
 
 XZNavigationController is a protocol oriented component that enables native UINavigationController to support custom navigation bars and full screen gesture navigation functions.
 
@@ -31,23 +31,67 @@ pod 'XZNavigationController'
 
 ## 功能特性
 
-`XZNavigationController`是对原生`UINavigationController`的增强辅助协议，它增强的原生`UINavigationController`的功能。
+`XZNavigationController`是一款辅助类型的协议，增强原生`UINavigationController`的功能，并不需要去实现它。
 
-1. 使`UINavigationController`支持自定义导航条
+1. 自定义导航条
 
-当开启自定义功能后，通过`XZNavigationBarCustomizable`协议，导航栈内的控制器可以设置定义的导航条。
+当开启自定义功能后，导航栈内的控制器可通过`XZNavigationBarCustomizable`协议自定义的导航条。
 
-自定义导航条会展示在原生导航条之上，而不是取代它，所以原生导航条的功能和特性，都还是保留的。
+自定义导航条会展示在原生导航条之上，而不是取代它，不影响原生导航条的功能和特性。
 
-拥有自定义导航条的控制，可以摆脱在`viewWillAppear`中对导航条状态的维护了，因为`XZNavigationController`在展示控制器时，会自动根据控制器的自定义导航条的状态，设置原生导航条的状态。
+拥有自定义导航条的控制器，可以通过配置自定义导航条，来维护导航条的状态，而不必在`viewWillAppear`来处理导航条的状态，这可以让控制器仅需要关注自己的导航条。
 
-2. 使`UINavigationController`支持全屏手势导航
+2. 全屏手势导航
 
-原生仅支持手势返回，且限制颇多，所以`XZNavigationController`重写了手势，不仅支持全屏手势返回，还支持手势进入下一页。
+原生仅支持手势返回，且限制颇多，所以`XZNavigationController`重写了手势，使“边缘手势返回”功能始终开启，并且通过`XZNavigationGestureDrivable`协议，还可以实现：
 
-3. 支持更多转场效果（TODO）
+- 声明遵循协议，不需要实现任何方法，即可获得全屏手势返回。
+- 在协议方法中，返回手势生效的范围，可以控制手势导航是否生效。
+- 在协议方法中，返回手势导航的目标控制器，可以精确控制手势导航的返回或者前进。
 
-由于完全是自定义的转场，`XZNavigationController`有能力实现，支持更多转场效果，或者提供更简便的自定义转场实现方式。
+3. 自定义转场效果
+
+为了处理自定义导航条的转场效果，`XZNavigationController` 已经自定义导航控制器效果，但是开发中依然可以按照原生的方法，自定义导航控制器的转场效果。
+
+此外，组件开放了内部的转场动画控制器，即 `XZNavigationControllerAnimationController` 类，以此基类，自定义转场效果的开发将变得更简单。
+
+比如通过下面的代码，即可以将传统的 push 动画，从左右平移改为上下平移。
+
+```swift
+class CustomAnimationController : XZNavigationControllerAnimationController {
+    
+    override func commitAnimation(using context: XZNavigationControllerAnimationContext, completion: @escaping () -> Void) {
+        switch self.operation {
+        case .push:
+            // 新页面入场动画：从底部向上运动
+            context.to.view.frame = context.to.frame.offsetBy(dx: 0, dy: context.to.frame.height);
+            if let toNavigationBar = context.toNavigationBar {
+                toNavigationBar.view.frame = toNavigationBar.frame.offsetBy(dx: 0, dy: context.to.frame.height)
+            }
+            // 阴影跟随新页面
+            context.shadow.view.frame = context.shadow.frame.offsetBy(dx: 0, dy: context.to.frame.height)
+            // 旧页面保持不动
+            context.from.frame = context.from.view.frame;
+            if let fromNavigationBar = context.fromNavigationBar {
+                fromNavigationBar.frame = fromNavigationBar.view.frame
+            }
+            super.commitAnimation(using: context, completion: completion)
+        case .pop:
+            super.commitAnimation(using: context, completion: completion)
+        default:
+            fatalError()
+        }
+    }
+    
+}
+
+// 在导航控制器的 delegate 方法中，使用自定义的转场动画控制器。
+func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    guard let navigationController = navigationController as? XZNavigationController else { return nil }
+    return CustomAnimationController.init(for: navigationController, operation: operation, isInteractive: false)
+}
+
+```
 
 ## 如何使用
 

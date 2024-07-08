@@ -37,9 +37,9 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
             hiddenSwitch.isOn = navigationController.isNavigationBarHidden
             translucentSwitch.isOn = navigationController.navigationBar.isTranslucent
             prefersLargeTitlesSwitch.isOn = navigationController.navigationBar.prefersLargeTitles
-        }        
+        }
     }
-
+    
     @IBAction func isCustomizableValueChanged(_ sender: UISwitch) {
         guard let navigationController = self.navigationController as? XZNavigationController else { return }
         
@@ -92,4 +92,3 @@ class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomiza
         }
     }
 }
-

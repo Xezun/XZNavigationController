@@ -525,6 +525,40 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection id="CZJ-NQ-HY8">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="XgT-gK-7cZ">
+                                        <rect key="frame" x="0.0" y="447.333330154419" width="393" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="XgT-gK-7cZ" id="fM4-Yr-6u9">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="自定义转场效果" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Ot-qy-3am">
+                                                    <rect key="frame" x="20" y="0.0" width="122" height="44"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="RgU-tG-dYe">
+                                                    <rect key="frame" x="324" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <connections>
+                                                        <action selector="customNavigationTranstionChanged:" destination="fcM-Hm-rVE" eventType="valueChanged" id="iR8-bR-ypZ"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="RgU-tG-dYe" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="5Ot-qy-3am" secondAttribute="trailing" constant="20" id="20G-JN-fSd"/>
+                                                <constraint firstAttribute="bottom" secondItem="5Ot-qy-3am" secondAttribute="bottom" id="7kV-ip-F0e"/>
+                                                <constraint firstAttribute="trailing" secondItem="RgU-tG-dYe" secondAttribute="trailing" constant="20" id="CKg-A2-X9w"/>
+                                                <constraint firstItem="RgU-tG-dYe" firstAttribute="centerY" secondItem="fM4-Yr-6u9" secondAttribute="centerY" id="WU8-mR-c9A"/>
+                                                <constraint firstItem="5Ot-qy-3am" firstAttribute="top" secondItem="fM4-Yr-6u9" secondAttribute="top" id="nen-eh-Kg0"/>
+                                                <constraint firstItem="5Ot-qy-3am" firstAttribute="leading" secondItem="fM4-Yr-6u9" secondAttribute="leading" constant="20" id="qfd-IZ-Kwl"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="fcM-Hm-rVE" id="7hO-cm-6FC"/>
@@ -535,6 +569,7 @@
                         <barButtonItem key="backBarButtonItem" title="返回" id="w4T-jb-hWO"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="customavigationTranstionSwitch" destination="RgU-tG-dYe" id="Mjr-hp-nOw"/>
                         <outlet property="hiddenSwitch" destination="BQJ-Tz-yX3" id="JeL-jH-NPz"/>
                         <outlet property="prefersLargeTitlesSwitch" destination="cvx-yj-8Fn" id="1Ng-xs-NL0"/>
                         <outlet property="translucentSwitch" destination="ngi-Xb-7Kh" id="0sJ-gH-HsP"/>
