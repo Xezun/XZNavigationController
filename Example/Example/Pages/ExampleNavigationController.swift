@@ -14,6 +14,10 @@ import XZNavigationController
 // 因为后续维护代码的人，可能并不知道遵循了协议的导航栈，是否使用了这个功能。
 // 协议 XZNavigationController 没有任何方法或属性需要实现，因为它是一个拓展功能的协议，遵循它可以获得额外属性。
 class ExampleNavigationController: UINavigationController, XZNavigationController {
+    
+    deinit {
+        print("\(type(of: self)) \(#function) successfully")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
