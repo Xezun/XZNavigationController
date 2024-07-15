@@ -35,11 +35,42 @@ pod 'XZNavigationController'
 
 1. 自定义导航条
 
-当开启自定义功能后，导航栈内的控制器可通过`XZNavigationBarCustomizable`协议自定义的导航条。
+当开启自定义功能后，导航栈内的控制器可通过`XZNavigationBarCustomizable`协议自定义控制器独立的导航条。
 
-自定义导航条会展示在原生导航条之上，而不是取代它，不影响原生导航条的功能和特性。
+> 自定义导航条会展示在原生导航条之上，而不是取代它，不影响原生导航条的功能和特性。
 
-拥有自定义导航条的控制器，可以通过配置自定义导航条，来维护导航条的状态，而不必在`viewWillAppear`来处理导航条的状态，这可以让控制器仅需要关注自己的导航条。
+```swift
+class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomizable {
+    
+    var navigationBarIfLoaded = ExampleNavigationBar.init()
+    
+}
+```
+
+这个协议，只有一个属性需要实现，但是更推荐您使用下面的方式实现，在使用时可以避免类型转换。
+
+```swift
+class ExampleHomeViewController: UITableViewController, XZNavigationBarCustomizable {
+    
+    var navigationBarIfLoaded: XZNavigationBarProtocol? {
+        return self.navigationBar
+    }
+    
+    var navigationBar = ExampleNavigationBar.init()
+  
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        navigationBar.title         = "首页"
+        navigationBar.barTintColor  = .brown
+        navigationBar.isTranslucent = true
+    }
+}
+```
+
+如果自定义导航条，大部分都有统一的样式，可以通过协议`extension`的方式实现，使用体验更好，详情参见"[使用自定义导航条](#三使用自定义导航条)"。
+
+控制器拥有自定义导航条，并不仅仅是有了自定义导航条，还能帮我们更好的维护导航条的状态。在某些情况下，如果我们可能需要在控制器退场时，恢复原来导航条的状态，这往往需要在`viewWillAppear`中记录，然后在`viewWillDisappear`中恢复，很明显不是很友好的处理方式，且也存在缺陷。但是如果我们使用`XZNavigationController`开启自定义，那么我们就仅仅需要像上例中这样，在`viewDidLoad`中，维护自身的导航条即可，而不必考虑之前或之后的状态。
 
 2. 全屏手势导航
 

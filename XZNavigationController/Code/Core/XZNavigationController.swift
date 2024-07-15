@@ -5,44 +5,6 @@
 //  Created by Xezun on 2017/2/17.
 //  Copyright © 2017年 XEZUN INC. All rights reserved.
 //
-// 【开发备忘】
-// 为了将更新导航条的操作放在 viewWillAppear 中：
-// 一、 方法交换，重写 UIViewController 基类的 viewWillAppear 方法，遇到一下问题：
-//      1. 某些页面，交换后的方法不执行（猜测可能是因为Swift消息派发机制，没有把方法按 objc 消息派发问题）
-//      2. 控制器重写的逻辑，在交换方法的逻辑之后运行，导致页面可能没有按照自定义导航条的配置来展示。
-//      3. 重写 UIViewController 基类，影响较大。
-// 二、重写 UINavigationController 的 addChildViewController 方法。
-//      1. 方法不调用
-// 三、监听 viewControllers 属性
-//      1. KVO 触发
-// 以上问题多是因为 Swift 优化了 OC 运行时代码，因此采用了使用 OC 来实现。
-//
-// 【已知问题一】
-// 如下操作会导致自定义导航条丢失。
-// ```swift
-// if let navigationController = navigationController {
-//    let viewControllers = navigationController.viewControllers
-//    navigationController.setViewControllers([], animated: false)
-//    navigationController.setViewControllers(viewControllers, animated: false)
-// }
-// ```
-// 因为 set 操作时，XZNavigationController 认为是转场开始而移除了自定义导航条，
-// 但是 UINavigationController 在处理这种情形时，认为没有转场发生，所以最终也没有 viewDidAppear 执行，
-// 自定义导航条没有机会展示。
-// 这说明，在 UINavigationController 中，方法 setViewControllers 实际是有延迟的。
-// 如果确实有这种逻辑需求，可以延迟第二次操作，来避免这个问题。
-//
-// 【已知问题二】
-// 在 UITabBarController 中时，tabBar 只在首页显示，如果手势跨层返回首页，那么 tabBar 没有动画转场动画，
-// 即没有从场外进场的过程，而是直接显示在底部，覆盖在转场的控制器之上。不过，如果转场取消一次，再次手势返回的话，
-// tabBar 却又有转场动画。
-// 目前，对于 left-to-right 布局下，没有控制 tabBar 的动画效果，虽然可以开启来解决这个问题，但是觉得没有必要。
-//
-// 【已知问题三】
-// 在使用 `-popToViewController:animated:` 进行手势跨层 pop 时，那么被 popTo 跨过的页面
-// 会被导航栈移除，且手势取消了操作，导航栈也不会恢复。这 BUG 是原生的，虽然可以尝试修复，但觉得没有必要。
-// 因为已经使用 `popTo` 跨层了，那说明，被跨的层，在业务逻辑中，大概率属于不可返回的页面，没有恢复的必要。
-//
 
 import UIKit
 import XZDefines
@@ -353,3 +315,44 @@ private var _naviagtionController = 0
 /// 保存自定义转场控制。
 private var _transitionController = 0
 
+// 【开发备忘】
+// 为了将更新导航条的操作放在 viewWillAppear 中：
+// 一、 用 Swift 方法交换，重写基类 UIViewController 的 viewWillAppear 方法，遇到以下问题：
+//      1. 某些页面，交换后的方法不执行，可能是因为 Swift 消息派发机制，没有把方法按 objc 消息派发造成的。
+//      2. 在基类中添加的代码，在自类用户的代码之前执行，所以页面导航条状态可以被用户修改，没有按照自定义导航条的配置来展示。
+//      3. 重写基类 UIViewController 影响会所有的控制器。
+// 二、重写 UINavigationController 的 addChildViewController 方法。
+//      1. 控制器入栈，不会调用这个方法，即栈内控制器不是导航控制器的子控制器。
+// 三、监听 viewControllers 属性
+//      1. KVO 可能不会触发
+// 最终采用的方案：
+// 注入导航控制器的所有入栈方法和出栈方法（属性 isCustomizable 被设置为 true 时），
+// 在控制器入栈时，向控制器 viewWillAppear/viewDidAppear 注入代码，这样就只影响控制器本身。
+//
+// 【已知问题一】
+// 如下操作会导致自定义导航条丢失。
+// ```swift
+// if let navigationController = navigationController {
+//    let viewControllers = navigationController.viewControllers
+//    navigationController.setViewControllers([], animated: false)
+//    navigationController.setViewControllers(viewControllers, animated: false)
+// }
+// ```
+// 因为 set 操作时，XZNavigationController 认为是转场开始而移除了自定义导航条，
+// 但是 UINavigationController 在处理这种情形时，认为没有转场发生，所以最终也没有 viewDidAppear 执行，
+// 自定义导航条没有机会展示。
+// 这说明，在 UINavigationController 中，方法 setViewControllers 实际是有延迟的。
+// 如果确实有这种逻辑需求，可以延迟第二次操作，来避免这个问题。
+//
+// 【已知问题二】
+// 在 UITabBarController 中时，tabBar 只在首页显示，如果手势**跨层**返回首页，那么 tabBar 没有动画转场动画，
+// 即没有从场外进场的过程，而是直接显示在底部，覆盖在转场的控制器之上。
+// 但是由于问题三的原因，如果转场取消一次，栈内只留下了栈顶和栈底控制器，再次手势返回的话，由于没有跨层 tabBar 就又有了转场动画。
+// 目前，重写 tabBar 的动画效果只在 Right-to-Left 的布局环境下生效，虽然在 left-to-right 布局下开启可以开启解决这个问题，但是觉得没有必要。
+//
+// 【已知问题三】
+// 在使用 `-popToViewController:animated:` 进行手势跨层 pop 时，那么被 popTo 跨过的页面
+// 会被导航栈移除，且手势取消了操作，导航栈也不会恢复。
+// 这 BUG 是原生的，虽然可以尝试修复，但觉得没有必要。
+// 因为已经使用 `popTo` 跨层了，那说明，被跨的层，在业务逻辑中，大概率属于不可返回的页面，没有恢复的必要。
+//
