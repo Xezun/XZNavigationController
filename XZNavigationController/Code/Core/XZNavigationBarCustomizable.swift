@@ -23,8 +23,8 @@ public protocol XZNavigationBarCustomizable: UIViewController {
 ///
 /// **关于系统导航条**
 ///
-/// 1. 如果 isTranslucent == false ，那么导航条背景色 alpha 会被设置为 1.0，但是大标题模式背景色却是白色的。
-/// 2. 如果 isTranslucent == true ，设置透明色，则导航条可以透明。
+/// 1. 如果 `isTranslucent == false` ，那么导航条背景色 alpha 会被设置为 1.0，但是大标题模式背景色却是白色的。
+/// 2. 如果 `isTranslucent == true` ，设置透明色，则导航条可以透明。
 ///
 /// **如何设置原生导航条透明**
 ///
@@ -49,7 +49,7 @@ public protocol XZNavigationBarCustomizable: UIViewController {
 /// self.isTranslucentDidChange()
 /// ```
 ///
-/// - Attention: 由于转场需要，自定义导航条并不总是在原生导航条之上，所以自定义导航条的 tintColor 可能需要单独设置。
+/// - Attention: 由于转场需要，自定义导航条并不总是在原生导航条之上，所以自定义导航条需要单独设置 tintColor 的值，以避免转场过程中，导航条颜色不一致的问题。
 public protocol XZNavigationBarProtocol: UIView {
     /// 导航条是否半透明。
     var isTranslucent: Bool { get set }
